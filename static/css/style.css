@@ -246,25 +246,197 @@ body {
     color: #666;
 }
 
-/* Responsive */
+/* Responsive - Mobil Optimizasyonu */
 @media (max-width: 768px) {
-    .race-tabs {
-        overflow-x: auto;
-        flex-wrap: nowrap;
+    /* Kontrol paneli mobil düzeni */
+    .top-control-bar {
+        padding: 8px;
     }
     
     .top-control-bar .d-flex {
-        flex-wrap: wrap;
-        gap: 5px;
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch !important;
+    }
+    
+    .top-control-bar select {
+        width: 100% !important;
+        margin-bottom: 5px;
+    }
+    
+    .top-control-bar .d-flex > * {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    /* Butonlar mobil düzeni */
+    .btn-sm {
+        font-size: 10px;
+        padding: 6px 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Koşu sekmeleri mobil */
+    .race-tabs-container {
+        padding: 2px 5px;
+    }
+    
+    .race-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .race-tab {
+        font-size: 10px;
+        padding: 4px 8px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    
+    /* Tablo mobil optimizasyonu */
+    .table-responsive {
+        border: none;
+        margin: 0;
+        padding: 0;
     }
     
     .horse-table {
-        font-size: 9px;
+        font-size: 8px;
+        margin: 0;
+        width: 100%;
+        min-width: 600px; /* Minimum genişlik yatay kaydırma için */
     }
     
     .horse-table th, .horse-table td {
-        padding: 2px;
+        padding: 3px 2px;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
+    
+    .horse-table th {
+        font-size: 8px;
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa;
+        z-index: 2;
+    }
+    
+    /* At ismi sütunu mobil */
+    .horse-name {
+        max-width: 80px;
+        font-size: 9px !important;
+        text-align: left !important;
+        padding-left: 4px !important;
+    }
+    
+    /* Skor sütunları vurgulanması */
+    .horse-score {
+        font-weight: bold;
+        font-size: 9px;
+    }
+    
+    /* Durum mesajları mobil */
+    .alert {
+        margin: 5px;
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+    
+    /* İstatistik kartları mobil */
+    .stats-card {
+        padding: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .stats-number {
+        font-size: 16px;
+    }
+    
+    .stats-card small {
+        font-size: 9px;
+    }
+    
+    /* Tüm koşular grid mobil */
+    .all-races-grid {
+        padding: 10px;
+    }
+    
+    .race-overview-card {
+        padding: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .race-overview-card h6 {
+        font-size: 11px;
+    }
+    
+    .race-overview-card .card-text {
+        font-size: 9px;
+    }
+}
+
+/* Küçük ekranlar için ek optimizasyon */
+@media (max-width: 480px) {
+    /* Çok küçük ekranlar */
+    .top-control-bar {
+        padding: 5px;
+    }
+    
+    .btn-sm {
+        font-size: 9px;
+        padding: 4px 6px;
+    }
+    
+    .horse-table {
+        font-size: 7px;
+        min-width: 550px;
+    }
+    
+    .horse-table th, .horse-table td {
+        padding: 2px 1px;
+    }
+    
+    .horse-name {
+        max-width: 60px;
+        font-size: 8px !important;
+    }
+    
+    .race-tab {
+        font-size: 9px;
+        padding: 3px 6px;
+    }
+    
+    .alert {
+        font-size: 10px;
+        margin: 3px;
+        padding: 5px 8px;
+    }
+}
+
+/* Dokunmatik cihazlar için scroll bar stilleri */
+.race-tabs::-webkit-scrollbar {
+    height: 4px;
+}
+
+.race-tabs::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+.race-tabs::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+}
+
+.race-tabs::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 /* Durum Mesajları */

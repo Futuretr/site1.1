@@ -1,0 +1,77 @@
+2025-09-25 01:00:38,807 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.16:5000
+2025-09-25 01:00:38,808 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-25 01:00:38,809 - INFO -  * Restarting with stat
+2025-09-25 01:00:39,597 - WARNING -  * Debugger is active!
+2025-09-25 01:00:39,600 - INFO -  * Debugger PIN: 580-487-815
+2025-09-25 01:00:53,211 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-25 01:00:53,307 - INFO -  * Restarting with stat
+2025-09-25 01:00:54,093 - INFO - 🏇 At yarışı modülleri başarıyla yüklendi
+2025-09-25 01:00:54,097 - INFO - 🚀 At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 01:00:54,097 - INFO - 🌐 Host: 0.0.0.0:5000
+2025-09-25 01:00:54,097 - INFO - 🔧 Debug Mode: True
+2025-09-25 01:00:54,109 - WARNING -  * Debugger is active!
+2025-09-25 01:00:54,112 - INFO -  * Debugger PIN: 580-487-815
+2025-09-25 01:00:58,352 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-25 01:00:58,438 - INFO -  * Restarting with stat
+2025-09-25 01:00:59,252 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-25 01:00:59,255 - INFO - 🚀 At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 01:00:59,255 - INFO - 🌐 Host: 0.0.0.0:5000
+2025-09-25 01:00:59,256 - INFO - 🔧 Debug Mode: True
+2025-09-25 01:00:59,268 - WARNING -  * Debugger is active!
+2025-09-25 01:00:59,271 - INFO -  * Debugger PIN: 580-487-815
+2025-09-25 01:01:03,517 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-25 01:01:03,619 - INFO -  * Restarting with stat
+2025-09-25 01:01:04,382 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-25 01:01:04,386 - INFO - 🚀 At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 01:01:04,386 - INFO - 🌐 Host: 0.0.0.0:5000
+2025-09-25 01:01:04,386 - INFO - 🔧 Debug Mode: True
+2025-09-25 01:01:04,398 - WARNING -  * Debugger is active!
+2025-09-25 01:01:04,402 - INFO -  * Debugger PIN: 580-487-815
+2025-09-25 01:01:09,693 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-25 01:01:09,781 - INFO -  * Restarting with stat
+2025-09-25 01:01:10,544 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-25 01:01:10,548 - INFO - 🚀 At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 01:01:10,548 - INFO - 🌐 Host: 0.0.0.0:5000
+2025-09-25 01:01:10,548 - INFO - 🔧 Debug Mode: True
+2025-09-25 01:01:10,561 - WARNING -  * Debugger is active!
+2025-09-25 01:01:10,564 - INFO -  * Debugger PIN: 580-487-815
+2025-09-25 01:01:14,805 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-25 01:01:14,898 - INFO -  * Restarting with stat
+2025-09-25 01:01:15,666 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-25 01:01:15,670 - INFO - 🚀 At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 01:01:15,670 - INFO - 🌐 Host: 0.0.0.0:5000
+2025-09-25 01:01:15,670 - INFO - 🔧 Debug Mode: True
+2025-09-25 01:01:15,683 - WARNING -  * Debugger is active!
+2025-09-25 01:01:15,685 - INFO -  * Debugger PIN: 580-487-815
+2025-09-25 01:01:19,926 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-25 01:01:20,018 - INFO -  * Restarting with stat
+2025-09-25 01:01:20,779 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-25 01:01:20,783 - INFO - 🚀 At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 01:01:20,783 - INFO - 🌐 Host: 0.0.0.0:5000
+2025-09-25 01:01:20,783 - INFO - 🔧 Debug Mode: True
+2025-09-25 01:01:20,795 - WARNING -  * Debugger is active!
+2025-09-25 01:01:20,798 - INFO -  * Debugger PIN: 580-487-815
+2025-09-25 01:01:25,045 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-25 01:01:25,150 - INFO -  * Restarting with stat
+2025-09-25 01:04:56,365 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-25 01:04:56,368 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 01:04:56,368 - INFO - Host: 0.0.0.0:5000
+2025-09-25 01:04:56,368 - INFO - Debug Mode: True
+2025-09-25 01:04:56,391 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.16:5000
+2025-09-25 01:04:56,391 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-25 01:04:56,392 - INFO -  * Restarting with stat
+2025-09-25 01:04:57,154 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-25 01:04:57,158 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 01:04:57,158 - INFO - Host: 0.0.0.0:5000
+2025-09-25 01:04:57,158 - INFO - Debug Mode: True
+2025-09-25 01:04:57,170 - WARNING -  * Debugger is active!
+2025-09-25 01:04:57,173 - INFO -  * Debugger PIN: 580-487-815
+2025-09-25 01:05:08,852 - INFO - 127.0.0.1 - - [25/Sep/2025 01:05:08] "GET /?id=f8172af0-1c48-4715-90b0-9022d44c083e&vscodeBrowserReqId=1758751508535 HTTP/1.1" 200 -
+2025-09-25 01:05:09,143 - INFO - 127.0.0.1 - - [25/Sep/2025 01:05:09] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-09-25 01:05:09,177 - INFO - 127.0.0.1 - - [25/Sep/2025 01:05:09] "GET /static/js/main.js HTTP/1.1" 200 -

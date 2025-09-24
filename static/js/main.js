@@ -15,6 +15,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let currentData = null;
 
+    // Mobil cihaz kontrolü
+    function isMobileDevice() {
+        return window.innerWidth <= 768 || 
+               /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    // Mobil optimizasyonları
+    if (isMobileDevice()) {
+        // Touch eventi optimizasyonları
+        document.body.style.webkitTouchCallout = 'none';
+        document.body.style.webkitUserSelect = 'none';
+        
+        // Mobil scroll optimizasyonu
+        document.addEventListener('touchstart', function() {}, {passive: true});
+        document.addEventListener('touchmove', function() {}, {passive: true});
+    }
+
+    // Ekran yönlendirme değişikliği
+    window.addEventListener('orientationchange', function() {
+        setTimeout(function() {
+            // Tablo genişliğini yeniden hesapla
+            const tables = document.querySelectorAll('.horse-table');
+            tables.forEach(table => {
+                table.style.width = 'auto';
+                setTimeout(() => table.style.width = '100%', 100);
+            });
+        }, 500);
+    });
+
     // Şehir seçimi değiştiğinde butonları aktif et
     citySelect.addEventListener('change', function() {
         const hasCity = this.value !== '';
@@ -133,16 +162,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         <table class="horse-table">
                             <thead>
                                 <tr>
-                                    <th width="30">N</th>
-                                    <th width="150">At İsmi</th>
-                                    <th width="100">Son Hipodrom</th>
-                                    <th width="60">100m Çıktı</th>
-                                    <th width="80">Son Mesafe</th>
-                                    <th width="60">Pist Türü</th>
-                                    <th width="60">Son Kilo</th>
-                                    <th width="60">Mevcut Kilo</th>
-                                    <th width="60">Son Derece</th>
-                                    <th width="80">Analiz Skoru</th>
+                                    <th width="25">N</th>
+                                    <th width="120">At İsmi</th>
+                                    <th width="80">Hipodrom</th>
+                                    <th width="50">Çıktı</th>
+                                    <th width="60">Mesafe</th>
+                                    <th width="50">Pist</th>
+                                    <th width="50">S.Kilo</th>
+                                    <th width="50">M.Kilo</th>
+                                    <th width="60">Derece</th>
+                                    <th width="60">Skor</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -238,6 +267,12 @@ document.addEventListener('DOMContentLoaded', function() {
         contentHtml += '</div>';
 
         results.innerHTML = tabsHtml + contentHtml;
+        
+        // Mobil optimizasyonları uygula
+        setTimeout(() => {
+            addTouchSupport();
+            optimizeTableScroll();
+        }, 100);
     }
 
     // Koşu sekmesi göster
@@ -269,6 +304,73 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('tab-all').classList.add('active');
         document.getElementById('race-tab-content-all').classList.add('active');
     };
+
+    // Mobil için dokunmatik sekme geçişi
+    function addTouchSupport() {
+        const raceTabsContainer = document.querySelector('.race-tabs');
+        if (raceTabsContainer && isMobileDevice()) {
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+
+            raceTabsContainer.addEventListener('touchstart', function(e) {
+                startX = e.touches[0].clientX;
+                isDragging = true;
+            }, {passive: true});
+
+            raceTabsContainer.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                currentX = e.touches[0].clientX;
+                const diffX = startX - currentX;
+                
+                // Yatay scroll
+                raceTabsContainer.scrollLeft += diffX * 0.5;
+                startX = currentX;
+            }, {passive: true});
+
+            raceTabsContainer.addEventListener('touchend', function() {
+                isDragging = false;
+            }, {passive: true});
+        }
+    }
+
+    // Mobil için tablo scroll optimizasyonu
+    function optimizeTableScroll() {
+        const tables = document.querySelectorAll('.table-responsive');
+        tables.forEach(table => {
+            if (isMobileDevice()) {
+                table.style.overflowX = 'auto';
+                table.style.webkitOverflowScrolling = 'touch';
+                
+                // Scroll ipucu göster
+                const scrollHint = document.createElement('div');
+                scrollHint.style.cssText = `
+                    position: absolute;
+                    top: 5px;
+                    right: 5px;
+                    background: rgba(0,0,0,0.7);
+                    color: white;
+                    padding: 2px 6px;
+                    border-radius: 3px;
+                    font-size: 10px;
+                    pointer-events: none;
+                    z-index: 10;
+                `;
+                scrollHint.textContent = '← → Kaydır';
+                table.style.position = 'relative';
+                table.appendChild(scrollHint);
+                
+                // 3 saniye sonra gizle
+                setTimeout(() => {
+                    if (scrollHint.parentNode) {
+                        scrollHint.style.opacity = '0';
+                        scrollHint.style.transition = 'opacity 0.5s';
+                        setTimeout(() => scrollHint.remove(), 500);
+                    }
+                }, 3000);
+            }
+        });
+    }
 
     // Veri kontrol butonu
     checkDataBtn.addEventListener('click', async function() {
