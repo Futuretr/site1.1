@@ -76,7 +76,7 @@ def scrape_city():
         
         city_name, city_function = CITY_FUNCTIONS[city]
         
-        print(f"🏇 {city_name} at verileri çekiliyor...")
+        print(f"[AT] {city_name} at verileri çekiliyor...")
         
         # At verilerini çek
         horses = city_function(debug)
@@ -92,6 +92,21 @@ def scrape_city():
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             
             df.to_csv(filepath, index=False, encoding='utf-8-sig')
+            
+            # JSON dosyası da kaydet (analiz için gerekli)
+            today = datetime.now().strftime('%Y%m%d')
+            json_filename = f"{city}_atlari_{today}.json"
+            json_filepath = os.path.join('data', json_filename)
+            
+            # Data klasörü yoksa oluştur
+            os.makedirs('data', exist_ok=True)
+            
+            with open(json_filepath, 'w', encoding='utf-8') as f:
+                json.dump(horses, f, ensure_ascii=False, indent=2)
+            
+            print(f"[DOSYA] {city_name} verileri kaydedildi:")
+            print(f"   CSV: {filepath}")
+            print(f"   JSON: {json_filepath}")
             
             # İstatistik hesapla
             basarili = sum(1 for h in horses if h['Son Derece'])
@@ -211,11 +226,11 @@ def calculate_from_saved():
         with open(saved_filepath, 'r', encoding='utf-8') as f:
             horses = json.load(f)
         
-        print(f"🧮 {city_name} için kaydedilmiş veriden hesaplama yapılıyor...")
+        print(f"[HESAP] {city_name} için kaydedilmiş veriden hesaplama yapılıyor...")
         
         # Kazanan verilerini oku
         kazanan_data = get_kazanan_data_for_city(city_name)
-        print(f"📊 {len(kazanan_data)} at için kazanan verisi bulundu")
+        print(f"[STAT] {len(kazanan_data)} at için kazanan verisi bulundu")
         
         # Hesaplama yap
         calculated_data = process_calculation_for_city(horses, city_name)
@@ -428,9 +443,9 @@ def calculate_from_saved():
                 'horses': races_data[race_num]['horses']
             })
         
-        print(f"🏁 Oluşturulan koşu sayısı: {len(races_list)}")
+        print(f"[YARISSONUC] Oluşturulan koşu sayısı: {len(races_list)}")
         for i, race in enumerate(races_list):
-            print(f"🏁 Koşu {race['race_number']}: {len(race['horses'])} at")
+            print(f"[YARISSONUC] Koşu {race['race_number']}: {len(race['horses'])} at")
         
         # Hesaplanmış CSV dosyası oluştur
         calc_df = pd.DataFrame(calculated_data)
@@ -663,7 +678,7 @@ def scrape_and_save():
         
         city_name, city_function = CITY_FUNCTIONS[city]
         
-        print(f"🏇 {city_name} at verileri çekiliyor ve kaydediliyor...")
+        print(f"[AT] {city_name} at verileri çekiliyor ve kaydediliyor...")
         
         # At verilerini çek
         horses = city_function(debug)
@@ -691,7 +706,7 @@ def scrape_and_save():
             raw_df.to_csv(raw_filepath, index=False, encoding='utf-8-sig')
             
             # KAZANAN ÇIKTI VERİLERİNİ ÇEK
-            print(f"🏆 {city_name} için kazanan verileri çekiliyor...")
+            print(f"[KAZANAN] {city_name} için kazanan verileri çekiliyor...")
             kazanan_data = process_kazanan_cikti_for_json(saved_filepath, city_name, today)
             kazanan_csv_path = save_kazanan_cikti_csv(kazanan_data, city_name, today)
             
@@ -741,14 +756,14 @@ def scrape_and_calculate():
         
         city_name, city_function = CITY_FUNCTIONS[city]
         
-        print(f"🏇 {city_name} at verileri çekiliyor ve hesaplanıyor...")
+        print(f"[AT] {city_name} at verileri çekiliyor ve hesaplanıyor...")
         
         # At verilerini çek
         horses = city_function(debug)
         
         if horses:
             # Hesaplama yap
-            print(f"🧮 {city_name} için hesaplama yapılıyor...")
+            print(f"[HESAP] {city_name} için hesaplama yapılıyor...")
             calculated_data = process_calculation_for_city(horses, city_name)
             
             # Verileri koşu bazında grupla
@@ -919,7 +934,7 @@ def scrape_all_cities():
         data = request.get_json()
         debug = data.get('debug', False)
         
-        print("🏇 TÜM ŞEHİRLER İÇİN AT VERİLERİ ÇEKİLİYOR...")
+        print("[AT] TÜM ŞEHİRLER İÇİN AT VERİLERİ ÇEKİLİYOR...")
         
         # Tüm şehirlerden veri çek
         all_horses, city_stats = get_all_cities_data(debug)

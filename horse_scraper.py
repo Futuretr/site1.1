@@ -80,7 +80,7 @@ def get_horse_last_race(profil_linki, at_ismi, debug=False):
         bugun_tarih = bugun.date()
         
         if debug:
-            print(f"    🔍 {at_ismi} analiz ediliyor... (Bugün: {bugun_tarih.strftime('%d.%m.%Y')})")
+            print(f"    [ANALIZ] {at_ismi} analiz ediliyor... (Bugun: {bugun_tarih.strftime('%d.%m.%Y')})")
         
         # Tüm koşu satırlarını bul
         all_trs = at_soup.find_all('tr')
@@ -120,7 +120,7 @@ def get_horse_last_race(profil_linki, at_ismi, debug=False):
         tr_list_sorted.sort(reverse=True, key=lambda x: x[0])
         
         if debug and tr_list_sorted:
-            print(f"      📋 {len(tr_list_sorted)} koşu bulundu")
+            print(f"      [LISTE] {len(tr_list_sorted)} kosu bulundu")
         
         # En uygun koşuyu bul - SIKI KONTROLLER
         veri_tr = None
@@ -131,7 +131,7 @@ def get_horse_last_race(profil_linki, at_ismi, debug=False):
                 kosu_tarih = tarih_dt.date()
                 
                 if debug:
-                    durum = "BUGÜN" if kosu_tarih == bugun_tarih else "GEÇMİŞ" if kosu_tarih < bugun_tarih else "GELECEK"
+                    durum = "BUGUN" if kosu_tarih == bugun_tarih else "GECMIS" if kosu_tarih < bugun_tarih else "GELECEK"
                     print(f"      {i+1}. {tarih_dt.strftime('%d.%m.%Y')} - Derece: '{derece_val}' - {durum}")
                 
                 # SIKI KONTROLLER
@@ -145,27 +145,27 @@ def get_horse_last_race(profil_linki, at_ismi, debug=False):
                                 # Derece bir zaman formatında olmalı (1.32.91) veya sayısal
                                 if ('.' in derece_val and len(derece_val.replace('.', '')) >= 3) or derece_val.replace('.', '').isdigit():
                                     if debug:
-                                        print(f"      ✅ KOŞU SEÇİLDİ: {tarih_dt.strftime('%d.%m.%Y')} - Derece: {derece_val}")
+                                        print(f"      [TAMAM] KOŞU SEÇİLDİ: {tarih_dt.strftime('%d.%m.%Y')} - Derece: {derece_val}")
                                     veri_tr = tr_item
                                     break
                                 else:
                                     if debug:
-                                        print(f"      ❌ Geçersiz derece formatı: '{derece_val}'")
+                                        print(f"      [HATA] Geçersiz derece formatı: '{derece_val}'")
                             except:
                                 if debug:
-                                    print(f"      ❌ Derece parse hatası: '{derece_val}'")
+                                    print(f"      [HATA] Derece parse hatası: '{derece_val}'")
                         else:
                             if debug:
-                                print(f"      ❌ Geçersiz durum: '{derece_val}'")
+                                print(f"      [HATA] Geçersiz durum: '{derece_val}'")
                     else:
                         if debug:
-                            print(f"      ❌ Derece bilgisi yok")
+                            print(f"      [HATA] Derece bilgisi yok")
                 elif kosu_tarih == bugun_tarih:
                     if debug:
-                        print(f"      ⚠️ Bugünkü koşu atlandı")
+                        print(f"      [UYARI] Bugünkü koşu atlandı")
                 else:
                     if debug:
-                        print(f"      ⚠️ Gelecek tarihli koşu atlandı")
+                        print(f"      [UYARI] Gelecek tarihli koşu atlandı")
         
         if veri_tr:
             tds = veri_tr.find_all('td')
@@ -196,11 +196,11 @@ def get_horse_last_race(profil_linki, at_ismi, debug=False):
                     kilo_onceki = normalize_weight(kilo_onceki_raw)
         else:
             if debug:
-                print(f"      ❌ {at_ismi} için uygun son koşu bulunamadı")
+                print(f"      [HATA] {at_ismi} için uygun son koşu bulunamadı")
                 
     except Exception as e:
         if debug:
-            print(f"      ⚠️ Hata: {at_ismi} için veri çekilemedi: {e}")
+            print(f"      [UYARI] Hata: {at_ismi} için veri çekilemedi: {e}")
     
     return mesafe_onceki, pist_onceki, derece, kilo_onceki, son_hipodrom
 
@@ -221,13 +221,13 @@ def get_city_races_unified(sehir_adi, url_suffix, debug=False):
     url = f"https://yenibeygir.com/{tarih_str}/{url_suffix}"
     
     if debug:
-        print(f"🏇 {sehir_adi} at verileri çekiliyor: {url}")
+        print(f"[DEBUG] {sehir_adi} at verileri cekiliyor: {url}")
     
     try:
         response = requests.get(url)
         response.raise_for_status()
     except Exception as e:
-        print(f"❌ {sehir_adi} sayfasına erişilemedi: {e}")
+        print(f"[HATA] {sehir_adi} sayfasina erisilemedi: {e}")
         return []
         
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -261,7 +261,7 @@ def get_city_races_unified(sehir_adi, url_suffix, debug=False):
         table = yaris_header.find_next('table')
         if table:
             if debug:
-                print(f"  📊 Koşu {kosu_no} işleniyor...")
+                print(f"  [STAT] Koşu {kosu_no} işleniyor...")
                 
             for tr in table.find_all('tr'):
                 a = tr.find('a', class_='atisimlink')
@@ -272,7 +272,7 @@ def get_city_races_unified(sehir_adi, url_suffix, debug=False):
                 profil_linki = a['href']
                 
                 if debug:
-                    print(f"    🐎 {at_ismi}")
+                    print(f"    [HORSE] {at_ismi}")
                 
                 # Jokey
                 jokey = ''
@@ -311,7 +311,7 @@ def get_city_races_unified(sehir_adi, url_suffix, debug=False):
     if debug:
         basarili = sum(1 for h in horses if h['Son Derece'])
         oran = (basarili / len(horses) * 100) if horses else 0
-        print(f"✅ {sehir_adi} - {len(horses)} at, {basarili} başarılı (%{oran:.1f})")
+        print(f"[TAMAM] {sehir_adi} - {len(horses)} at, {basarili} başarılı (%{oran:.1f})")
     
     return horses
 
@@ -348,7 +348,7 @@ def get_all_cities_data(debug=False):
     """
     Tüm şehirlerden at verilerini çek
     """
-    print("🏇 TÜM ŞEHİRLER İÇİN AT VERİLERİ ÇEKİLİYOR...")
+    print("[AT] TÜM ŞEHİRLER İÇİN AT VERİLERİ ÇEKİLİYOR...")
     print("=" * 60)
     
     city_functions = [
@@ -379,10 +379,10 @@ def get_all_cities_data(debug=False):
                 'oran': oran
             }
             
-            print(f"✅ {city_name}: {basarili}/{len(horses)} (%{oran:.1f})")
+            print(f"[TAMAM] {city_name}: {basarili}/{len(horses)} (%{oran:.1f})")
             
         except Exception as e:
-            print(f"❌ {city_name} hatası: {e}")
+            print(f"[HATA] {city_name} hatası: {e}")
             city_stats[city_name] = {'hata': str(e)}
     
     # Genel istatistik
@@ -390,7 +390,7 @@ def get_all_cities_data(debug=False):
     toplam_basarili = sum(1 for h in all_horses if h['Son Derece'])
     genel_oran = (toplam_basarili / toplam_at * 100) if toplam_at else 0
     
-    print(f"\n🏆 GENEL SONUÇ:")
+    print(f"\n[KAZANAN] GENEL SONUÇ:")
     print(f"   Toplam at: {toplam_at}")
     print(f"   Başarılı: {toplam_basarili}")
     print(f"   Genel başarı oranı: %{genel_oran:.1f}")
@@ -418,7 +418,7 @@ def create_all_csv_files(debug=False):
     
     for city_name, filename, city_func in city_functions:
         try:
-            print(f"\n🏇 {city_name} işleniyor...")
+            print(f"\n[AT] {city_name} işleniyor...")
             horses = city_func(debug)
             
             if horses:
@@ -428,12 +428,12 @@ def create_all_csv_files(debug=False):
                 basarili = sum(1 for h in horses if h['Son Derece'])
                 oran = (basarili / len(horses) * 100)
                 
-                print(f"✅ {filename} oluşturuldu - {basarili}/{len(horses)} (%{oran:.1f})")
+                print(f"[TAMAM] {filename} oluşturuldu - {basarili}/{len(horses)} (%{oran:.1f})")
             else:
-                print(f"❌ {city_name} için veri bulunamadı")
+                print(f"[HATA] {city_name} için veri bulunamadı")
                 
         except Exception as e:
-            print(f"❌ {city_name} CSV hatası: {e}")
+            print(f"[HATA] {city_name} CSV hatası: {e}")
     
     print(f"\n🎉 Tüm CSV dosyaları oluşturuldu!")
 
@@ -452,16 +452,16 @@ def test_system():
         # LOSTRA'yı kontrol et
         lostra = next((h for h in horses if 'LOSTRA' in h['At İsmi'].upper()), None)
         if lostra:
-            print(f"\n🎯 LOSTRA TEST SONUCU:")
+            print(f"\n[HEDEF] LOSTRA TEST SONUCU:")
             print(f"   At: {lostra['At İsmi']}")
             print(f"   Son Derece: '{lostra['Son Derece']}'")
             print(f"   Son Hipodrom: '{lostra['Son Hipodrom']}'")
             print(f"   Son Mesafe: '{lostra['Son Mesafe']}'")
             
             if lostra['Son Derece'] == '1.49.26':
-                print(f"   ✅ BAŞARILI! Doğru son koşu verisi çekildi!")
+                print(f"   [TAMAM] BAŞARILI! Doğru son koşu verisi çekildi!")
             else:
-                print(f"   ⚠️ Beklenmeyen değer, kontrol edilmeli")
+                print(f"   [UYARI] Beklenmeyen değer, kontrol edilmeli")
     
     return horses
 
