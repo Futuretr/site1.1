@@ -1,118 +1,68 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-"""
-AT YARIŞI ANALİZ SİSTEMİ - PRODUCTION         return f"At Yarişı Analiz Sistemi çalışıyor! Hata: {str(e)}", 500ERSION
-VPS üzerinde sürekli çalışması için optimize edilmiş
-"""
-
-import os
-import sys
-import logging
-from datetime import datetime
 from flask import Flask, render_template, request, jsonify, send_file
-import pandas as pd
+import os
 import json
-
-# Logging yapılandırması
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('app.log', encoding='utf-8'),
-        logging.StreamHandler(sys.stdout)
-    ]
+from datetime import datetime
+import pandas as pd
+import math
+from horse_scraper import (
+    get_istanbul_races_and_horse_last_race,
+    get_ankara_races_and_horse_last_race,
+    get_izmir_races_and_horse_last_race,
+    get_adana_races_and_horse_last_race,
+    get_bursa_races_and_horse_last_race,
+    get_kocaeli_races_and_horse_last_race,
+    get_sanliurfa_races_and_horse_last_race,
+    get_diyarbakir_races_and_horse_last_race,
+    get_elazig_races_and_horse_last_race,
+    get_all_cities_data,
+    test_system,
+    process_calculation_for_city,
+    process_kazanan_cikti_for_json,
+    save_kazanan_cikti_csv,
+    get_kazanan_data_for_city,
+    calculate_average_time,
+    calculate_time_per_100m,
+    calculate_kadapt
 )
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this')
 
-# Production ayarları
-if os.environ.get('FLASK_ENV') == 'production':
-    app.config['DEBUG'] = False
-else:
-    app.config['DEBUG'] = True
-
-# At yarışı analiz modüllerini import et
-try:
-    from horse_scraper import (
-        get_adana_races_and_horse_last_race,
-        get_ankara_races_and_horse_last_race,
-        get_bursa_races_and_horse_last_race,
-        get_diyarbakir_races_and_horse_last_race,
-        get_elazig_races_and_horse_last_race,
-        get_istanbul_races_and_horse_last_race,
-        get_izmir_races_and_horse_last_race,
-        get_kocaeli_races_and_horse_last_race,
-        get_sanliurfa_races_and_horse_last_race,
-        process_calculation_for_city
-    )
-    logging.info("At yarışı modülleri başarıyla yüklendi")
-except ImportError as e:
-    logging.error(f"At yarışı modülleri yüklenemedi: {e}")
-    # Fallback - eğer import edilemezse boş fonksiyonlar tanımla
-    def get_adana_races_and_horse_last_race(debug=False):
-        return []
-    def get_ankara_races_and_horse_last_race(debug=False):
-        return []
-    def get_bursa_races_and_horse_last_race(debug=False):
-        return []
-    def get_diyarbakir_races_and_horse_last_race(debug=False):
-        return []
-    def get_elazig_races_and_horse_last_race(debug=False):
-        return []
-    def get_istanbul_races_and_horse_last_race(debug=False):
-        return []
-    def get_izmir_races_and_horse_last_race(debug=False):
-        return []
-    def get_kocaeli_races_and_horse_last_race(debug=False):
-        return []
-    def get_sanliurfa_races_and_horse_last_race(debug=False):
-        return []
-    def process_calculation_for_city(horses_list, city_name):
-        return []
+def clean_json_data(obj):
+    """JSON serialize edilebilir hale getir - NaN ve None değerlerini temizle"""
+    if isinstance(obj, dict):
+        return {k: clean_json_data(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [clean_json_data(item) for item in obj]
+    elif isinstance(obj, float):
+        if math.isnan(obj) or math.isinf(obj):
+            return None
+        return obj
+    elif obj is None:
+        return None
+    else:
+        return obj
 
 # Şehir fonksiyonları mapping
 CITY_FUNCTIONS = {
-    'adana': ('Adana', get_adana_races_and_horse_last_race),
-    'ankara': ('Ankara', get_ankara_races_and_horse_last_race),
-    'bursa': ('Bursa', get_bursa_races_and_horse_last_race),
-    'diyarbakir': ('Diyarbakır', get_diyarbakir_races_and_horse_last_race),
-    'elazig': ('Elazığ', get_elazig_races_and_horse_last_race),
     'istanbul': ('İstanbul', get_istanbul_races_and_horse_last_race),
+    'ankara': ('Ankara', get_ankara_races_and_horse_last_race),
     'izmir': ('İzmir', get_izmir_races_and_horse_last_race),
+    'adana': ('Adana', get_adana_races_and_horse_last_race),
+    'bursa': ('Bursa', get_bursa_races_and_horse_last_race),
     'kocaeli': ('Kocaeli', get_kocaeli_races_and_horse_last_race),
     'sanliurfa': ('Şanlıurfa', get_sanliurfa_races_and_horse_last_race),
+    'diyarbakir': ('Diyarbakır', get_diyarbakir_races_and_horse_last_race),
+    'elazig': ('Elazığ', get_elazig_races_and_horse_last_race)
 }
 
 @app.route('/')
 def index():
     """Ana sayfa"""
-    try:
-        return render_template('index.html')
-    except Exception as e:
-        logging.error(f"Ana sayfa hatası: {e}")
-        return f"At Yarışı Analiz Sistemi çalışıyor! Hata: {str(e)}", 500
+    return render_template('index.html')
 
-@app.route('/health')
-def health_check():
-    """Sistem durumu kontrolü - VPS monitoring için"""
-    return {
-        'status': 'healthy',
-        'timestamp': datetime.now().isoformat(),
-        'version': '1.0',
-        'message': 'At Yarışı Analiz Sistemi çalışıyor!'
-    }
-
-@app.route('/api/cities')
-def get_cities():
-    """Desteklenen şehirleri listele"""
-    cities = [{'id': key, 'name': value[0]} for key, value in CITY_FUNCTIONS.items()]
-    return jsonify({'cities': cities})
-
-@app.route('/api/scrape_and_save', methods=['POST'])
-def scrape_and_save():
-    """At verilerini çek ve kaydet"""
+@app.route('/api/scrape_city', methods=['POST'])
+def scrape_city():
+    """Tek şehir için at verilerini çek"""
     try:
         data = request.get_json()
         city = data.get('city', '').lower()
@@ -126,50 +76,38 @@ def scrape_and_save():
         
         city_name, city_function = CITY_FUNCTIONS[city]
         
-        logging.info(f"{city_name} at verileri çekiliyor...")
+        print(f"🏇 {city_name} at verileri çekiliyor...")
         
         # At verilerini çek
         horses = city_function(debug)
         
         if horses:
-            # Data klasörü oluştur
-            os.makedirs('data', exist_ok=True)
-            
-            # Bugünkü tarih için JSON dosyasına kaydet
-            today = datetime.now().strftime('%Y%m%d')
-            saved_filename = f"{city}_atlari_{today}.json"
-            saved_filepath = os.path.join('data', saved_filename)
-            
-            with open(saved_filepath, 'w', encoding='utf-8') as f:
-                json.dump(horses, f, ensure_ascii=False, indent=2)
-            
-            # Ham veri CSV'si de oluştur
+            # CSV dosyası oluştur
+            df = pd.DataFrame(horses)
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            raw_df = pd.DataFrame(horses)
-            raw_filename = f"{city}_ham_veri_{timestamp}.csv"
-            raw_filepath = os.path.join('static', 'downloads', raw_filename)
+            filename = f"{city}_atlari_{timestamp}.csv"
+            filepath = os.path.join('static', 'downloads', filename)
             
             # Downloads klasörü yoksa oluştur
-            os.makedirs(os.path.dirname(raw_filepath), exist_ok=True)
-            raw_df.to_csv(raw_filepath, index=False, encoding='utf-8-sig')
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
             
-            # İstatistikler
+            df.to_csv(filepath, index=False, encoding='utf-8-sig')
+            
+            # İstatistik hesapla
             basarili = sum(1 for h in horses if h['Son Derece'])
-            oran = round((basarili / len(horses)) * 100, 1) if horses else 0
-            
-            logging.info(f"[OK] {city_name}: {len(horses)} at, {basarili} başarılı (%{oran})")
+            oran = (basarili / len(horses) * 100) if horses else 0
             
             return jsonify({
                 'status': 'success',
+                'message': f'{city_name} verileri başarıyla çekildi!',
                 'data': {
                     'city': city_name,
                     'total_horses': len(horses),
-                    'successful_horses': basarili,
-                    'success_rate': oran,
-                    'saved_filename': saved_filename,
-                    'raw_download_url': f'/download/{raw_filename}',
-                    'raw_filename': raw_filename,
-                    'source': 'fresh_scrape'
+                    'successful': basarili,
+                    'success_rate': round(oran, 1),
+                    'horses': horses[:10],  # İlk 10 atı önizleme olarak gönder
+                    'download_url': f'/download/{filename}',
+                    'filename': filename
                 }
             })
         else:
@@ -179,7 +117,6 @@ def scrape_and_save():
             }), 500
             
     except Exception as e:
-        logging.error(f"Veri çekme hatası: {e}")
         return jsonify({
             'status': 'error',
             'message': f'Hata: {str(e)}'
@@ -213,16 +150,18 @@ def check_saved_data():
             # İstatistikleri hesapla
             total_horses = len(horses_data)
             successful = sum(1 for h in horses_data if h.get('Son Derece'))
-            success_rate = round((successful / total_horses) * 100, 1) if total_horses > 0 else 0
+            success_rate = (successful / total_horses * 100) if total_horses else 0
             
             return jsonify({
                 'status': 'success',
                 'has_data': True,
+                'message': f'{city_name} için bugünkü veriler mevcut!',
                 'data': {
                     'city': city_name,
                     'total_horses': total_horses,
-                    'successful_horses': successful,
-                    'success_rate': success_rate,
+                    'successful': successful,
+                    'success_rate': round(success_rate, 1),
+                    'filename': saved_filename,
                     'file_date': today
                 }
             })
@@ -230,11 +169,13 @@ def check_saved_data():
             return jsonify({
                 'status': 'success',
                 'has_data': False,
-                'message': f'{city_name} için bugünkü veri bulunamadı'
+                'message': f'{city_name} için bugünkü veri henüz çekilmemiş',
+                'data': {
+                    'city': city_name
+                }
             })
             
     except Exception as e:
-        logging.error(f"Veri kontrol hatası: {e}")
         return jsonify({
             'status': 'error',
             'message': f'Hata: {str(e)}'
@@ -242,7 +183,7 @@ def check_saved_data():
 
 @app.route('/api/calculate_from_saved', methods=['POST'])
 def calculate_from_saved():
-    """Kaydedilmiş verilerden hesaplama yap"""
+    """Kaydedilmiş veriden hesaplama yap"""
     try:
         data = request.get_json()
         city = data.get('city', '').lower()
@@ -270,7 +211,11 @@ def calculate_from_saved():
         with open(saved_filepath, 'r', encoding='utf-8') as f:
             horses = json.load(f)
         
-        logging.info(f"{city_name} için kaydedilmiş veriden hesaplama yapılıyor...")
+        print(f"🧮 {city_name} için kaydedilmiş veriden hesaplama yapılıyor...")
+        
+        # Kazanan verilerini oku
+        kazanan_data = get_kazanan_data_for_city(city_name)
+        print(f"📊 {len(kazanan_data)} at için kazanan verisi bulundu")
         
         # Hesaplama yap
         calculated_data = process_calculation_for_city(horses, city_name)
@@ -282,55 +227,474 @@ def calculate_from_saved():
                 race_number = item['Koşu'].replace('. Koşu', '').strip()
                 if race_number:
                     races_data[race_number] = {'horses': []}
+                    print(f"[KOŞU GRUBU] {race_number}. Koşu oluşturuldu")
             elif item['At İsmi']:  # At verisi
                 # En son koşuya at ekle
                 if races_data:
                     last_race = list(races_data.keys())[-1]
+                    
+                    # Bu atın kazanan verilerini kontrol et
+                    at_ismi = item['At İsmi']
+                    kazanan_info = kazanan_data.get(at_ismi, {})
+                    
+                    # O atın bugünkü koşu bilgilerini bul
+                    horse_today = next((h for h in horses if h.get('At İsmi') == at_ismi), {})
+                    bugun_mesafe = horse_today.get('Bugünkü Mesafe', '')
+                    bugun_pist = horse_today.get('Bugünkü Pist', '')
+                    
+                    # Birincinin hesaplanmış derecesini çek
+                    calculated_winner_score = ''
+                    
+                    # PARİSLİ için debug
+                    if item['At İsmi'] == 'PARİSLİ':
+                        print(f"\n[PARİSLİ DEBUG] kazanan_info: {kazanan_info}")
+                        print(f"[PARİSLİ DEBUG] Son Mesafe: {item.get('Son Mesafe')}")
+                        print(f"[PARİSLİ DEBUG] Son Pist: {item.get('Son Pist')}")
+                    
+                    # Birincinin mesafe/pist bilgilerini kontrol et
+                    onceki_mesafe = str(kazanan_info.get('onceki_mesafe', '')).strip()
+                    onceki_pist = str(kazanan_info.get('onceki_pist', '')).strip()
+                    
+                    # Eğer birincinin mesafe/pist bilgisi boşsa, ana atın (CAN DENİZİM) bilgilerini kullan
+                    # Çünkü birinci at hesaplamasında aynı koşudaki atın mesafe/pist bilgileri kullanılmalı
+                    if not onceki_mesafe or onceki_mesafe == 'nan' or onceki_mesafe == '':
+                        onceki_mesafe = item.get('Son Mesafe', '')
+                        print(f"[MESAFE TAMAMLANDI] {at_ismi} için ana atın mesafesi kullanıldı: {onceki_mesafe}")
+                    
+                    if not onceki_pist or onceki_pist == 'nan' or onceki_pist == '':
+                        onceki_pist = item.get('Son Pist', '')
+                        print(f"[PİST TAMAMLANDI] {at_ismi} için ana atın pisti kullanıldı: {onceki_pist}")
+                    
+                    if kazanan_info.get('kazanan_derece') and onceki_mesafe and onceki_pist:
+                        # Pist değerlerini integer'a çevir
+                        def pist_to_int(pist):
+                            pist = str(pist).lower()
+                            if 'çim' in pist:
+                                return 1
+                            elif 'kum' in pist and 'sentetik' not in pist:
+                                return 2
+                            elif 'sentetik' in pist:
+                                return 3
+                            return 1
+                        
+                        pist1 = pist_to_int(onceki_pist)
+                        pist3 = pist_to_int(bugun_pist)
+                        
+                        # Mesafe değerlerini float'a çevir
+                        try:
+                            son_mesafe_float = float(str(onceki_mesafe).replace(',', '.'))
+                            bugun_mesafe_float = float(str(bugun_mesafe).replace(',', '.'))
+                        except:
+                            son_mesafe_float = 1200
+                            bugun_mesafe_float = 1200
+                        
+                        # 1. Toplam süreyi hesapla
+                        toplam_sure = calculate_average_time(
+                            kazanan_info.get('kazanan_derece'),
+                            pist1,
+                            son_mesafe_float,
+                            bugun_mesafe_float,
+                            pist3
+                        )
+                        
+                        if toplam_sure and toplam_sure > 0:
+                            # 2. 100m ortalama süreyi hesapla
+                            ort_100m_sure = calculate_time_per_100m(toplam_sure, bugun_mesafe_float)
+
+                            # 3. Şehir adaptasyonu hesapla (varsayılan değerlerle)
+                            gecmis_sehir = city_name  # Aynı şehir varsayımı
+                            hedef_sehir = city_name
+                            kadapt = calculate_kadapt(gecmis_sehir, onceki_pist, hedef_sehir, bugun_pist)
+                            if item['At İsmi'].strip().upper() == 'DEHLİN':
+                                print(f"[KADAPT-DEHLİN] geçmiş: {gecmis_sehir} ({onceki_pist}), hedef: {hedef_sehir} ({bugun_pist}), kadapt: {kadapt}")
+
+                            # 4. Kadapt uygula
+                            raw_score = ort_100m_sure
+                            adjusted_score = raw_score * kadapt
+
+                            # 5. Kilo etkisi (gerçek kilo)
+                            try:
+                                kilo_onceki = float(item.get('Son Kilo', 50.5))
+                            except (ValueError, TypeError):
+                                kilo_onceki = 50.5
+                            try:
+                                kilo_bugun = float(item.get('Kilo', 50.5))
+                            except (ValueError, TypeError):
+                                kilo_bugun = 50.5
+                            if item['At İsmi'] == 'PARİSLİ':
+                                print(f"[PARISLI-ÇIKTI] onceki_mesafe: {onceki_mesafe}, bugun_mesafe: {bugun_mesafe}, onceki_pist: {onceki_pist}, bugun_pist: {bugun_pist}, kilo_onceki: {kilo_onceki}, kilo_bugun: {kilo_bugun}")
+                            kilo_fark = kilo_bugun - kilo_onceki
+                            calc_score = adjusted_score - (kilo_fark * 0.02)
+                        else:
+                            calc_score = None
+                        
+                        if calc_score and not (math.isnan(calc_score) or math.isinf(calc_score)):
+                            calculated_winner_score = f"{calc_score:.2f}"
+                    
+                    # Skor hesapla: (Çıktı + Birinci Derece) / 2
+                    skor_value = 'Veri yok'
+                    at_adi = item['At İsmi']
+                    
+                    # Debug için mevcut değerleri kontrol et
+                    print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Çıktı='{item.get('Çıktı', '')}', Birinci='{calculated_winner_score}', Skor='{item.get('Skor', '')}'")
+                    
+                    try:
+                        # Önce hesaplanmış Skor değerini kontrol et
+                        skor_str = str(item.get('Skor', '')).strip()
+                        if skor_str and skor_str != 'geçersiz' and skor_str != '':
+                            try:
+                                skor_value = float(skor_str.replace(',', '.'))
+                                print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Hesaplanmış skor kullanıldı: {skor_value}")
+                            except ValueError:
+                                print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Skor parse hatası: {skor_str}")
+                                pass
+                        
+                        # Skor yoksa, Çıktı ve Birinci Derece ile hesapla
+                        if skor_value == 'Veri yok':
+                            cikti_str = str(item.get('Çıktı', '')).strip()
+                            birinci_derece_str = str(calculated_winner_score).strip()
+                            
+                            if (cikti_str and cikti_str != 'geçersiz' and 
+                                birinci_derece_str and birinci_derece_str != 'geçersiz' and birinci_derece_str != ''):
+                                try:
+                                    cikti_val = float(cikti_str.replace(',', '.'))
+                                    birinci_derece_val = float(birinci_derece_str.replace(',', '.'))
+                                    
+                                    # Skor hesapla: (Çıktı + Birinci Derece) / 2
+                                    skor = (cikti_val + birinci_derece_val) / 2
+                                    if not (skor != skor):  # NaN kontrolü (NaN != NaN is True)
+                                        skor_value = skor
+                                        print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Manuel skor hesaplandı: {cikti_val} + {birinci_derece_val} = {skor}")
+                                except ValueError as e:
+                                    print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Hesaplama hatası: {e}")
+                                    pass
+                            
+                            # Hâlâ yoksa, sadece Çıktı değerini kullan (fallback)
+                            if skor_value == 'Veri yok' and cikti_str and cikti_str != 'geçersiz':
+                                try:
+                                    skor_float = float(cikti_str)
+                                    if not (skor_float != skor_float):  # NaN kontrolü (NaN != NaN is True)
+                                        skor_value = skor_float
+                                        print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Fallback Çıktı kullanıldı: {skor_value}")
+                                except ValueError:
+                                    print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Çıktı parse hatası: {cikti_str}")
+                                    pass
+                    except (ValueError, TypeError) as e:
+                        print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Genel hata: {e}")
+                        pass
+                    
                     horse_data = {
                         'at_adi': item['At İsmi'],
-                        'skor': float(item['Çıktı']) if item['Çıktı'] != 'geçersiz' else 'Veri yok',
-                        'jokey': '',  
+                        'skor': skor_value,
+                        'cikti_degeri': item.get('Çıktı', ''),  # Ham çıktı değeri
+                        'jokey': '',  # Bu veri yok ama uyumlu olması için
                         'yas': '',
                         'agirlik': item.get('Kilo', ''),
                         'son_mesafe': item.get('Son Mesafe', ''),
                         'son_pist': item.get('Son Pist', ''),
                         'son_kilo': item.get('Son Kilo', ''),
                         'son_hipodrom': item.get('Son Hipodrom', ''),
-                        'son_derece': item.get('Son Derece', '')
+                        'son_derece': item.get('Son Derece', ''),
+                        # Birincinin hesaplanmış derecesi (sadece hesaplananlar)
+                        'kazanan_ismi': calculated_winner_score,  # Sadece hesaplanmış değer
+                        'kazanan_derece': kazanan_info.get('kazanan_derece', ''),  # Doğru field
+                        'kazanan_ganyan': kazanan_info.get('kazanan_ganyan', '')  # Doğru field
                     }
                     races_data[last_race]['horses'].append(horse_data)
         
         # JSON formatına çevir
         races_list = []
         for race_num in sorted(races_data.keys(), key=lambda x: int(x) if x.isdigit() else 0):
+            # Her atın skor değerini debug et
+            for horse in races_data[race_num]['horses']:
+                print(f"[JSON-DEBUG] {horse.get('at_adi', '')}: skor={horse.get('skor', 'YOK')}")
+            
             races_list.append({
                 'race_number': race_num,
                 'horses': races_data[race_num]['horses']
             })
         
+        print(f"🏁 Oluşturulan koşu sayısı: {len(races_list)}")
+        for i, race in enumerate(races_list):
+            print(f"🏁 Koşu {race['race_number']}: {len(race['horses'])} at")
+        
+        # Hesaplanmış CSV dosyası oluştur
+        calc_df = pd.DataFrame(calculated_data)
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        calc_filename = f"{city}_hesaplamali_{timestamp}.csv"
+        calc_filepath = os.path.join('static', 'downloads', calc_filename)
+        
+        # Downloads klasörü yoksa oluştur
+        os.makedirs(os.path.dirname(calc_filepath), exist_ok=True)
+        
+        # Önceki yarışın birincisinin hesaplanmış derecesini calculated_data'ya ekle
+        for i, item in enumerate(calculated_data):
+            if item['At İsmi']:  # At verisi ise
+                at_ismi = item['At İsmi']
+                kazanan_info = kazanan_data.get(at_ismi, {})
+                
+                # O atın bugünkü koşu bilgilerini bul
+                horse_today = next((h for h in horses if h.get('At İsmi') == at_ismi), {})
+                bugun_mesafe = horse_today.get('Bugünkü Mesafe', '')
+                bugun_pist = horse_today.get('Bugünkü Pist', '')
+                
+                # Birincinin hesaplanmış derecesini çek
+                calculated_winner_score = ''
+                
+                # Debug: Kazanan bilgisi kontrolü
+                if not kazanan_info.get('kazanan_derece'):
+                    print(f"[KAZANAN EKSİK] {at_ismi}: kazanan_derece yok")
+                
+                # Birincinin mesafe/pist bilgilerini kontrol et
+                onceki_mesafe = str(kazanan_info.get('onceki_mesafe', '')).strip()
+                onceki_pist = str(kazanan_info.get('onceki_pist', '')).strip()
+                
+                # Eğer boşsa (CSV'de nan/boş) ana atın bilgilerini kullan (aynı koşu)
+                if not onceki_mesafe or onceki_mesafe == 'nan':
+                    onceki_mesafe = item.get('Son Mesafe', '')
+                if not onceki_pist or onceki_pist == 'nan':
+                    onceki_pist = item.get('Son Pist', '')
+                
+                # Kazanan derecesi ve mesafe/pist bilgileri geçerliyse hesapla
+                if (kazanan_info.get('kazanan_derece') and 
+                    onceki_mesafe and onceki_pist and 
+                    str(onceki_mesafe) != 'nan' and str(onceki_pist) != 'nan' and
+                    str(kazanan_info.get('kazanan_derece')) != 'nan'):
+                    # Pist değerlerini integer'a çevir
+                    def pist_to_int_local(pist):
+                        pist = str(pist).lower()
+                        if 'çim' in pist:
+                            return 1
+                        elif 'kum' in pist and 'sentetik' not in pist:
+                            return 2
+                        elif 'sentetik' in pist:
+                            return 3
+                        return 1
+                    
+                    pist1 = pist_to_int_local(onceki_pist)
+                    pist3 = pist_to_int_local(bugun_pist)
+                    
+                    # Mesafe değerlerini float'a çevir
+                    try:
+                        # Birincinin mesafesi (eski koşu)
+                        onceki_mesafe_float = float(str(onceki_mesafe).replace(',', '.'))
+                        # Ana atın bugünkü mesafesi (hesaplama için bu kullanılacak)
+                        bugun_mesafe_float = float(str(bugun_mesafe).replace(',', '.'))
+                    except:
+                        onceki_mesafe_float = 1200
+                        bugun_mesafe_float = 1200
+                    
+                    # Debug için
+                    print(f"[BİRİNCİ DERECE DEBUG] {at_ismi}")
+                    print(f"  kazanan_derece: {kazanan_info.get('kazanan_derece')}")
+                    print(f"  onceki_mesafe_float: {onceki_mesafe_float}")
+                    print(f"  bugun_mesafe_float: {bugun_mesafe_float}")
+                    print(f"  pist1 (önceki): {pist1}, pist3 (bugün): {pist3}")
+                    
+                    # Aynı yöntemle hesapla (calculate_average_time)
+                    toplam_sure = calculate_average_time(
+                        kazanan_info.get('kazanan_derece'),
+                        pist1,
+                        onceki_mesafe_float,
+                        bugun_mesafe_float,
+                        pist3
+                    )
+                    
+                    print(f"  toplam_sure: {toplam_sure}")
+                    
+                    if toplam_sure and toplam_sure > 0:
+                        ort_100m_sure = calculate_time_per_100m(toplam_sure, bugun_mesafe_float)
+                        gecmis_sehir = city_name
+                        hedef_sehir = city_name
+                        kadapt = calculate_kadapt(gecmis_sehir, onceki_pist, hedef_sehir, bugun_pist)
+                        raw_score = ort_100m_sure
+                        adjusted_score = raw_score * kadapt
+                        
+                        # Gerçek kilo değerlerini kullan (varsayılan değil)
+                        kilo_onceki = float(item.get('Son Kilo', 50.5))  # Atın geçmiş kilosu
+                        kilo_bugun = float(item.get('Kilo', 50.5))      # Atın bugünkü kilosu
+                        kilo_fark = kilo_bugun - kilo_onceki
+                        calc_score = adjusted_score - (kilo_fark * 0.02)
+                        
+                        print(f"  kilo_onceki: {kilo_onceki}, kilo_bugun: {kilo_bugun}")
+                        print(f"  kilo_fark: {kilo_fark}, kilo_etkisi: {kilo_fark * 0.02}")
+                        print(f"  ort_100m_sure: {ort_100m_sure}")
+                        print(f"  kadapt: {kadapt}")
+                        print(f"  adjusted_score: {adjusted_score}")
+                        print(f"  calc_score: {calc_score}")
+                    else:
+                        calc_score = None
+                        print(f"  calc_score: None (toplam_sure geçersiz)")
+                    if calc_score and not (math.isnan(calc_score) or math.isinf(calc_score)):
+                        calculated_winner_score = f"{calc_score:.2f}"
+                        print(f"  calculated_winner_score: {calculated_winner_score}")
+                    else:
+                        print(f"  calculated_winner_score: '' (geçersiz calc_score)")
+                
+                calculated_data[i]['Birinci Derece'] = calculated_winner_score  # Sadece hesaplanmış değer
+        
+        # Skor hesapla: (Çıktı + Birinci Derece) / 2
+        for i, item in enumerate(calculated_data):
+            skor_value = ""
+            at_ismi = item.get('At İsmi', '')
+            
+            try:
+                cikti_str = str(item.get('Çıktı', '')).strip()
+                birinci_derece_str = str(item.get('Birinci Derece', '')).strip()
+                
+                # Debug için log ekle
+                if at_ismi and 'Koşu' not in str(item.get('Koşu', '')):
+                    print(f"[SKOR-DEBUG] {at_ismi}: Çıktı='{cikti_str}', Birinci='{birinci_derece_str}'")
+                
+                # Sayısal kontrolü daha güvenli yap
+                def is_numeric_string(s):
+                    try:
+                        float(s.replace(',', '.'))
+                        return True
+                    except ValueError:
+                        return False
+                
+                # Sadece sayısal değerleri işle, koşu başlıklarını ve geçersizleri atla
+                if (cikti_str and cikti_str != 'geçersiz' and is_numeric_string(cikti_str) and
+                    birinci_derece_str and birinci_derece_str != 'geçersiz' and is_numeric_string(birinci_derece_str)):
+                    
+                    cikti_val = float(cikti_str.replace(',', '.'))
+                    birinci_derece_val = float(birinci_derece_str.replace(',', '.'))
+                    
+                    # Skor hesapla: (Çıktı + Birinci Derece) / 2
+                    skor = (cikti_val + birinci_derece_val) / 2
+                    skor_value = f"{skor:.2f}"
+                    
+                    if at_ismi and 'Koşu' not in str(item.get('Koşu', '')):
+                        print(f"[SKOR-DEBUG] {at_ismi}: {cikti_val} + {birinci_derece_val} = {cikti_val + birinci_derece_val}, /2 = {skor}, Final: {skor_value}")
+                    
+            except (ValueError, TypeError) as e:
+                if at_ismi and 'Koşu' not in str(item.get('Koşu', '')):
+                    print(f"[SKOR-HATA] {at_ismi}: {e}")
+                skor_value = ""
+            
+            calculated_data[i]['Skor'] = skor_value
+        
+        # DataFrame'i yeniden oluştur
+        calc_df = pd.DataFrame(calculated_data)
+        
+        # Kolonları düzenle - Skor'u Birinci Derece'den sonra ekle
+        cols = ['Koşu', 'Çıktı', 'Birinci Derece', 'Skor', 'At İsmi', 'Son Mesafe', 'Son Pist', 'Son Kilo', 'Kilo', 'Son Hipodrom']
+        for col in cols:
+            if col not in calc_df.columns:
+                calc_df[col] = ''
+        calc_df = calc_df.reindex(columns=cols)
+        calc_df.to_csv(calc_filepath, index=False, encoding='utf-8-sig')
+        
         # İstatistikler
-        total_horses = sum(len(race['horses']) for race in races_list)
-        valid_horses = sum(1 for race in races_list for horse in race['horses'] 
-                          if isinstance(horse['skor'], (int, float)) and horse['skor'] != 'Veri yok')
-        success_rate = round((valid_horses / total_horses) * 100, 1) if total_horses > 0 else 0
+        total_horses = len(horses)
+        successful_data = sum(1 for h in horses if h.get('Son Derece'))
+        success_rate = (successful_data / total_horses * 100) if total_horses else 0
         
-        logging.info(f"[OK] {city_name} hesaplama tamamlandı: {total_horses} at, {valid_horses} geçerli")
+        # Hesaplanabilir atlar
+        hesaplanabilir = sum(1 for d in calculated_data if d['Çıktı'] and d['Çıktı'] != 'geçersiz')
+        gecersiz = sum(1 for d in calculated_data if d['Çıktı'] == 'geçersiz')
         
-        return jsonify({
+        # JSON response'u temizle (NaN değerlerini kaldır)
+        response_data = {
             'status': 'success',
+            'message': f'{city_name} kaydedilmiş veriden hesaplandı! (Çok hızlı)',
             'city': city_name,
             'races': races_list,
             'total_horses': total_horses,
-            'valid_horses': valid_horses,
-            'success_rate': success_rate,
+            'successful_data': successful_data,
+            'success_rate': round(success_rate, 1),
+            'calculated_horses': hesaplanabilir,
+            'invalid_calculations': gecersiz,
+            'calculated_download_url': f'/download/{calc_filename}',
+            'calculated_filename': calc_filename,
             'source': 'saved_data'
-        })
+        }
+        
+        return jsonify(clean_json_data(response_data))
         
     except Exception as e:
-        logging.error(f"Hesaplama hatası: {e}")
         return jsonify({
             'status': 'error',
-            'message': f'Hesaplama hatası: {str(e)}'
+            'message': f'Hata: {str(e)}'
+        }), 500
+
+@app.route('/api/scrape_and_save', methods=['POST'])
+def scrape_and_save():
+    """At verilerini çek ve kaydet (hesaplama yapmadan)"""
+    try:
+        data = request.get_json()
+        city = data.get('city', '').lower()
+        debug = data.get('debug', False)
+        
+        if city not in CITY_FUNCTIONS:
+            return jsonify({
+                'status': 'error',
+                'message': f'Desteklenmeyen şehir: {city}'
+            }), 400
+        
+        city_name, city_function = CITY_FUNCTIONS[city]
+        
+        print(f"🏇 {city_name} at verileri çekiliyor ve kaydediliyor...")
+        
+        # At verilerini çek
+        horses = city_function(debug)
+        
+        if horses:
+            # Data klasörü oluştur
+            os.makedirs('data', exist_ok=True)
+            
+            # Bugünkü tarih için JSON dosyasına kaydet
+            today = datetime.now().strftime('%Y%m%d')
+            saved_filename = f"{city}_atlari_{today}.json"
+            saved_filepath = os.path.join('data', saved_filename)
+            
+            with open(saved_filepath, 'w', encoding='utf-8') as f:
+                json.dump(horses, f, ensure_ascii=False, indent=2)
+            
+            # Ham veri CSV'si de oluştur
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            raw_df = pd.DataFrame(horses)
+            raw_filename = f"{city}_ham_veri_{timestamp}.csv"
+            raw_filepath = os.path.join('static', 'downloads', raw_filename)
+            
+            # Downloads klasörü yoksa oluştur
+            os.makedirs(os.path.dirname(raw_filepath), exist_ok=True)
+            raw_df.to_csv(raw_filepath, index=False, encoding='utf-8-sig')
+            
+            # KAZANAN ÇIKTI VERİLERİNİ ÇEK
+            print(f"🏆 {city_name} için kazanan verileri çekiliyor...")
+            kazanan_data = process_kazanan_cikti_for_json(saved_filepath, city_name, today)
+            kazanan_csv_path = save_kazanan_cikti_csv(kazanan_data, city_name, today)
+            
+            # İstatistikler
+            basarili = sum(1 for h in horses if h['Son Derece'])
+            oran = (basarili / len(horses) * 100) if horses else 0
+            
+            return jsonify({
+                'status': 'success',
+                'message': f'{city_name} verileri çekildi ve kaydedildi!',
+                'data': {
+                    'city': city_name,
+                    'total_horses': len(horses),
+                    'successful_data': basarili,
+                    'success_rate': round(oran, 1),
+                    'saved_filename': saved_filename,
+                    'raw_download_url': f'/download/{raw_filename}',
+                    'raw_filename': raw_filename,
+                    'source': 'fresh_scrape'
+                }
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': f'{city_name} için veri çekilemedi'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Hata: {str(e)}'
         }), 500
 
 @app.route('/api/scrape_and_calculate', methods=['POST'])
@@ -349,14 +713,14 @@ def scrape_and_calculate():
         
         city_name, city_function = CITY_FUNCTIONS[city]
         
-        logging.info(f"{city_name} at verileri çekiliyor ve hesaplanıyor...")
+        print(f"🏇 {city_name} at verileri çekiliyor ve hesaplanıyor...")
         
         # At verilerini çek
         horses = city_function(debug)
         
         if horses:
             # Hesaplama yap
-            logging.info(f"{city_name} için hesaplama yapılıyor...")
+            print(f"🧮 {city_name} için hesaplama yapılıyor...")
             calculated_data = process_calculation_for_city(horses, city_name)
             
             # Verileri koşu bazında grupla
@@ -370,10 +734,46 @@ def scrape_and_calculate():
                     # En son koşuya at ekle
                     if races_data:
                         last_race = list(races_data.keys())[-1]
+                        # Skor değerini al (hesaplanmış Skor değeri)
+                        skor_value = 'Veri yok'
+                        at_adi = item['At İsmi']
+                        
+                        # Debug için mevcut değerleri kontrol et
+                        print(f"[WEB-SKOR-DEBUG] {at_adi}: Çıktı='{item.get('Çıktı', '')}', Birinci='{item.get('Birinci Derece', '')}', Skor='{item.get('Skor', '')}'")
+                        
+                        try:
+                            # Önce Skor değerini kontrol et (önceden hesaplanmışsa)
+                            skor_str = str(item.get('Skor', '')).strip()
+                            if skor_str and skor_str != 'geçersiz' and skor_str != '':
+                                try:
+                                    skor_value = float(skor_str.replace(',', '.'))
+                                    print(f"[WEB-SKOR-DEBUG] {at_adi}: Hesaplanmış skor kullanıldı: {skor_value}")
+                                except ValueError:
+                                    print(f"[WEB-SKOR-DEBUG] {at_adi}: Skor parse hatası: {skor_str}")
+                                    pass
+                            
+                            # Skor yoksa, fallback olarak Çıktı değerini kullan
+                            if skor_value == 'Veri yok':
+                                cikti_str = str(item.get('Çıktı', '')).strip()
+                                if cikti_str and cikti_str != 'geçersiz':
+                                    try:
+                                        skor_float = float(cikti_str.replace(',', '.'))
+                                        # NaN kontrolü
+                                        if not (skor_float != skor_float):  # NaN kontrolü (NaN != NaN is True)
+                                            skor_value = skor_float
+                                            print(f"[WEB-SKOR-DEBUG] {at_adi}: Fallback Çıktı kullanıldı: {skor_value}")
+                                    except ValueError:
+                                        print(f"[WEB-SKOR-DEBUG] {at_adi}: Çıktı parse hatası: {cikti_str}")
+                                        pass
+                        except (ValueError, TypeError) as e:
+                            print(f"[WEB-SKOR-DEBUG] {at_adi}: Genel hata: {e}")
+                            pass
+                        
                         horse_data = {
                             'at_adi': item['At İsmi'],
-                            'skor': float(item['Çıktı']) if item['Çıktı'] != 'geçersiz' else 'Veri yok',
-                            'jokey': '',  
+                            'skor': skor_value,
+                            'cikti_degeri': item.get('Çıktı', ''),  # Ham çıktı değeri
+                            'jokey': '',  # Bu veri yok ama uyumlu olması için
                             'yas': '',
                             'agirlik': item.get('Kilo', ''),
                             'son_mesafe': item.get('Son Mesafe', ''),
@@ -392,23 +792,86 @@ def scrape_and_calculate():
                     'horses': races_data[race_num]['horses']
                 })
             
+            # Hesaplanmış CSV dosyası oluştur
+            calc_df = pd.DataFrame(calculated_data)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            calc_filename = f"{city}_hesaplamali_{timestamp}.csv"
+            calc_filepath = os.path.join('static', 'downloads', calc_filename)
+            
+            # Downloads klasörü yoksa oluştur
+            os.makedirs(os.path.dirname(calc_filepath), exist_ok=True)
+            
+            # Skor hesapla: (Çıktı + Birinci Derece) / 2
+            for i, item in enumerate(calculated_data):
+                skor_value = ""
+                try:
+                    cikti_str = str(item.get('Çıktı', '')).strip()
+                    birinci_derece_str = str(item.get('Birinci Derece', '')).strip()
+                    
+                    # Sayısal kontrolü daha güvenli yap
+                    def is_numeric_string(s):
+                        try:
+                            float(s.replace(',', '.'))
+                            return True
+                        except ValueError:
+                            return False
+                    
+                    # Sadece sayısal değerleri işle, koşu başlıklarını ve geçersizleri atla
+                    if (cikti_str and cikti_str != 'geçersiz' and is_numeric_string(cikti_str) and
+                        birinci_derece_str and birinci_derece_str != 'geçersiz' and is_numeric_string(birinci_derece_str)):
+                        
+                        cikti_val = float(cikti_str.replace(',', '.'))
+                        birinci_derece_val = float(birinci_derece_str.replace(',', '.'))
+                        
+                        # Skor hesapla: (Çıktı + Birinci Derece) / 2
+                        skor = (cikti_val + birinci_derece_val) / 2
+                        skor_value = f"{skor:.2f}"
+                        
+                except (ValueError, TypeError):
+                    skor_value = ""
+                
+                calculated_data[i]['Skor'] = skor_value
+            
+            # Kolonları düzenle - Skor'u Birinci Derece'den sonra ekle
+            cols = ['Koşu', 'Çıktı', 'Birinci Derece', 'Skor', 'At İsmi', 'Son Mesafe', 'Son Pist', 'Son Kilo', 'Kilo', 'Son Hipodrom']
+            for col in cols:
+                if col not in calc_df.columns:
+                    calc_df[col] = ''
+            calc_df = calc_df.reindex(columns=cols)
+            calc_df.to_csv(calc_filepath, index=False, encoding='utf-8-sig')
+            
+            # Ham veri CSV'si de oluştur
+            raw_df = pd.DataFrame(horses)
+            raw_filename = f"{city}_ham_veri_{timestamp}.csv"
+            raw_filepath = os.path.join('static', 'downloads', raw_filename)
+            raw_df.to_csv(raw_filepath, index=False, encoding='utf-8-sig')
+            
             # İstatistikler
-            total_horses = sum(len(race['horses']) for race in races_list)
-            valid_horses = sum(1 for race in races_list for horse in race['horses'] 
-                              if isinstance(horse['skor'], (int, float)) and horse['skor'] != 'Veri yok')
-            success_rate = round((valid_horses / total_horses) * 100, 1) if total_horses > 0 else 0
+            basarili = sum(1 for h in horses if h['Son Derece'])
+            oran = (basarili / len(horses) * 100) if horses else 0
             
-            logging.info(f"[OK] {city_name} tamamlandı: {total_horses} at, {valid_horses} geçerli")
+            # Hesaplanabilir atlar
+            hesaplanabilir = sum(1 for d in calculated_data if d['Çıktı'] and d['Çıktı'] != 'geçersiz')
+            gecersiz = sum(1 for d in calculated_data if d['Çıktı'] == 'geçersiz')
             
-            return jsonify({
+            # JSON response'u temizle (NaN değerlerini kaldır)
+            response_data = {
                 'status': 'success',
+                'message': f'{city_name} verileri çekildi ve hesaplandı!',
                 'city': city_name,
                 'races': races_list,
-                'total_horses': total_horses,
-                'valid_horses': valid_horses,
-                'success_rate': success_rate,
-                'source': 'fresh_scrape_and_calc'
-            })
+                'total_horses': len(horses),
+                'successful_data': basarili,
+                'success_rate': round(oran, 1),
+                'calculated_horses': hesaplanabilir,
+                'invalid_calculations': gecersiz,
+                'raw_download_url': f'/download/{raw_filename}',
+                'calculated_download_url': f'/download/{calc_filename}',
+                'raw_filename': raw_filename,
+                'calculated_filename': calc_filename
+            }
+            
+            return jsonify(clean_json_data(response_data))
         else:
             return jsonify({
                 'status': 'error',
@@ -416,75 +879,134 @@ def scrape_and_calculate():
             }), 500
             
     except Exception as e:
-        logging.error(f"Çek ve hesapla hatası: {e}")
         return jsonify({
             'status': 'error',
-            'error': str(e)
+            'message': f'Hata: {str(e)}'
+        }), 500
+
+@app.route('/api/scrape_all', methods=['POST'])
+def scrape_all_cities():
+    """Tüm şehirler için at verilerini çek"""
+    try:
+        data = request.get_json()
+        debug = data.get('debug', False)
+        
+        print("🏇 TÜM ŞEHİRLER İÇİN AT VERİLERİ ÇEKİLİYOR...")
+        
+        # Tüm şehirlerden veri çek
+        all_horses, city_stats = get_all_cities_data(debug)
+        
+        if all_horses:
+            # CSV dosyası oluştur
+            df = pd.DataFrame(all_horses)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"tum_sehirler_atlari_{timestamp}.csv"
+            filepath = os.path.join('static', 'downloads', filename)
+            
+            # Downloads klasörü yoksa oluştur
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            
+            df.to_csv(filepath, index=False, encoding='utf-8-sig')
+            
+            # Genel istatistik
+            toplam_at = len(all_horses)
+            toplam_basarili = sum(1 for h in all_horses if h['Son Derece'])
+            genel_oran = (toplam_basarili / toplam_at * 100) if toplam_at else 0
+            
+            return jsonify({
+                'status': 'success',
+                'message': 'Tüm şehirler için veriler başarıyla çekildi!',
+                'data': {
+                    'total_horses': toplam_at,
+                    'successful': toplam_basarili,
+                    'success_rate': round(genel_oran, 1),
+                    'city_stats': city_stats,
+                    'horses_preview': all_horses[:20],  # İlk 20 atı önizleme
+                    'download_url': f'/download/{filename}',
+                    'filename': filename
+                }
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'Hiçbir şehirden veri çekilemedi'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Hata: {str(e)}'
+        }), 500
+
+@app.route('/api/test', methods=['POST'])
+def test_system_api():
+    """Sistem testi yap"""
+    try:
+        print("🧪 SİSTEM TEST EDİLİYOR...")
+        horses = test_system()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Test tamamlandı',
+            'data': {
+                'test_results': horses[:5] if horses else [],
+                'total_found': len(horses) if horses else 0
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Test hatası: {str(e)}'
         }), 500
 
 @app.route('/download/<filename>')
 def download_file(filename):
-    """Dosya indirme"""
+    """CSV dosyasını indir"""
     try:
-        file_path = os.path.join('static', 'downloads', filename)
-        if os.path.exists(file_path):
-            return send_file(file_path, as_attachment=True)
+        filepath = os.path.join('static', 'downloads', filename)
+        if os.path.exists(filepath):
+            return send_file(filepath, as_attachment=True, download_name=filename)
         else:
-            return "Dosya bulunamadı", 404
+            return jsonify({'error': 'Dosya bulunamadı'}), 404
     except Exception as e:
-        logging.error(f"Dosya indirme hatası: {e}")
-        return f"İndirme hatası: {str(e)}", 500
+        return jsonify({'error': str(e)}), 500
 
-@app.route('/download_csv/<city>')
-def download_csv(city):
-    """CSV indirme"""
+@app.route('/api/process', methods=['POST'])
+def process_data():
+    """Genel veri işleme endpoint'i"""
     try:
-        # En son oluşturulan CSV dosyasını bul
-        downloads_dir = os.path.join('static', 'downloads')
-        if not os.path.exists(downloads_dir):
-            return "İndirme klasörü bulunamadı", 404
-            
-        csv_files = [f for f in os.listdir(downloads_dir) if f.startswith(city) and f.endswith('.csv')]
-        if not csv_files:
-            return "CSV dosyası bulunamadı", 404
-            
-        # En son dosyayı al
-        latest_file = sorted(csv_files)[-1]
-        file_path = os.path.join(downloads_dir, latest_file)
+        data = request.get_json()
         
-        return send_file(file_path, as_attachment=True, download_name=f"{city}_analiz_sonuclari.csv")
+        result = {
+            'status': 'success',
+            'message': 'At çekme sistemi hazır!',
+            'available_cities': list(CITY_FUNCTIONS.keys()),
+            'data': data
+        }
+        
+        return jsonify(result)
+    
     except Exception as e:
-        logging.error(f"CSV indirme hatası: {e}")
-        return f"CSV indirme hatası: {str(e)}", 500
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
 
-@app.errorhandler(404)
-def not_found(error):
-    """404 hata sayfası"""
-    return jsonify({'error': 'Sayfa bulunamadı', 'status': 404}), 404
-
-@app.errorhandler(500)
-def internal_error(error):
-    """500 hata sayfası"""
-    logging.error(f"Internal server error: {error}")
-    return jsonify({'error': 'Sunucu hatası', 'status': 500}), 500
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    """Dosya yükleme endpoint'i"""
+    if 'file' not in request.files:
+        return jsonify({'error': 'Dosya bulunamadı'}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'Dosya seçilmedi'}), 400
+    
+    # Dosyayı işleme
+    # Burada dosyayı mevcut Python kodunuzla işleyebilirsiniz
+    
+    return jsonify({'message': 'Dosya başarıyla yüklendi ve işlendi'})
 
 if __name__ == '__main__':
-    # Gerekli klasörleri oluştur
-    os.makedirs('data', exist_ok=True)
-    os.makedirs('static/downloads', exist_ok=True)
-    
-    # Uygulama başlatma
-    port = int(os.environ.get('PORT', 5000))
-    host = os.environ.get('HOST', '0.0.0.0')
-    
-    logging.info(f"At Yarışı Analiz Sistemi başlatılıyor...")
-    logging.info(f"Host: {host}:{port}")
-    logging.info(f"Debug Mode: {app.config['DEBUG']}")
-    
-    # Production'da debug=False, geliştirmede debug=True
-    app.run(
-        host=host,
-        port=port,
-        debug=app.config['DEBUG'],
-        threaded=True  # Çoklu istek desteği
-    )
+    app.run(debug=True, host='0.0.0.0', port=5000)

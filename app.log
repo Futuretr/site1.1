@@ -75,3 +75,877 @@
 2025-09-25 01:05:08,852 - INFO - 127.0.0.1 - - [25/Sep/2025 01:05:08] "GET /?id=f8172af0-1c48-4715-90b0-9022d44c083e&vscodeBrowserReqId=1758751508535 HTTP/1.1" 200 -
 2025-09-25 01:05:09,143 - INFO - 127.0.0.1 - - [25/Sep/2025 01:05:09] "GET /static/css/style.css HTTP/1.1" 200 -
 2025-09-25 01:05:09,177 - INFO - 127.0.0.1 - - [25/Sep/2025 01:05:09] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-25 22:42:26,545 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-25 22:42:26,549 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 22:42:26,549 - INFO - Host: 0.0.0.0:5000
+2025-09-25 22:42:26,549 - INFO - Debug Mode: True
+2025-09-25 22:42:26,572 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.16:5000
+2025-09-25 22:42:26,572 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-25 22:42:26,573 - INFO -  * Restarting with stat
+2025-09-25 22:42:27,451 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-25 22:42:27,454 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 22:42:27,454 - INFO - Host: 0.0.0.0:5000
+2025-09-25 22:42:27,454 - INFO - Debug Mode: True
+2025-09-25 22:42:27,468 - WARNING -  * Debugger is active!
+2025-09-25 22:42:27,471 - INFO -  * Debugger PIN: 580-487-815
+2025-09-25 22:42:28,526 - INFO - 127.0.0.1 - - [25/Sep/2025 22:42:28] "GET / HTTP/1.1" 200 -
+2025-09-25 22:42:28,604 - INFO - 127.0.0.1 - - [25/Sep/2025 22:42:28] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-25 22:42:28,608 - INFO - 127.0.0.1 - - [25/Sep/2025 22:42:28] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-25 22:42:30,631 - INFO - İstanbul için kaydedilmiş veriden hesaplama yapılıyor...
+2025-09-25 22:42:30,633 - INFO - [OK] İstanbul hesaplama tamamlandı: 69 at, 68 geçerli
+2025-09-25 22:42:30,634 - INFO - 127.0.0.1 - - [25/Sep/2025 22:42:30] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-25 22:42:34,754 - INFO - İstanbul için kaydedilmiş veriden hesaplama yapılıyor...
+2025-09-25 22:42:34,756 - INFO - [OK] İstanbul hesaplama tamamlandı: 69 at, 68 geçerli
+2025-09-25 22:42:34,757 - INFO - 127.0.0.1 - - [25/Sep/2025 22:42:34] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-25 22:42:48,884 - INFO - İstanbul at verileri çekiliyor...
+2025-09-25 22:44:03,891 - INFO - [OK] İstanbul: 91 at, 62 başarılı (%68.1)
+2025-09-25 22:44:03,892 - INFO - 127.0.0.1 - - [25/Sep/2025 22:44:03] "POST /api/scrape_and_save HTTP/1.1" 200 -
+2025-09-25 22:44:05,754 - INFO - İstanbul için kaydedilmiş veriden hesaplama yapılıyor...
+2025-09-25 22:44:05,756 - INFO - [OK] İstanbul hesaplama tamamlandı: 91 at, 62 geçerli
+2025-09-25 22:44:05,757 - INFO - 127.0.0.1 - - [25/Sep/2025 22:44:05] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-25 22:50:41,556 - INFO - İzmir için kaydedilmiş veriden hesaplama yapılıyor...
+2025-09-25 22:50:41,558 - INFO - [OK] İzmir hesaplama tamamlandı: 91 at, 62 geçerli
+2025-09-25 22:50:41,559 - INFO - 127.0.0.1 - - [25/Sep/2025 22:50:41] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-25 22:57:14,176 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-25 22:57:14,180 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 22:57:14,180 - INFO - Host: 0.0.0.0:5000
+2025-09-25 22:57:14,180 - INFO - Debug Mode: True
+2025-09-25 22:57:14,205 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.16:5000
+2025-09-25 22:57:14,206 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-25 22:57:14,207 - INFO -  * Restarting with stat
+2025-09-25 22:57:14,992 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-25 22:57:14,996 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 22:57:14,996 - INFO - Host: 0.0.0.0:5000
+2025-09-25 22:57:14,996 - INFO - Debug Mode: True
+2025-09-25 22:57:15,009 - WARNING -  * Debugger is active!
+2025-09-25 22:57:15,012 - INFO -  * Debugger PIN: 580-487-815
+2025-09-25 22:57:31,986 - INFO - 127.0.0.1 - - [25/Sep/2025 22:57:31] "GET / HTTP/1.1" 200 -
+2025-09-25 22:57:32,046 - INFO - 127.0.0.1 - - [25/Sep/2025 22:57:32] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-25 22:57:33,052 - INFO - 127.0.0.1 - - [25/Sep/2025 22:57:33] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-25 22:57:37,183 - INFO - İzmir için kaydedilmiş veriden hesaplama yapılıyor...
+2025-09-25 22:57:37,185 - INFO - [OK] İzmir hesaplama tamamlandı: 91 at, 62 geçerli
+2025-09-25 22:57:37,186 - INFO - 127.0.0.1 - - [25/Sep/2025 22:57:37] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-25 23:01:15,328 - INFO - 127.0.0.1 - - [25/Sep/2025 23:01:15] "GET / HTTP/1.1" 200 -
+2025-09-25 23:01:15,343 - INFO - 127.0.0.1 - - [25/Sep/2025 23:01:15] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-25 23:01:15,368 - INFO - 127.0.0.1 - - [25/Sep/2025 23:01:15] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-25 23:01:18,669 - INFO - İzmir için kaydedilmiş veriden hesaplama yapılıyor...
+2025-09-25 23:01:18,671 - INFO - [OK] İzmir hesaplama tamamlandı: 91 at, 62 geçerli
+2025-09-25 23:01:18,672 - INFO - 127.0.0.1 - - [25/Sep/2025 23:01:18] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-25 23:01:38,052 - INFO - 127.0.0.1 - - [25/Sep/2025 23:01:38] "GET / HTTP/1.1" 200 -
+2025-09-25 23:01:38,069 - INFO - 127.0.0.1 - - [25/Sep/2025 23:01:38] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-25 23:01:38,095 - INFO - 127.0.0.1 - - [25/Sep/2025 23:01:38] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-25 23:01:40,634 - INFO - İzmir için kaydedilmiş veriden hesaplama yapılıyor...
+2025-09-25 23:01:40,637 - INFO - [OK] İzmir hesaplama tamamlandı: 91 at, 62 geçerli
+2025-09-25 23:01:40,637 - INFO - 127.0.0.1 - - [25/Sep/2025 23:01:40] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-25 23:01:47,611 - INFO - 127.0.0.1 - - [25/Sep/2025 23:01:47] "GET / HTTP/1.1" 200 -
+2025-09-25 23:01:47,626 - INFO - 127.0.0.1 - - [25/Sep/2025 23:01:47] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-25 23:01:47,651 - INFO - 127.0.0.1 - - [25/Sep/2025 23:01:47] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-25 23:01:49,202 - INFO - İzmir için kaydedilmiş veriden hesaplama yapılıyor...
+2025-09-25 23:01:49,204 - INFO - [OK] İzmir hesaplama tamamlandı: 91 at, 62 geçerli
+2025-09-25 23:01:49,205 - INFO - 127.0.0.1 - - [25/Sep/2025 23:01:49] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-25 23:09:06,467 - INFO -  * Detected change in 'c:\\Users\\emir\\Desktop\\site\\kazanan_cikti_scraper.py', reloading
+2025-09-25 23:09:06,559 - INFO -  * Restarting with stat
+2025-09-25 23:09:07,356 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-25 23:09:07,360 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-25 23:09:07,360 - INFO - Host: 0.0.0.0:5000
+2025-09-25 23:09:07,360 - INFO - Debug Mode: True
+2025-09-25 23:09:07,373 - WARNING -  * Debugger is active!
+2025-09-25 23:09:07,376 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:11:19,225 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:11:19,228 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:11:19,228 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:11:19,228 - INFO - Debug Mode: True
+2025-09-26 00:11:19,254 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.12:5000
+2025-09-26 00:11:19,254 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-26 00:11:19,256 - INFO -  * Restarting with stat
+2025-09-26 00:11:20,044 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:11:20,047 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:11:20,047 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:11:20,048 - INFO - Debug Mode: True
+2025-09-26 00:11:20,061 - WARNING -  * Debugger is active!
+2025-09-26 00:11:20,064 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:11:25,546 - INFO - 127.0.0.1 - - [26/Sep/2025 00:11:25] "GET / HTTP/1.1" 200 -
+2025-09-26 00:11:25,636 - INFO - 127.0.0.1 - - [26/Sep/2025 00:11:25] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-09-26 00:11:26,614 - INFO - 127.0.0.1 - - [26/Sep/2025 00:11:26] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-26 00:11:51,615 - INFO - İstanbul at verileri çekiliyor...
+2025-09-26 00:11:52,051 - INFO - 127.0.0.1 - - [26/Sep/2025 00:11:52] "GET /?id=f3e59ab5-8182-4e2a-b083-069c5a384bc4&vscodeBrowserReqId=1758834711739 HTTP/1.1" 200 -
+2025-09-26 00:11:52,315 - INFO - 127.0.0.1 - - [26/Sep/2025 00:11:52] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-09-26 00:11:52,379 - INFO - 127.0.0.1 - - [26/Sep/2025 00:11:52] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-26 00:12:59,847 - INFO - Kazanan çıktı işleniyor: istanbul - 26-09-2025
+2025-09-26 00:12:59,847 - INFO - [1/92] Kazanan çıktı - ÇAYCI KIZ
+2025-09-26 00:13:00,847 - INFO - [2/92] Kazanan çıktı - ABDİ BABA
+2025-09-26 00:13:01,848 - INFO - [3/92] Kazanan çıktı - AKBELHAN
+2025-09-26 00:13:02,848 - INFO - [4/92] Kazanan çıktı - TUNÇYILMAZ
+2025-09-26 00:13:03,849 - INFO - [5/92] Kazanan çıktı - TAŞUCU
+2025-09-26 00:13:04,850 - INFO - [6/92] Kazanan çıktı - YENİSİSTEM
+2025-09-26 00:13:05,851 - INFO - [7/92] Kazanan çıktı - CAN DENİZİM
+2025-09-26 00:13:06,851 - INFO - [8/92] Kazanan çıktı - GUBAZ
+2025-09-26 00:13:07,852 - INFO - [9/92] Kazanan çıktı - HALİD BEY
+2025-09-26 00:13:08,853 - INFO - [10/92] Kazanan çıktı - AKTER TAY
+2025-09-26 00:13:09,853 - INFO - [11/92] Kazanan çıktı - ERSELAY
+2025-09-26 00:13:10,854 - INFO - [12/92] Kazanan çıktı - BABA MESUT
+2025-09-26 00:13:11,854 - INFO - [13/92] Kazanan çıktı - FRECCIA
+2025-09-26 00:13:12,855 - INFO - [14/92] Kazanan çıktı - BAŞ KRALİÇE
+2025-09-26 00:13:13,855 - INFO - [15/92] Kazanan çıktı - GLORY
+2025-09-26 00:13:14,856 - INFO - [16/92] Kazanan çıktı - HARPUT ASLANI
+2025-09-26 00:13:15,856 - INFO - [17/92] Kazanan çıktı - KATANA BOY
+2025-09-26 00:13:16,857 - INFO - [18/92] Kazanan çıktı - PARİSLİ
+2025-09-26 00:13:17,858 - INFO - [19/92] Kazanan çıktı - RAAVIRA
+2025-09-26 00:13:18,858 - INFO - [20/92] Kazanan çıktı - BEBEĞİM OLDUN
+2025-09-26 00:13:19,859 - INFO - [21/92] Kazanan çıktı - MAGIC TOUCH
+2025-09-26 00:13:20,860 - INFO - [22/92] Kazanan çıktı - SARMAT
+2025-09-26 00:13:21,860 - INFO - [23/92] Kazanan çıktı - EASTERN PILOT
+2025-09-26 00:13:22,861 - INFO - [24/92] Kazanan çıktı - HUSARIA
+2025-09-26 00:13:23,862 - INFO - [25/92] Kazanan çıktı - LITTLE WING
+2025-09-26 00:13:24,862 - INFO - [26/92] Kazanan çıktı - GRITTY
+2025-09-26 00:13:25,862 - INFO - [27/92] Kazanan çıktı - GREY GHOST
+2025-09-26 00:13:26,863 - INFO - [28/92] Kazanan çıktı - MR BAYBARS
+2025-09-26 00:13:27,863 - INFO - [29/92] Kazanan çıktı - PEEKABOO
+2025-09-26 00:13:28,864 - INFO - [30/92] Kazanan çıktı - RONIN
+2025-09-26 00:13:29,864 - INFO - [31/92] Kazanan çıktı - PATAKHA GUDDI
+2025-09-26 00:13:30,865 - INFO - [32/92] Kazanan çıktı - TILO GIRL
+2025-09-26 00:13:31,866 - INFO - [33/92] Kazanan çıktı - MALĞUN HATUN
+2025-09-26 00:13:32,866 - INFO - [34/92] Kazanan çıktı - AYBENOVA
+2025-09-26 00:13:33,867 - INFO - [35/92] Kazanan çıktı - GÜL DERYA
+2025-09-26 00:13:34,867 - INFO - [36/92] Kazanan çıktı - KIZIL ZEYNA
+2025-09-26 00:13:35,868 - INFO - [37/92] Kazanan çıktı - KOŞUCU KIZ
+2025-09-26 00:13:36,868 - INFO - [38/92] Kazanan çıktı - TUĞÇEYİM
+2025-09-26 00:13:37,869 - INFO - [39/92] Kazanan çıktı - OKALİPTÜS
+2025-09-26 00:13:38,870 - INFO - [40/92] Kazanan çıktı - ÇÖL KRALİÇESİ
+2025-09-26 00:13:39,870 - INFO - [41/92] Kazanan çıktı - TURBOLU
+2025-09-26 00:13:40,870 - INFO - [42/92] Kazanan çıktı - YURTSEVİL
+2025-09-26 00:13:41,871 - INFO - [43/92] Kazanan çıktı - GELİN TÜLÜ
+2025-09-26 00:13:42,872 - INFO - [44/92] Kazanan çıktı - SEMENDİN OĞLU
+2025-09-26 00:13:43,872 - INFO - [45/92] Kazanan çıktı - GENÇYÜREK
+2025-09-26 00:13:44,873 - INFO - [46/92] Kazanan çıktı - GÜRCEYHUN
+2025-09-26 00:13:45,874 - INFO - [47/92] Kazanan çıktı - BALDER
+2025-09-26 00:13:46,874 - INFO - [48/92] Kazanan çıktı - BAYBARSBEY
+2025-09-26 00:13:47,875 - INFO - [49/92] Kazanan çıktı - KAPTANPAŞALI
+2025-09-26 00:13:48,876 - INFO - [50/92] Kazanan çıktı - TOSKAAN
+2025-09-26 00:13:49,876 - INFO - [51/92] Kazanan çıktı - ULU BEDEN
+2025-09-26 00:13:50,877 - INFO - [52/92] Kazanan çıktı - ALEMARA
+2025-09-26 00:13:51,877 - INFO - [53/92] Kazanan çıktı - AYBARIM
+2025-09-26 00:13:52,878 - INFO - [54/92] Kazanan çıktı - GÖK MİLA
+2025-09-26 00:13:53,878 - INFO - [55/92] Kazanan çıktı - JULNAR
+2025-09-26 00:13:54,879 - INFO - [56/92] Kazanan çıktı - KARBİR
+2025-09-26 00:13:55,880 - INFO - [57/92] Kazanan çıktı - BUILD YOUR DREAMS
+2025-09-26 00:13:56,880 - INFO - [58/92] Kazanan çıktı - DILUVIO
+2025-09-26 00:13:57,881 - INFO - [59/92] Kazanan çıktı - EL GLADIADOR
+2025-09-26 00:13:58,882 - INFO - [60/92] Kazanan çıktı - METAL HEART
+2025-09-26 00:13:59,883 - INFO - [61/92] Kazanan çıktı - NALÇAKAN HAN
+2025-09-26 00:14:00,883 - INFO - [62/92] Kazanan çıktı - UPAMECANO
+2025-09-26 00:14:01,884 - INFO - [63/92] Kazanan çıktı - YAKARİ
+2025-09-26 00:14:02,885 - INFO - [64/92] Kazanan çıktı - LAVENDER
+2025-09-26 00:14:03,886 - INFO - [65/92] Kazanan çıktı - SIDNEYS STAR
+2025-09-26 00:14:04,887 - INFO - [66/92] Kazanan çıktı - MADAM ORACLE
+2025-09-26 00:14:05,888 - INFO - [67/92] Kazanan çıktı - BOSETTI
+2025-09-26 00:14:06,889 - INFO - [68/92] Kazanan çıktı - STASERA
+2025-09-26 00:14:07,889 - INFO - [69/92] Kazanan çıktı - GOLD FLOWER
+2025-09-26 00:14:08,890 - INFO - [70/92] Kazanan çıktı - MITROS ON FIRE
+2025-09-26 00:14:09,890 - INFO - [71/92] Kazanan çıktı - AGATHA
+2025-09-26 00:14:10,891 - INFO - [72/92] Kazanan çıktı - DEJAME
+2025-09-26 00:14:11,892 - INFO - [73/92] Kazanan çıktı - GRACE OF GOD
+2025-09-26 00:14:12,892 - INFO - [74/92] Kazanan çıktı - NAZUŞUM
+2025-09-26 00:14:13,893 - INFO - [75/92] Kazanan çıktı - PIHA
+2025-09-26 00:14:14,894 - INFO - [76/92] Kazanan çıktı - PRENSES YAZ
+2025-09-26 00:14:15,894 - INFO - [77/92] Kazanan çıktı - TRAİDORA
+2025-09-26 00:14:16,895 - INFO - [78/92] Kazanan çıktı - VICTORY LANE
+2025-09-26 00:14:17,896 - INFO - [79/92] Kazanan çıktı - ABUZER BABA
+2025-09-26 00:14:18,896 - INFO - [80/92] Kazanan çıktı - DELİ ŞİMŞEK
+2025-09-26 00:14:19,898 - INFO - [81/92] Kazanan çıktı - EL FAMİLİA
+2025-09-26 00:14:20,900 - INFO - [82/92] Kazanan çıktı - ERİŞMİŞ
+2025-09-26 00:14:21,901 - INFO - [83/92] Kazanan çıktı - HARPUT MUHAFIZI
+2025-09-26 00:14:22,902 - INFO - [84/92] Kazanan çıktı - THOTH
+2025-09-26 00:14:23,903 - INFO - [85/92] Kazanan çıktı - UDARHAN
+2025-09-26 00:14:24,903 - INFO - [86/92] Kazanan çıktı - YEDİNCİHİS
+2025-09-26 00:14:25,904 - INFO - [87/92] Kazanan çıktı - MEVHİDE HANIM
+2025-09-26 00:14:26,905 - INFO - [88/92] Kazanan çıktı - AVRENLİ
+2025-09-26 00:14:27,906 - INFO - [89/92] Kazanan çıktı - ÇİĞDEMİN DENİZİ
+2025-09-26 00:14:28,906 - INFO - [90/92] Kazanan çıktı - GÜLLÜ TAY
+2025-09-26 00:14:29,907 - INFO - [91/92] Kazanan çıktı - SEBİLE HANIM
+2025-09-26 00:14:30,908 - INFO - [92/92] Kazanan çıktı - TULPARIM
+2025-09-26 00:14:31,910 - INFO - Kazanan çıktı CSV kaydedildi: static\downloads\istanbul_kazanan_cikti_20250926_20250926_001431.csv
+2025-09-26 00:14:31,910 - INFO - 🎯 Kazanan çıktı CSV kaydedildi: static\downloads\istanbul_kazanan_cikti_20250926_20250926_001431.csv
+2025-09-26 00:14:31,915 - INFO - [OK] İstanbul: 92 at, 92 başarılı (%100.0)
+2025-09-26 00:14:31,916 - INFO - 127.0.0.1 - - [26/Sep/2025 00:14:31] "POST /api/scrape_and_save HTTP/1.1" 200 -
+2025-09-26 00:14:40,266 - INFO - İstanbul için kaydedilmiş veriden hesaplama yapılıyor...
+2025-09-26 00:14:40,269 - INFO - Kazanan çıktı işleniyor: istanbul - 26-09-2025
+2025-09-26 00:14:40,269 - INFO - [1/92] Kazanan çıktı - ÇAYCI KIZ
+2025-09-26 00:14:41,270 - INFO - [2/92] Kazanan çıktı - ABDİ BABA
+2025-09-26 00:14:42,270 - INFO - [3/92] Kazanan çıktı - AKBELHAN
+2025-09-26 00:14:43,271 - INFO - [4/92] Kazanan çıktı - TUNÇYILMAZ
+2025-09-26 00:14:44,272 - INFO - [5/92] Kazanan çıktı - TAŞUCU
+2025-09-26 00:14:45,272 - INFO - [6/92] Kazanan çıktı - YENİSİSTEM
+2025-09-26 00:14:46,273 - INFO - [7/92] Kazanan çıktı - CAN DENİZİM
+2025-09-26 00:14:47,273 - INFO - [8/92] Kazanan çıktı - GUBAZ
+2025-09-26 00:14:48,274 - INFO - [9/92] Kazanan çıktı - HALİD BEY
+2025-09-26 00:14:49,275 - INFO - [10/92] Kazanan çıktı - AKTER TAY
+2025-09-26 00:14:50,275 - INFO - [11/92] Kazanan çıktı - ERSELAY
+2025-09-26 00:14:51,276 - INFO - [12/92] Kazanan çıktı - BABA MESUT
+2025-09-26 00:14:52,277 - INFO - [13/92] Kazanan çıktı - FRECCIA
+2025-09-26 00:14:53,278 - INFO - [14/92] Kazanan çıktı - BAŞ KRALİÇE
+2025-09-26 00:14:54,278 - INFO - [15/92] Kazanan çıktı - GLORY
+2025-09-26 00:14:55,279 - INFO - [16/92] Kazanan çıktı - HARPUT ASLANI
+2025-09-26 00:14:56,280 - INFO - [17/92] Kazanan çıktı - KATANA BOY
+2025-09-26 00:14:57,280 - INFO - [18/92] Kazanan çıktı - PARİSLİ
+2025-09-26 00:14:58,281 - INFO - [19/92] Kazanan çıktı - RAAVIRA
+2025-09-26 00:14:59,281 - INFO - [20/92] Kazanan çıktı - BEBEĞİM OLDUN
+2025-09-26 00:15:00,282 - INFO - [21/92] Kazanan çıktı - MAGIC TOUCH
+2025-09-26 00:15:01,283 - INFO - [22/92] Kazanan çıktı - SARMAT
+2025-09-26 00:15:02,283 - INFO - [23/92] Kazanan çıktı - EASTERN PILOT
+2025-09-26 00:15:03,284 - INFO - [24/92] Kazanan çıktı - HUSARIA
+2025-09-26 00:15:04,285 - INFO - [25/92] Kazanan çıktı - LITTLE WING
+2025-09-26 00:15:05,285 - INFO - [26/92] Kazanan çıktı - GRITTY
+2025-09-26 00:15:06,286 - INFO - [27/92] Kazanan çıktı - GREY GHOST
+2025-09-26 00:15:07,286 - INFO - [28/92] Kazanan çıktı - MR BAYBARS
+2025-09-26 00:15:08,287 - INFO - [29/92] Kazanan çıktı - PEEKABOO
+2025-09-26 00:15:09,288 - INFO - [30/92] Kazanan çıktı - RONIN
+2025-09-26 00:15:10,289 - INFO - [31/92] Kazanan çıktı - PATAKHA GUDDI
+2025-09-26 00:15:11,289 - INFO - [32/92] Kazanan çıktı - TILO GIRL
+2025-09-26 00:15:12,290 - INFO - [33/92] Kazanan çıktı - MALĞUN HATUN
+2025-09-26 00:15:13,290 - INFO - [34/92] Kazanan çıktı - AYBENOVA
+2025-09-26 00:15:14,291 - INFO - [35/92] Kazanan çıktı - GÜL DERYA
+2025-09-26 00:15:15,291 - INFO - [36/92] Kazanan çıktı - KIZIL ZEYNA
+2025-09-26 00:15:16,292 - INFO - [37/92] Kazanan çıktı - KOŞUCU KIZ
+2025-09-26 00:15:17,292 - INFO - [38/92] Kazanan çıktı - TUĞÇEYİM
+2025-09-26 00:15:18,293 - INFO - [39/92] Kazanan çıktı - OKALİPTÜS
+2025-09-26 00:15:19,293 - INFO - [40/92] Kazanan çıktı - ÇÖL KRALİÇESİ
+2025-09-26 00:15:20,294 - INFO - [41/92] Kazanan çıktı - TURBOLU
+2025-09-26 00:15:21,295 - INFO - [42/92] Kazanan çıktı - YURTSEVİL
+2025-09-26 00:15:22,295 - INFO - [43/92] Kazanan çıktı - GELİN TÜLÜ
+2025-09-26 00:15:23,296 - INFO - [44/92] Kazanan çıktı - SEMENDİN OĞLU
+2025-09-26 00:15:24,297 - INFO - [45/92] Kazanan çıktı - GENÇYÜREK
+2025-09-26 00:15:25,297 - INFO - [46/92] Kazanan çıktı - GÜRCEYHUN
+2025-09-26 00:15:26,298 - INFO - [47/92] Kazanan çıktı - BALDER
+2025-09-26 00:15:27,298 - INFO - [48/92] Kazanan çıktı - BAYBARSBEY
+2025-09-26 00:15:28,299 - INFO - [49/92] Kazanan çıktı - KAPTANPAŞALI
+2025-09-26 00:15:29,300 - INFO - [50/92] Kazanan çıktı - TOSKAAN
+2025-09-26 00:15:30,300 - INFO - [51/92] Kazanan çıktı - ULU BEDEN
+2025-09-26 00:15:31,301 - INFO - [52/92] Kazanan çıktı - ALEMARA
+2025-09-26 00:15:32,302 - INFO - [53/92] Kazanan çıktı - AYBARIM
+2025-09-26 00:15:33,302 - INFO - [54/92] Kazanan çıktı - GÖK MİLA
+2025-09-26 00:15:34,303 - INFO - [55/92] Kazanan çıktı - JULNAR
+2025-09-26 00:15:35,304 - INFO - [56/92] Kazanan çıktı - KARBİR
+2025-09-26 00:15:36,304 - INFO - [57/92] Kazanan çıktı - BUILD YOUR DREAMS
+2025-09-26 00:15:37,305 - INFO - [58/92] Kazanan çıktı - DILUVIO
+2025-09-26 00:15:38,306 - INFO - [59/92] Kazanan çıktı - EL GLADIADOR
+2025-09-26 00:15:39,306 - INFO - [60/92] Kazanan çıktı - METAL HEART
+2025-09-26 00:15:40,307 - INFO - [61/92] Kazanan çıktı - NALÇAKAN HAN
+2025-09-26 00:15:41,308 - INFO - [62/92] Kazanan çıktı - UPAMECANO
+2025-09-26 00:15:42,309 - INFO - [63/92] Kazanan çıktı - YAKARİ
+2025-09-26 00:15:43,309 - INFO - [64/92] Kazanan çıktı - LAVENDER
+2025-09-26 00:15:44,310 - INFO - [65/92] Kazanan çıktı - SIDNEYS STAR
+2025-09-26 00:15:45,310 - INFO - [66/92] Kazanan çıktı - MADAM ORACLE
+2025-09-26 00:15:46,311 - INFO - [67/92] Kazanan çıktı - BOSETTI
+2025-09-26 00:15:47,312 - INFO - [68/92] Kazanan çıktı - STASERA
+2025-09-26 00:15:48,312 - INFO - [69/92] Kazanan çıktı - GOLD FLOWER
+2025-09-26 00:15:49,313 - INFO - [70/92] Kazanan çıktı - MITROS ON FIRE
+2025-09-26 00:15:50,314 - INFO - [71/92] Kazanan çıktı - AGATHA
+2025-09-26 00:15:51,315 - INFO - [72/92] Kazanan çıktı - DEJAME
+2025-09-26 00:15:52,317 - INFO - [73/92] Kazanan çıktı - GRACE OF GOD
+2025-09-26 00:15:53,321 - INFO - [74/92] Kazanan çıktı - NAZUŞUM
+2025-09-26 00:15:54,321 - INFO - [75/92] Kazanan çıktı - PIHA
+2025-09-26 00:15:55,322 - INFO - [76/92] Kazanan çıktı - PRENSES YAZ
+2025-09-26 00:15:56,328 - INFO - [77/92] Kazanan çıktı - TRAİDORA
+2025-09-26 00:15:57,329 - INFO - [78/92] Kazanan çıktı - VICTORY LANE
+2025-09-26 00:15:58,329 - INFO - [79/92] Kazanan çıktı - ABUZER BABA
+2025-09-26 00:15:59,331 - INFO - [80/92] Kazanan çıktı - DELİ ŞİMŞEK
+2025-09-26 00:16:00,331 - INFO - [81/92] Kazanan çıktı - EL FAMİLİA
+2025-09-26 00:16:01,332 - INFO - [82/92] Kazanan çıktı - ERİŞMİŞ
+2025-09-26 00:16:02,333 - INFO - [83/92] Kazanan çıktı - HARPUT MUHAFIZI
+2025-09-26 00:16:03,334 - INFO - [84/92] Kazanan çıktı - THOTH
+2025-09-26 00:16:04,334 - INFO - [85/92] Kazanan çıktı - UDARHAN
+2025-09-26 00:16:05,335 - INFO - [86/92] Kazanan çıktı - YEDİNCİHİS
+2025-09-26 00:16:06,336 - INFO - [87/92] Kazanan çıktı - MEVHİDE HANIM
+2025-09-26 00:16:07,337 - INFO - [88/92] Kazanan çıktı - AVRENLİ
+2025-09-26 00:16:08,337 - INFO - [89/92] Kazanan çıktı - ÇİĞDEMİN DENİZİ
+2025-09-26 00:16:09,338 - INFO - [90/92] Kazanan çıktı - GÜLLÜ TAY
+2025-09-26 00:16:10,339 - INFO - [91/92] Kazanan çıktı - SEBİLE HANIM
+2025-09-26 00:16:11,339 - INFO - [92/92] Kazanan çıktı - TULPARIM
+2025-09-26 00:16:12,342 - INFO - Kazanan çıktı CSV kaydedildi: static\downloads\istanbul_kazanan_cikti_20250926_20250926_001612.csv
+2025-09-26 00:16:12,342 - INFO - 🎯 Kazanan çıktı CSV kaydedildi: static\downloads\istanbul_kazanan_cikti_20250926_20250926_001612.csv
+2025-09-26 00:16:12,342 - INFO - [OK] İstanbul hesaplama tamamlandı: 92 at, 89 geçerli
+2025-09-26 00:16:12,343 - INFO - 127.0.0.1 - - [26/Sep/2025 00:16:12] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-26 00:19:11,522 - INFO - 127.0.0.1 - - [26/Sep/2025 00:19:11] "[33mPOST /api/calculate_from_saved HTTP/1.1[0m" 404 -
+2025-09-26 00:19:13,270 - INFO - 127.0.0.1 - - [26/Sep/2025 00:19:13] "[33mPOST /api/calculate_from_saved HTTP/1.1[0m" 404 -
+2025-09-26 00:19:53,989 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-26 00:19:54,124 - INFO -  * Restarting with stat
+2025-09-26 00:23:07,340 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:23:07,343 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:23:07,343 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:23:07,344 - INFO - Debug Mode: True
+2025-09-26 00:23:07,366 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.12:5000
+2025-09-26 00:23:07,367 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-26 00:23:07,368 - INFO -  * Restarting with stat
+2025-09-26 00:23:08,217 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:23:08,220 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:23:08,221 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:23:08,221 - INFO - Debug Mode: True
+2025-09-26 00:23:08,233 - WARNING -  * Debugger is active!
+2025-09-26 00:23:08,236 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:23:26,410 - INFO - 127.0.0.1 - - [26/Sep/2025 00:23:26] "GET /?id=f3e59ab5-8182-4e2a-b083-069c5a384bc4&vscodeBrowserReqId=1758835406090 HTTP/1.1" 200 -
+2025-09-26 00:23:26,712 - INFO - 127.0.0.1 - - [26/Sep/2025 00:23:26] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-09-26 00:23:26,755 - INFO - 127.0.0.1 - - [26/Sep/2025 00:23:26] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-26 00:23:29,297 - INFO - 127.0.0.1 - - [26/Sep/2025 00:23:29] "GET / HTTP/1.1" 200 -
+2025-09-26 00:23:29,318 - INFO - 127.0.0.1 - - [26/Sep/2025 00:23:29] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-09-26 00:23:29,322 - INFO - 127.0.0.1 - - [26/Sep/2025 00:23:29] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-26 00:23:30,969 - INFO - 127.0.0.1 - - [26/Sep/2025 00:23:30] "GET / HTTP/1.1" 200 -
+2025-09-26 00:23:30,994 - INFO - 127.0.0.1 - - [26/Sep/2025 00:23:30] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-26 00:23:32,028 - INFO - 127.0.0.1 - - [26/Sep/2025 00:23:32] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-09-26 00:23:52,366 - INFO - 127.0.0.1 - - [26/Sep/2025 00:23:52] "GET / HTTP/1.1" 200 -
+2025-09-26 00:23:52,383 - INFO - 127.0.0.1 - - [26/Sep/2025 00:23:52] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-26 00:23:52,386 - INFO - 127.0.0.1 - - [26/Sep/2025 00:23:52] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-09-26 00:24:43,365 - INFO - 127.0.0.1 - - [26/Sep/2025 00:24:43] "GET /?id=f3e59ab5-8182-4e2a-b083-069c5a384bc4&vscodeBrowserReqId=1758835483057 HTTP/1.1" 200 -
+2025-09-26 00:24:43,625 - INFO - 127.0.0.1 - - [26/Sep/2025 00:24:43] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-26 00:24:43,678 - INFO - 127.0.0.1 - - [26/Sep/2025 00:24:43] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-26 00:24:53,466 - INFO - 127.0.0.1 - - [26/Sep/2025 00:24:53] "GET / HTTP/1.1" 200 -
+2025-09-26 00:24:53,485 - INFO - 127.0.0.1 - - [26/Sep/2025 00:24:53] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-26 00:24:53,513 - INFO - 127.0.0.1 - - [26/Sep/2025 00:24:53] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-26 00:24:58,179 - INFO - İstanbul için kaydedilmiş veriden hesaplama yapılıyor...
+2025-09-26 00:24:58,183 - INFO - Kazanan çıktı işleniyor: istanbul - 26-09-2025
+2025-09-26 00:24:58,183 - INFO - [1/92] Kazanan çıktı - ÇAYCI KIZ
+2025-09-26 00:24:59,184 - INFO - [2/92] Kazanan çıktı - ABDİ BABA
+2025-09-26 00:25:00,184 - INFO - [3/92] Kazanan çıktı - AKBELHAN
+2025-09-26 00:25:01,185 - INFO - [4/92] Kazanan çıktı - TUNÇYILMAZ
+2025-09-26 00:25:02,185 - INFO - [5/92] Kazanan çıktı - TAŞUCU
+2025-09-26 00:25:03,186 - INFO - [6/92] Kazanan çıktı - YENİSİSTEM
+2025-09-26 00:25:04,186 - INFO - [7/92] Kazanan çıktı - CAN DENİZİM
+2025-09-26 00:25:05,187 - INFO - [8/92] Kazanan çıktı - GUBAZ
+2025-09-26 00:25:06,188 - INFO - [9/92] Kazanan çıktı - HALİD BEY
+2025-09-26 00:25:07,189 - INFO - [10/92] Kazanan çıktı - AKTER TAY
+2025-09-26 00:25:08,189 - INFO - [11/92] Kazanan çıktı - ERSELAY
+2025-09-26 00:25:09,189 - INFO - [12/92] Kazanan çıktı - BABA MESUT
+2025-09-26 00:25:10,190 - INFO - [13/92] Kazanan çıktı - FRECCIA
+2025-09-26 00:25:11,191 - INFO - [14/92] Kazanan çıktı - BAŞ KRALİÇE
+2025-09-26 00:25:12,191 - INFO - [15/92] Kazanan çıktı - GLORY
+2025-09-26 00:25:13,192 - INFO - [16/92] Kazanan çıktı - HARPUT ASLANI
+2025-09-26 00:25:14,193 - INFO - [17/92] Kazanan çıktı - KATANA BOY
+2025-09-26 00:25:15,193 - INFO - [18/92] Kazanan çıktı - PARİSLİ
+2025-09-26 00:25:16,194 - INFO - [19/92] Kazanan çıktı - RAAVIRA
+2025-09-26 00:25:17,195 - INFO - [20/92] Kazanan çıktı - BEBEĞİM OLDUN
+2025-09-26 00:25:18,195 - INFO - [21/92] Kazanan çıktı - MAGIC TOUCH
+2025-09-26 00:25:19,196 - INFO - [22/92] Kazanan çıktı - SARMAT
+2025-09-26 00:25:19,361 - INFO - 127.0.0.1 - - [26/Sep/2025 00:25:19] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-26 00:25:19,371 - INFO - 127.0.0.1 - - [26/Sep/2025 00:25:19] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-09-26 00:25:20,197 - INFO - [23/92] Kazanan çıktı - EASTERN PILOT
+2025-09-26 00:25:21,198 - INFO - [24/92] Kazanan çıktı - HUSARIA
+2025-09-26 00:25:22,198 - INFO - [25/92] Kazanan çıktı - LITTLE WING
+2025-09-26 00:25:23,199 - INFO - [26/92] Kazanan çıktı - GRITTY
+2025-09-26 00:25:24,200 - INFO - [27/92] Kazanan çıktı - GREY GHOST
+2025-09-26 00:25:25,201 - INFO - [28/92] Kazanan çıktı - MR BAYBARS
+2025-09-26 00:25:26,202 - INFO - [29/92] Kazanan çıktı - PEEKABOO
+2025-09-26 00:25:27,202 - INFO - [30/92] Kazanan çıktı - RONIN
+2025-09-26 00:25:28,203 - INFO - [31/92] Kazanan çıktı - PATAKHA GUDDI
+2025-09-26 00:25:29,204 - INFO - [32/92] Kazanan çıktı - TILO GIRL
+2025-09-26 00:25:30,205 - INFO - [33/92] Kazanan çıktı - MALĞUN HATUN
+2025-09-26 00:25:31,206 - INFO - [34/92] Kazanan çıktı - AYBENOVA
+2025-09-26 00:25:32,206 - INFO - [35/92] Kazanan çıktı - GÜL DERYA
+2025-09-26 00:25:33,207 - INFO - [36/92] Kazanan çıktı - KIZIL ZEYNA
+2025-09-26 00:25:34,208 - INFO - [37/92] Kazanan çıktı - KOŞUCU KIZ
+2025-09-26 00:25:35,209 - INFO - [38/92] Kazanan çıktı - TUĞÇEYİM
+2025-09-26 00:25:36,211 - INFO - [39/92] Kazanan çıktı - OKALİPTÜS
+2025-09-26 00:25:37,212 - INFO - [40/92] Kazanan çıktı - ÇÖL KRALİÇESİ
+2025-09-26 00:25:38,212 - INFO - [41/92] Kazanan çıktı - TURBOLU
+2025-09-26 00:25:39,213 - INFO - [42/92] Kazanan çıktı - YURTSEVİL
+2025-09-26 00:25:40,213 - INFO - [43/92] Kazanan çıktı - GELİN TÜLÜ
+2025-09-26 00:25:41,214 - INFO - [44/92] Kazanan çıktı - SEMENDİN OĞLU
+2025-09-26 00:25:42,214 - INFO - [45/92] Kazanan çıktı - GENÇYÜREK
+2025-09-26 00:25:43,215 - INFO - [46/92] Kazanan çıktı - GÜRCEYHUN
+2025-09-26 00:25:44,216 - INFO - [47/92] Kazanan çıktı - BALDER
+2025-09-26 00:25:45,217 - INFO - [48/92] Kazanan çıktı - BAYBARSBEY
+2025-09-26 00:25:46,218 - INFO - [49/92] Kazanan çıktı - KAPTANPAŞALI
+2025-09-26 00:25:47,219 - INFO - [50/92] Kazanan çıktı - TOSKAAN
+2025-09-26 00:25:48,220 - INFO - [51/92] Kazanan çıktı - ULU BEDEN
+2025-09-26 00:25:49,220 - INFO - [52/92] Kazanan çıktı - ALEMARA
+2025-09-26 00:25:50,221 - INFO - [53/92] Kazanan çıktı - AYBARIM
+2025-09-26 00:25:51,222 - INFO - [54/92] Kazanan çıktı - GÖK MİLA
+2025-09-26 00:25:52,223 - INFO - [55/92] Kazanan çıktı - JULNAR
+2025-09-26 00:25:53,224 - INFO - [56/92] Kazanan çıktı - KARBİR
+2025-09-26 00:25:54,225 - INFO - [57/92] Kazanan çıktı - BUILD YOUR DREAMS
+2025-09-26 00:25:55,226 - INFO - [58/92] Kazanan çıktı - DILUVIO
+2025-09-26 00:25:56,226 - INFO - [59/92] Kazanan çıktı - EL GLADIADOR
+2025-09-26 00:25:57,227 - INFO - [60/92] Kazanan çıktı - METAL HEART
+2025-09-26 00:25:58,228 - INFO - [61/92] Kazanan çıktı - NALÇAKAN HAN
+2025-09-26 00:25:59,229 - INFO - [62/92] Kazanan çıktı - UPAMECANO
+2025-09-26 00:26:00,229 - INFO - [63/92] Kazanan çıktı - YAKARİ
+2025-09-26 00:26:01,230 - INFO - [64/92] Kazanan çıktı - LAVENDER
+2025-09-26 00:26:02,231 - INFO - [65/92] Kazanan çıktı - SIDNEYS STAR
+2025-09-26 00:26:03,231 - INFO - [66/92] Kazanan çıktı - MADAM ORACLE
+2025-09-26 00:26:04,232 - INFO - [67/92] Kazanan çıktı - BOSETTI
+2025-09-26 00:26:05,232 - INFO - [68/92] Kazanan çıktı - STASERA
+2025-09-26 00:26:06,233 - INFO - [69/92] Kazanan çıktı - GOLD FLOWER
+2025-09-26 00:26:07,233 - INFO - [70/92] Kazanan çıktı - MITROS ON FIRE
+2025-09-26 00:26:08,234 - INFO - [71/92] Kazanan çıktı - AGATHA
+2025-09-26 00:26:09,234 - INFO - [72/92] Kazanan çıktı - DEJAME
+2025-09-26 00:26:10,235 - INFO - [73/92] Kazanan çıktı - GRACE OF GOD
+2025-09-26 00:26:11,235 - INFO - [74/92] Kazanan çıktı - NAZUŞUM
+2025-09-26 00:26:12,236 - INFO - [75/92] Kazanan çıktı - PIHA
+2025-09-26 00:26:13,237 - INFO - [76/92] Kazanan çıktı - PRENSES YAZ
+2025-09-26 00:26:14,237 - INFO - [77/92] Kazanan çıktı - TRAİDORA
+2025-09-26 00:26:15,238 - INFO - [78/92] Kazanan çıktı - VICTORY LANE
+2025-09-26 00:26:16,239 - INFO - [79/92] Kazanan çıktı - ABUZER BABA
+2025-09-26 00:26:17,239 - INFO - [80/92] Kazanan çıktı - DELİ ŞİMŞEK
+2025-09-26 00:26:18,240 - INFO - [81/92] Kazanan çıktı - EL FAMİLİA
+2025-09-26 00:26:19,240 - INFO - [82/92] Kazanan çıktı - ERİŞMİŞ
+2025-09-26 00:26:20,241 - INFO - [83/92] Kazanan çıktı - HARPUT MUHAFIZI
+2025-09-26 00:26:21,241 - INFO - [84/92] Kazanan çıktı - THOTH
+2025-09-26 00:26:22,242 - INFO - [85/92] Kazanan çıktı - UDARHAN
+2025-09-26 00:26:23,242 - INFO - [86/92] Kazanan çıktı - YEDİNCİHİS
+2025-09-26 00:26:24,243 - INFO - [87/92] Kazanan çıktı - MEVHİDE HANIM
+2025-09-26 00:26:25,244 - INFO - [88/92] Kazanan çıktı - AVRENLİ
+2025-09-26 00:26:26,244 - INFO - [89/92] Kazanan çıktı - ÇİĞDEMİN DENİZİ
+2025-09-26 00:26:27,245 - INFO - [90/92] Kazanan çıktı - GÜLLÜ TAY
+2025-09-26 00:26:28,245 - INFO - [91/92] Kazanan çıktı - SEBİLE HANIM
+2025-09-26 00:26:29,246 - INFO - [92/92] Kazanan çıktı - TULPARIM
+2025-09-26 00:26:30,248 - INFO - Kazanan çıktı CSV kaydedildi: static\downloads\istanbul_kazanan_cikti_20250926_20250926_002630.csv
+2025-09-26 00:26:30,248 - INFO - 🎯 Kazanan çıktı CSV kaydedildi: static\downloads\istanbul_kazanan_cikti_20250926_20250926_002630.csv
+2025-09-26 00:26:30,248 - INFO - [OK] İstanbul hesaplama tamamlandı: 92 at, 89 geçerli
+2025-09-26 00:26:30,249 - INFO - 127.0.0.1 - - [26/Sep/2025 00:26:30] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-26 00:30:11,081 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-26 00:30:11,207 - INFO -  * Restarting with stat
+2025-09-26 00:30:12,102 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:30:12,105 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:30:12,105 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:30:12,106 - INFO - Debug Mode: True
+2025-09-26 00:30:12,118 - WARNING -  * Debugger is active!
+2025-09-26 00:30:12,121 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:30:25,742 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-26 00:30:25,844 - INFO -  * Restarting with stat
+2025-09-26 00:30:26,662 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:30:26,666 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:30:26,666 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:30:26,666 - INFO - Debug Mode: True
+2025-09-26 00:30:26,679 - WARNING -  * Debugger is active!
+2025-09-26 00:30:26,681 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:30:30,818 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:30:30,821 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:30:30,822 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:30:30,822 - INFO - Debug Mode: True
+2025-09-26 00:30:30,844 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.12:5000
+2025-09-26 00:30:30,844 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-26 00:30:30,846 - INFO -  * Restarting with stat
+2025-09-26 00:30:31,641 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:30:31,644 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:30:31,644 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:30:31,644 - INFO - Debug Mode: True
+2025-09-26 00:30:31,658 - WARNING -  * Debugger is active!
+2025-09-26 00:30:31,662 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:30:49,430 - INFO - 127.0.0.1 - - [26/Sep/2025 00:30:49] "GET /?id=f3e59ab5-8182-4e2a-b083-069c5a384bc4&vscodeBrowserReqId=1758835849112 HTTP/1.1" 200 -
+2025-09-26 00:30:49,709 - INFO - 127.0.0.1 - - [26/Sep/2025 00:30:49] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-26 00:30:49,776 - INFO - 127.0.0.1 - - [26/Sep/2025 00:30:49] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-26 00:31:07,659 - INFO - 127.0.0.1 - - [26/Sep/2025 00:31:07] "GET / HTTP/1.1" 200 -
+2025-09-26 00:31:07,678 - INFO - 127.0.0.1 - - [26/Sep/2025 00:31:07] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-26 00:31:07,682 - INFO - 127.0.0.1 - - [26/Sep/2025 00:31:07] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-26 00:31:10,185 - INFO - İstanbul için kaydedilmiş veriden hesaplama yapılıyor...
+2025-09-26 00:31:10,190 - INFO - Kazanan çıktı işleniyor: istanbul - 26-09-2025
+2025-09-26 00:31:10,190 - INFO - [1/92] Kazanan çıktı - ÇAYCI KIZ
+2025-09-26 00:31:11,190 - INFO - [2/92] Kazanan çıktı - ABDİ BABA
+2025-09-26 00:31:12,191 - INFO - [3/92] Kazanan çıktı - AKBELHAN
+2025-09-26 00:31:13,191 - INFO - [4/92] Kazanan çıktı - TUNÇYILMAZ
+2025-09-26 00:31:14,192 - INFO - [5/92] Kazanan çıktı - TAŞUCU
+2025-09-26 00:31:15,192 - INFO - [6/92] Kazanan çıktı - YENİSİSTEM
+2025-09-26 00:31:16,193 - INFO - [7/92] Kazanan çıktı - CAN DENİZİM
+2025-09-26 00:31:17,194 - INFO - [8/92] Kazanan çıktı - GUBAZ
+2025-09-26 00:31:18,194 - INFO - [9/92] Kazanan çıktı - HALİD BEY
+2025-09-26 00:31:19,195 - INFO - [10/92] Kazanan çıktı - AKTER TAY
+2025-09-26 00:31:20,196 - INFO - [11/92] Kazanan çıktı - ERSELAY
+2025-09-26 00:31:21,197 - INFO - [12/92] Kazanan çıktı - BABA MESUT
+2025-09-26 00:31:22,198 - INFO - [13/92] Kazanan çıktı - FRECCIA
+2025-09-26 00:31:23,198 - INFO - [14/92] Kazanan çıktı - BAŞ KRALİÇE
+2025-09-26 00:31:24,199 - INFO - [15/92] Kazanan çıktı - GLORY
+2025-09-26 00:31:25,199 - INFO - [16/92] Kazanan çıktı - HARPUT ASLANI
+2025-09-26 00:31:26,200 - INFO - [17/92] Kazanan çıktı - KATANA BOY
+2025-09-26 00:31:27,201 - INFO - [18/92] Kazanan çıktı - PARİSLİ
+2025-09-26 00:31:28,201 - INFO - [19/92] Kazanan çıktı - RAAVIRA
+2025-09-26 00:31:29,202 - INFO - [20/92] Kazanan çıktı - BEBEĞİM OLDUN
+2025-09-26 00:31:30,203 - INFO - [21/92] Kazanan çıktı - MAGIC TOUCH
+2025-09-26 00:31:31,203 - INFO - [22/92] Kazanan çıktı - SARMAT
+2025-09-26 00:31:32,204 - INFO - [23/92] Kazanan çıktı - EASTERN PILOT
+2025-09-26 00:31:33,205 - INFO - [24/92] Kazanan çıktı - HUSARIA
+2025-09-26 00:31:34,206 - INFO - [25/92] Kazanan çıktı - LITTLE WING
+2025-09-26 00:31:35,206 - INFO - [26/92] Kazanan çıktı - GRITTY
+2025-09-26 00:31:36,208 - INFO - [27/92] Kazanan çıktı - GREY GHOST
+2025-09-26 00:31:37,209 - INFO - [28/92] Kazanan çıktı - MR BAYBARS
+2025-09-26 00:31:38,210 - INFO - [29/92] Kazanan çıktı - PEEKABOO
+2025-09-26 00:31:39,210 - INFO - [30/92] Kazanan çıktı - RONIN
+2025-09-26 00:31:40,211 - INFO - [31/92] Kazanan çıktı - PATAKHA GUDDI
+2025-09-26 00:31:41,212 - INFO - [32/92] Kazanan çıktı - TILO GIRL
+2025-09-26 00:31:42,213 - INFO - [33/92] Kazanan çıktı - MALĞUN HATUN
+2025-09-26 00:31:43,213 - INFO - [34/92] Kazanan çıktı - AYBENOVA
+2025-09-26 00:31:44,214 - INFO - [35/92] Kazanan çıktı - GÜL DERYA
+2025-09-26 00:31:45,215 - INFO - [36/92] Kazanan çıktı - KIZIL ZEYNA
+2025-09-26 00:31:46,216 - INFO - [37/92] Kazanan çıktı - KOŞUCU KIZ
+2025-09-26 00:31:47,217 - INFO - [38/92] Kazanan çıktı - TUĞÇEYİM
+2025-09-26 00:31:48,218 - INFO - [39/92] Kazanan çıktı - OKALİPTÜS
+2025-09-26 00:31:49,218 - INFO - [40/92] Kazanan çıktı - ÇÖL KRALİÇESİ
+2025-09-26 00:31:50,219 - INFO - [41/92] Kazanan çıktı - TURBOLU
+2025-09-26 00:31:51,219 - INFO - [42/92] Kazanan çıktı - YURTSEVİL
+2025-09-26 00:31:52,220 - INFO - [43/92] Kazanan çıktı - GELİN TÜLÜ
+2025-09-26 00:31:53,221 - INFO - [44/92] Kazanan çıktı - SEMENDİN OĞLU
+2025-09-26 00:31:54,221 - INFO - [45/92] Kazanan çıktı - GENÇYÜREK
+2025-09-26 00:31:55,222 - INFO - [46/92] Kazanan çıktı - GÜRCEYHUN
+2025-09-26 00:31:56,222 - INFO - [47/92] Kazanan çıktı - BALDER
+2025-09-26 00:31:57,223 - INFO - [48/92] Kazanan çıktı - BAYBARSBEY
+2025-09-26 00:31:58,224 - INFO - [49/92] Kazanan çıktı - KAPTANPAŞALI
+2025-09-26 00:31:59,224 - INFO - [50/92] Kazanan çıktı - TOSKAAN
+2025-09-26 00:32:00,225 - INFO - [51/92] Kazanan çıktı - ULU BEDEN
+2025-09-26 00:32:01,225 - INFO - [52/92] Kazanan çıktı - ALEMARA
+2025-09-26 00:32:02,226 - INFO - [53/92] Kazanan çıktı - AYBARIM
+2025-09-26 00:32:03,226 - INFO - [54/92] Kazanan çıktı - GÖK MİLA
+2025-09-26 00:32:04,227 - INFO - [55/92] Kazanan çıktı - JULNAR
+2025-09-26 00:32:05,228 - INFO - [56/92] Kazanan çıktı - KARBİR
+2025-09-26 00:32:06,229 - INFO - [57/92] Kazanan çıktı - BUILD YOUR DREAMS
+2025-09-26 00:32:07,230 - INFO - [58/92] Kazanan çıktı - DILUVIO
+2025-09-26 00:32:08,230 - INFO - [59/92] Kazanan çıktı - EL GLADIADOR
+2025-09-26 00:32:09,231 - INFO - [60/92] Kazanan çıktı - METAL HEART
+2025-09-26 00:32:10,232 - INFO - [61/92] Kazanan çıktı - NALÇAKAN HAN
+2025-09-26 00:32:11,232 - INFO - [62/92] Kazanan çıktı - UPAMECANO
+2025-09-26 00:32:12,232 - INFO - [63/92] Kazanan çıktı - YAKARİ
+2025-09-26 00:32:13,233 - INFO - [64/92] Kazanan çıktı - LAVENDER
+2025-09-26 00:32:14,233 - INFO - [65/92] Kazanan çıktı - SIDNEYS STAR
+2025-09-26 00:32:15,234 - INFO - [66/92] Kazanan çıktı - MADAM ORACLE
+2025-09-26 00:32:16,234 - INFO - [67/92] Kazanan çıktı - BOSETTI
+2025-09-26 00:32:17,235 - INFO - [68/92] Kazanan çıktı - STASERA
+2025-09-26 00:32:18,236 - INFO - [69/92] Kazanan çıktı - GOLD FLOWER
+2025-09-26 00:32:19,236 - INFO - [70/92] Kazanan çıktı - MITROS ON FIRE
+2025-09-26 00:32:20,237 - INFO - [71/92] Kazanan çıktı - AGATHA
+2025-09-26 00:32:21,238 - INFO - [72/92] Kazanan çıktı - DEJAME
+2025-09-26 00:32:22,238 - INFO - [73/92] Kazanan çıktı - GRACE OF GOD
+2025-09-26 00:32:23,239 - INFO - [74/92] Kazanan çıktı - NAZUŞUM
+2025-09-26 00:32:24,239 - INFO - [75/92] Kazanan çıktı - PIHA
+2025-09-26 00:32:25,240 - INFO - [76/92] Kazanan çıktı - PRENSES YAZ
+2025-09-26 00:32:26,240 - INFO - [77/92] Kazanan çıktı - TRAİDORA
+2025-09-26 00:32:27,241 - INFO - [78/92] Kazanan çıktı - VICTORY LANE
+2025-09-26 00:32:28,242 - INFO - [79/92] Kazanan çıktı - ABUZER BABA
+2025-09-26 00:32:29,243 - INFO - [80/92] Kazanan çıktı - DELİ ŞİMŞEK
+2025-09-26 00:32:30,243 - INFO - [81/92] Kazanan çıktı - EL FAMİLİA
+2025-09-26 00:32:31,243 - INFO - [82/92] Kazanan çıktı - ERİŞMİŞ
+2025-09-26 00:32:32,244 - INFO - [83/92] Kazanan çıktı - HARPUT MUHAFIZI
+2025-09-26 00:32:33,245 - INFO - [84/92] Kazanan çıktı - THOTH
+2025-09-26 00:32:34,245 - INFO - [85/92] Kazanan çıktı - UDARHAN
+2025-09-26 00:32:35,246 - INFO - [86/92] Kazanan çıktı - YEDİNCİHİS
+2025-09-26 00:32:36,247 - INFO - [87/92] Kazanan çıktı - MEVHİDE HANIM
+2025-09-26 00:32:37,247 - INFO - [88/92] Kazanan çıktı - AVRENLİ
+2025-09-26 00:32:38,248 - INFO - [89/92] Kazanan çıktı - ÇİĞDEMİN DENİZİ
+2025-09-26 00:32:39,248 - INFO - [90/92] Kazanan çıktı - GÜLLÜ TAY
+2025-09-26 00:32:40,249 - INFO - [91/92] Kazanan çıktı - SEBİLE HANIM
+2025-09-26 00:32:41,249 - INFO - [92/92] Kazanan çıktı - TULPARIM
+2025-09-26 00:32:42,251 - INFO - Kazanan çıktı CSV kaydedildi: static\downloads\istanbul_kazanan_cikti_20250926_20250926_003242.csv
+2025-09-26 00:32:42,251 - INFO - 🎯 Kazanan çıktı CSV kaydedildi: static\downloads\istanbul_kazanan_cikti_20250926_20250926_003242.csv
+2025-09-26 00:32:42,252 - INFO - [OK] İstanbul hesaplama tamamlandı: 92 at, 89 geçerli
+2025-09-26 00:32:42,252 - INFO - 127.0.0.1 - - [26/Sep/2025 00:32:42] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-26 00:34:17,482 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-26 00:34:17,589 - INFO -  * Restarting with stat
+2025-09-26 00:34:18,450 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:34:18,454 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:34:18,454 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:34:18,454 - INFO - Debug Mode: True
+2025-09-26 00:34:18,470 - WARNING -  * Debugger is active!
+2025-09-26 00:34:18,473 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:34:34,215 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-26 00:34:34,310 - INFO -  * Restarting with stat
+2025-09-26 00:34:35,168 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:34:35,171 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:34:35,171 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:34:35,171 - INFO - Debug Mode: True
+2025-09-26 00:34:35,184 - WARNING -  * Debugger is active!
+2025-09-26 00:34:35,187 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:34:40,540 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-26 00:34:40,635 - INFO -  * Restarting with stat
+2025-09-26 00:34:41,414 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:34:41,417 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:34:41,417 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:34:41,417 - INFO - Debug Mode: True
+2025-09-26 00:34:41,430 - WARNING -  * Debugger is active!
+2025-09-26 00:34:41,433 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:34:44,118 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:34:44,122 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:34:44,122 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:34:44,122 - INFO - Debug Mode: True
+2025-09-26 00:34:44,150 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.12:5000
+2025-09-26 00:34:44,150 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-26 00:34:44,152 - INFO -  * Restarting with stat
+2025-09-26 00:34:44,914 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:34:44,917 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:34:44,917 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:34:44,917 - INFO - Debug Mode: True
+2025-09-26 00:34:44,931 - WARNING -  * Debugger is active!
+2025-09-26 00:34:44,934 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:34:49,798 - INFO - 127.0.0.1 - - [26/Sep/2025 00:34:49] "GET / HTTP/1.1" 200 -
+2025-09-26 00:34:49,871 - INFO - 127.0.0.1 - - [26/Sep/2025 00:34:49] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-26 00:34:49,913 - INFO - 127.0.0.1 - - [26/Sep/2025 00:34:49] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-26 00:35:03,171 - INFO - 127.0.0.1 - - [26/Sep/2025 00:35:03] "GET /?id=f3e59ab5-8182-4e2a-b083-069c5a384bc4&vscodeBrowserReqId=1758836102862 HTTP/1.1" 200 -
+2025-09-26 00:35:03,434 - INFO - 127.0.0.1 - - [26/Sep/2025 00:35:03] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-26 00:35:03,482 - INFO - 127.0.0.1 - - [26/Sep/2025 00:35:03] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-09-26 00:35:23,842 - INFO - İstanbul at verileri çekiliyor...
+2025-09-26 00:36:29,772 - INFO - İstanbul için hesaplamalar yapılıyor...
+2025-09-26 00:36:29,777 - INFO - ✅ Hesaplamalı CSV kaydedildi: istanbul_hesaplamali_20250926_003629.csv
+2025-09-26 00:36:29,788 - INFO - Kazanan çıktı işleniyor: istanbul - 26-09-2025
+2025-09-26 00:36:29,788 - INFO - [1/92] Kazanan çıktı - ÇAYCI KIZ
+2025-09-26 00:36:30,789 - INFO - [2/92] Kazanan çıktı - ABDİ BABA
+2025-09-26 00:36:31,789 - INFO - [3/92] Kazanan çıktı - AKBELHAN
+2025-09-26 00:36:32,790 - INFO - [4/92] Kazanan çıktı - TUNÇYILMAZ
+2025-09-26 00:36:33,791 - INFO - [5/92] Kazanan çıktı - TAŞUCU
+2025-09-26 00:36:34,791 - INFO - [6/92] Kazanan çıktı - YENİSİSTEM
+2025-09-26 00:36:35,792 - INFO - [7/92] Kazanan çıktı - CAN DENİZİM
+2025-09-26 00:36:36,793 - INFO - [8/92] Kazanan çıktı - GUBAZ
+2025-09-26 00:36:37,794 - INFO - [9/92] Kazanan çıktı - HALİD BEY
+2025-09-26 00:36:38,794 - INFO - [10/92] Kazanan çıktı - AKTER TAY
+2025-09-26 00:36:39,795 - INFO - [11/92] Kazanan çıktı - ERSELAY
+2025-09-26 00:36:40,795 - INFO - [12/92] Kazanan çıktı - BABA MESUT
+2025-09-26 00:36:41,796 - INFO - [13/92] Kazanan çıktı - FRECCIA
+2025-09-26 00:36:42,797 - INFO - [14/92] Kazanan çıktı - BAŞ KRALİÇE
+2025-09-26 00:36:43,798 - INFO - [15/92] Kazanan çıktı - GLORY
+2025-09-26 00:36:44,799 - INFO - [16/92] Kazanan çıktı - HARPUT ASLANI
+2025-09-26 00:36:45,799 - INFO - [17/92] Kazanan çıktı - KATANA BOY
+2025-09-26 00:36:46,800 - INFO - [18/92] Kazanan çıktı - PARİSLİ
+2025-09-26 00:36:47,801 - INFO - [19/92] Kazanan çıktı - RAAVIRA
+2025-09-26 00:36:48,801 - INFO - [20/92] Kazanan çıktı - BEBEĞİM OLDUN
+2025-09-26 00:36:49,802 - INFO - [21/92] Kazanan çıktı - MAGIC TOUCH
+2025-09-26 00:36:50,802 - INFO - [22/92] Kazanan çıktı - SARMAT
+2025-09-26 00:36:51,803 - INFO - [23/92] Kazanan çıktı - EASTERN PILOT
+2025-09-26 00:36:52,804 - INFO - [24/92] Kazanan çıktı - HUSARIA
+2025-09-26 00:36:53,804 - INFO - [25/92] Kazanan çıktı - LITTLE WING
+2025-09-26 00:36:54,805 - INFO - [26/92] Kazanan çıktı - GRITTY
+2025-09-26 00:36:55,805 - INFO - [27/92] Kazanan çıktı - GREY GHOST
+2025-09-26 00:36:56,806 - INFO - [28/92] Kazanan çıktı - MR BAYBARS
+2025-09-26 00:36:57,806 - INFO - [29/92] Kazanan çıktı - PEEKABOO
+2025-09-26 00:36:58,807 - INFO - [30/92] Kazanan çıktı - RONIN
+2025-09-26 00:36:59,807 - INFO - [31/92] Kazanan çıktı - PATAKHA GUDDI
+2025-09-26 00:37:00,808 - INFO - [32/92] Kazanan çıktı - TILO GIRL
+2025-09-26 00:37:01,808 - INFO - [33/92] Kazanan çıktı - MALĞUN HATUN
+2025-09-26 00:37:02,809 - INFO - [34/92] Kazanan çıktı - AYBENOVA
+2025-09-26 00:37:03,809 - INFO - [35/92] Kazanan çıktı - GÜL DERYA
+2025-09-26 00:37:04,810 - INFO - [36/92] Kazanan çıktı - KIZIL ZEYNA
+2025-09-26 00:37:05,810 - INFO - [37/92] Kazanan çıktı - KOŞUCU KIZ
+2025-09-26 00:37:06,811 - INFO - [38/92] Kazanan çıktı - TUĞÇEYİM
+2025-09-26 00:37:07,812 - INFO - [39/92] Kazanan çıktı - OKALİPTÜS
+2025-09-26 00:37:08,813 - INFO - [40/92] Kazanan çıktı - ÇÖL KRALİÇESİ
+2025-09-26 00:37:09,813 - INFO - [41/92] Kazanan çıktı - TURBOLU
+2025-09-26 00:37:10,814 - INFO - [42/92] Kazanan çıktı - YURTSEVİL
+2025-09-26 00:37:11,814 - INFO - [43/92] Kazanan çıktı - GELİN TÜLÜ
+2025-09-26 00:37:12,815 - INFO - [44/92] Kazanan çıktı - SEMENDİN OĞLU
+2025-09-26 00:37:13,816 - INFO - [45/92] Kazanan çıktı - GENÇYÜREK
+2025-09-26 00:37:14,816 - INFO - [46/92] Kazanan çıktı - GÜRCEYHUN
+2025-09-26 00:37:15,817 - INFO - [47/92] Kazanan çıktı - BALDER
+2025-09-26 00:37:16,817 - INFO - [48/92] Kazanan çıktı - BAYBARSBEY
+2025-09-26 00:37:17,818 - INFO - [49/92] Kazanan çıktı - KAPTANPAŞALI
+2025-09-26 00:37:18,818 - INFO - [50/92] Kazanan çıktı - TOSKAAN
+2025-09-26 00:37:19,819 - INFO - [51/92] Kazanan çıktı - ULU BEDEN
+2025-09-26 00:37:20,819 - INFO - [52/92] Kazanan çıktı - ALEMARA
+2025-09-26 00:37:21,820 - INFO - [53/92] Kazanan çıktı - AYBARIM
+2025-09-26 00:37:22,820 - INFO - [54/92] Kazanan çıktı - GÖK MİLA
+2025-09-26 00:37:23,821 - INFO - [55/92] Kazanan çıktı - JULNAR
+2025-09-26 00:37:24,822 - INFO - [56/92] Kazanan çıktı - KARBİR
+2025-09-26 00:37:25,822 - INFO - [57/92] Kazanan çıktı - BUILD YOUR DREAMS
+2025-09-26 00:37:26,823 - INFO - [58/92] Kazanan çıktı - DILUVIO
+2025-09-26 00:37:27,823 - INFO - [59/92] Kazanan çıktı - EL GLADIADOR
+2025-09-26 00:37:28,824 - INFO - [60/92] Kazanan çıktı - METAL HEART
+2025-09-26 00:37:29,825 - INFO - [61/92] Kazanan çıktı - NALÇAKAN HAN
+2025-09-26 00:37:30,826 - INFO - [62/92] Kazanan çıktı - UPAMECANO
+2025-09-26 00:37:31,826 - INFO - [63/92] Kazanan çıktı - YAKARİ
+2025-09-26 00:37:32,827 - INFO - [64/92] Kazanan çıktı - LAVENDER
+2025-09-26 00:37:33,828 - INFO - [65/92] Kazanan çıktı - SIDNEYS STAR
+2025-09-26 00:37:34,829 - INFO - [66/92] Kazanan çıktı - MADAM ORACLE
+2025-09-26 00:37:35,829 - INFO - [67/92] Kazanan çıktı - BOSETTI
+2025-09-26 00:37:36,830 - INFO - [68/92] Kazanan çıktı - STASERA
+2025-09-26 00:37:37,831 - INFO - [69/92] Kazanan çıktı - GOLD FLOWER
+2025-09-26 00:37:38,831 - INFO - [70/92] Kazanan çıktı - MITROS ON FIRE
+2025-09-26 00:37:39,836 - INFO - [71/92] Kazanan çıktı - AGATHA
+2025-09-26 00:37:40,838 - INFO - [72/92] Kazanan çıktı - DEJAME
+2025-09-26 00:37:41,839 - INFO - [73/92] Kazanan çıktı - GRACE OF GOD
+2025-09-26 00:37:42,839 - INFO - [74/92] Kazanan çıktı - NAZUŞUM
+2025-09-26 00:37:43,840 - INFO - [75/92] Kazanan çıktı - PIHA
+2025-09-26 00:37:44,841 - INFO - [76/92] Kazanan çıktı - PRENSES YAZ
+2025-09-26 00:37:45,841 - INFO - [77/92] Kazanan çıktı - TRAİDORA
+2025-09-26 00:37:46,842 - INFO - [78/92] Kazanan çıktı - VICTORY LANE
+2025-09-26 00:37:47,842 - INFO - [79/92] Kazanan çıktı - ABUZER BABA
+2025-09-26 00:37:48,842 - INFO - [80/92] Kazanan çıktı - DELİ ŞİMŞEK
+2025-09-26 00:37:49,843 - INFO - [81/92] Kazanan çıktı - EL FAMİLİA
+2025-09-26 00:37:50,843 - INFO - [82/92] Kazanan çıktı - ERİŞMİŞ
+2025-09-26 00:37:51,844 - INFO - [83/92] Kazanan çıktı - HARPUT MUHAFIZI
+2025-09-26 00:37:52,844 - INFO - [84/92] Kazanan çıktı - THOTH
+2025-09-26 00:37:53,845 - INFO - [85/92] Kazanan çıktı - UDARHAN
+2025-09-26 00:37:54,845 - INFO - [86/92] Kazanan çıktı - YEDİNCİHİS
+2025-09-26 00:37:55,846 - INFO - [87/92] Kazanan çıktı - MEVHİDE HANIM
+2025-09-26 00:37:56,846 - INFO - [88/92] Kazanan çıktı - AVRENLİ
+2025-09-26 00:37:57,847 - INFO - [89/92] Kazanan çıktı - ÇİĞDEMİN DENİZİ
+2025-09-26 00:37:58,847 - INFO - [90/92] Kazanan çıktı - GÜLLÜ TAY
+2025-09-26 00:37:59,866 - INFO - [91/92] Kazanan çıktı - SEBİLE HANIM
+2025-09-26 00:38:00,925 - INFO - [92/92] Kazanan çıktı - TULPARIM
+2025-09-26 00:38:01,927 - INFO - Kazanan çıktı CSV kaydedildi: static\downloads\istanbul_kazanan_cikti_20250926_20250926_003801.csv
+2025-09-26 00:38:01,927 - INFO - 🎯 Kazanan çıktı CSV kaydedildi: static\downloads\istanbul_kazanan_cikti_20250926_20250926_003801.csv
+2025-09-26 00:38:01,933 - INFO - [OK] İstanbul: 92 at, 92 başarılı (%100.0)
+2025-09-26 00:38:01,933 - INFO - 127.0.0.1 - - [26/Sep/2025 00:38:01] "POST /api/scrape_and_save HTTP/1.1" 200 -
+2025-09-26 00:38:10,056 - INFO - İstanbul için hazır hesaplanmış veriler okunuyor...
+2025-09-26 00:38:10,057 - INFO - ✅ Hesaplanmış veriler okundu: istanbul_hesaplamali_20250926_003629.csv
+2025-09-26 00:38:10,058 - INFO - Kazanan çıktı işleniyor: istanbul - 26-09-2025
+2025-09-26 00:38:10,058 - INFO - [1/92] Kazanan çıktı - ÇAYCI KIZ
+2025-09-26 00:38:11,059 - INFO - [2/92] Kazanan çıktı - ABDİ BABA
+2025-09-26 00:38:12,060 - INFO - [3/92] Kazanan çıktı - AKBELHAN
+2025-09-26 00:38:13,060 - INFO - [4/92] Kazanan çıktı - TUNÇYILMAZ
+2025-09-26 00:38:14,060 - INFO - [5/92] Kazanan çıktı - TAŞUCU
+2025-09-26 00:38:15,061 - INFO - [6/92] Kazanan çıktı - YENİSİSTEM
+2025-09-26 00:38:16,062 - INFO - [7/92] Kazanan çıktı - CAN DENİZİM
+2025-09-26 00:38:17,062 - INFO - [8/92] Kazanan çıktı - GUBAZ
+2025-09-26 00:38:18,063 - INFO - [9/92] Kazanan çıktı - HALİD BEY
+2025-09-26 00:38:19,063 - INFO - [10/92] Kazanan çıktı - AKTER TAY
+2025-09-26 00:38:20,064 - INFO - [11/92] Kazanan çıktı - ERSELAY
+2025-09-26 00:38:21,064 - INFO - [12/92] Kazanan çıktı - BABA MESUT
+2025-09-26 00:38:22,065 - INFO - [13/92] Kazanan çıktı - FRECCIA
+2025-09-26 00:38:23,066 - INFO - [14/92] Kazanan çıktı - BAŞ KRALİÇE
+2025-09-26 00:38:24,067 - INFO - [15/92] Kazanan çıktı - GLORY
+2025-09-26 00:38:25,068 - INFO - [16/92] Kazanan çıktı - HARPUT ASLANI
+2025-09-26 00:38:26,069 - INFO - [17/92] Kazanan çıktı - KATANA BOY
+2025-09-26 00:38:27,069 - INFO - [18/92] Kazanan çıktı - PARİSLİ
+2025-09-26 00:38:28,070 - INFO - [19/92] Kazanan çıktı - RAAVIRA
+2025-09-26 00:38:29,071 - INFO - [20/92] Kazanan çıktı - BEBEĞİM OLDUN
+2025-09-26 00:38:30,071 - INFO - [21/92] Kazanan çıktı - MAGIC TOUCH
+2025-09-26 00:38:31,072 - INFO - [22/92] Kazanan çıktı - SARMAT
+2025-09-26 00:38:32,072 - INFO - [23/92] Kazanan çıktı - EASTERN PILOT
+2025-09-26 00:38:33,073 - INFO - [24/92] Kazanan çıktı - HUSARIA
+2025-09-26 00:38:34,073 - INFO - [25/92] Kazanan çıktı - LITTLE WING
+2025-09-26 00:38:35,074 - INFO - [26/92] Kazanan çıktı - GRITTY
+2025-09-26 00:38:36,075 - INFO - [27/92] Kazanan çıktı - GREY GHOST
+2025-09-26 00:38:37,075 - INFO - [28/92] Kazanan çıktı - MR BAYBARS
+2025-09-26 00:38:38,076 - INFO - [29/92] Kazanan çıktı - PEEKABOO
+2025-09-26 00:38:39,077 - INFO - [30/92] Kazanan çıktı - RONIN
+2025-09-26 00:38:40,077 - INFO - [31/92] Kazanan çıktı - PATAKHA GUDDI
+2025-09-26 00:38:41,078 - INFO - [32/92] Kazanan çıktı - TILO GIRL
+2025-09-26 00:38:42,079 - INFO - [33/92] Kazanan çıktı - MALĞUN HATUN
+2025-09-26 00:38:43,080 - INFO - [34/92] Kazanan çıktı - AYBENOVA
+2025-09-26 00:38:44,080 - INFO - [35/92] Kazanan çıktı - GÜL DERYA
+2025-09-26 00:38:45,081 - INFO - [36/92] Kazanan çıktı - KIZIL ZEYNA
+2025-09-26 00:38:46,081 - INFO - [37/92] Kazanan çıktı - KOŞUCU KIZ
+2025-09-26 00:38:47,082 - INFO - [38/92] Kazanan çıktı - TUĞÇEYİM
+2025-09-26 00:38:48,083 - INFO - [39/92] Kazanan çıktı - OKALİPTÜS
+2025-09-26 00:38:49,084 - INFO - [40/92] Kazanan çıktı - ÇÖL KRALİÇESİ
+2025-09-26 00:38:50,085 - INFO - [41/92] Kazanan çıktı - TURBOLU
+2025-09-26 00:38:51,085 - INFO - [42/92] Kazanan çıktı - YURTSEVİL
+2025-09-26 00:38:52,086 - INFO - [43/92] Kazanan çıktı - GELİN TÜLÜ
+2025-09-26 00:38:53,087 - INFO - [44/92] Kazanan çıktı - SEMENDİN OĞLU
+2025-09-26 00:38:54,088 - INFO - [45/92] Kazanan çıktı - GENÇYÜREK
+2025-09-26 00:38:55,088 - INFO - [46/92] Kazanan çıktı - GÜRCEYHUN
+2025-09-26 00:38:56,090 - INFO - [47/92] Kazanan çıktı - BALDER
+2025-09-26 00:38:57,091 - INFO - [48/92] Kazanan çıktı - BAYBARSBEY
+2025-09-26 00:38:58,093 - INFO - [49/92] Kazanan çıktı - KAPTANPAŞALI
+2025-09-26 00:38:59,098 - INFO - [50/92] Kazanan çıktı - TOSKAAN
+2025-09-26 00:39:00,100 - INFO - [51/92] Kazanan çıktı - ULU BEDEN
+2025-09-26 00:39:01,100 - INFO - [52/92] Kazanan çıktı - ALEMARA
+2025-09-26 00:39:02,102 - INFO - [53/92] Kazanan çıktı - AYBARIM
+2025-09-26 00:39:03,102 - INFO - [54/92] Kazanan çıktı - GÖK MİLA
+2025-09-26 00:39:04,103 - INFO - [55/92] Kazanan çıktı - JULNAR
+2025-09-26 00:39:05,104 - INFO - [56/92] Kazanan çıktı - KARBİR
+2025-09-26 00:39:06,104 - INFO - [57/92] Kazanan çıktı - BUILD YOUR DREAMS
+2025-09-26 00:39:07,105 - INFO - [58/92] Kazanan çıktı - DILUVIO
+2025-09-26 00:39:08,105 - INFO - [59/92] Kazanan çıktı - EL GLADIADOR
+2025-09-26 00:39:09,106 - INFO - [60/92] Kazanan çıktı - METAL HEART
+2025-09-26 00:39:10,106 - INFO - [61/92] Kazanan çıktı - NALÇAKAN HAN
+2025-09-26 00:39:11,107 - INFO - [62/92] Kazanan çıktı - UPAMECANO
+2025-09-26 00:39:12,107 - INFO - [63/92] Kazanan çıktı - YAKARİ
+2025-09-26 00:39:13,108 - INFO - [64/92] Kazanan çıktı - LAVENDER
+2025-09-26 00:39:14,108 - INFO - [65/92] Kazanan çıktı - SIDNEYS STAR
+2025-09-26 00:39:15,109 - INFO - [66/92] Kazanan çıktı - MADAM ORACLE
+2025-09-26 00:39:16,110 - INFO - [67/92] Kazanan çıktı - BOSETTI
+2025-09-26 00:39:17,111 - INFO - [68/92] Kazanan çıktı - STASERA
+2025-09-26 00:39:18,111 - INFO - [69/92] Kazanan çıktı - GOLD FLOWER
+2025-09-26 00:39:19,112 - INFO - [70/92] Kazanan çıktı - MITROS ON FIRE
+2025-09-26 00:39:20,112 - INFO - [71/92] Kazanan çıktı - AGATHA
+2025-09-26 00:39:21,113 - INFO - [72/92] Kazanan çıktı - DEJAME
+2025-09-26 00:39:22,113 - INFO - [73/92] Kazanan çıktı - GRACE OF GOD
+2025-09-26 00:39:23,114 - INFO - [74/92] Kazanan çıktı - NAZUŞUM
+2025-09-26 00:39:24,115 - INFO - [75/92] Kazanan çıktı - PIHA
+2025-09-26 00:39:24,169 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-26 00:39:24,311 - INFO -  * Restarting with stat
+2025-09-26 00:39:25,111 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:39:25,114 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:39:25,114 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:39:25,115 - INFO - Debug Mode: True
+2025-09-26 00:39:25,128 - WARNING -  * Debugger is active!
+2025-09-26 00:39:25,132 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:39:31,471 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-26 00:39:31,577 - INFO -  * Restarting with stat
+2025-09-26 00:39:32,376 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:39:32,379 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:39:32,379 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:39:32,379 - INFO - Debug Mode: True
+2025-09-26 00:39:32,392 - WARNING -  * Debugger is active!
+2025-09-26 00:39:32,395 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:39:35,616 - INFO - İstanbul için hazır hesaplanmış veriler okunuyor...
+2025-09-26 00:39:35,617 - INFO - ✅ Hesaplanmış veriler okundu: istanbul_hesaplamali_20250926_003629.csv
+2025-09-26 00:39:35,617 - INFO - [OK] İstanbul hesaplama tamamlandı: 92 at, 89 geçerli
+2025-09-26 00:39:35,618 - INFO - 127.0.0.1 - - [26/Sep/2025 00:39:35] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-26 00:39:42,010 - INFO - İstanbul için hazır hesaplanmış veriler okunuyor...
+2025-09-26 00:39:42,011 - INFO - ✅ Hesaplanmış veriler okundu: istanbul_hesaplamali_20250926_003629.csv
+2025-09-26 00:39:42,012 - INFO - [OK] İstanbul hesaplama tamamlandı: 92 at, 89 geçerli
+2025-09-26 00:39:42,013 - INFO - 127.0.0.1 - - [26/Sep/2025 00:39:42] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-26 00:39:42,434 - INFO - İstanbul için hazır hesaplanmış veriler okunuyor...
+2025-09-26 00:39:42,434 - INFO - ✅ Hesaplanmış veriler okundu: istanbul_hesaplamali_20250926_003629.csv
+2025-09-26 00:39:42,435 - INFO - [OK] İstanbul hesaplama tamamlandı: 92 at, 89 geçerli
+2025-09-26 00:39:42,435 - INFO - 127.0.0.1 - - [26/Sep/2025 00:39:42] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-26 00:39:42,785 - INFO - İstanbul için hazır hesaplanmış veriler okunuyor...
+2025-09-26 00:39:42,785 - INFO - ✅ Hesaplanmış veriler okundu: istanbul_hesaplamali_20250926_003629.csv
+2025-09-26 00:39:42,786 - INFO - [OK] İstanbul hesaplama tamamlandı: 92 at, 89 geçerli
+2025-09-26 00:39:42,786 - INFO - 127.0.0.1 - - [26/Sep/2025 00:39:42] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-26 00:39:49,436 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:39:49,439 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:39:49,439 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:39:49,439 - INFO - Debug Mode: True
+2025-09-26 00:39:49,465 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.12:5000
+2025-09-26 00:39:49,466 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-26 00:39:49,467 - INFO -  * Restarting with stat
+2025-09-26 00:39:50,291 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:39:50,294 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:39:50,295 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:39:50,295 - INFO - Debug Mode: True
+2025-09-26 00:39:50,308 - WARNING -  * Debugger is active!
+2025-09-26 00:39:50,311 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:39:52,864 - INFO - 127.0.0.1 - - [26/Sep/2025 00:39:52] "GET / HTTP/1.1" 200 -
+2025-09-26 00:39:52,925 - INFO - 127.0.0.1 - - [26/Sep/2025 00:39:52] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-26 00:39:52,950 - INFO - 127.0.0.1 - - [26/Sep/2025 00:39:52] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-09-26 00:39:55,529 - INFO - İstanbul için hazır hesaplanmış veriler okunuyor...
+2025-09-26 00:39:55,530 - INFO - ✅ Hesaplanmış veriler okundu: istanbul_hesaplamali_20250926_003629.csv
+2025-09-26 00:39:55,531 - INFO - [OK] İstanbul hesaplama tamamlandı: 92 at, 89 geçerli
+2025-09-26 00:39:55,531 - INFO - 127.0.0.1 - - [26/Sep/2025 00:39:55] "POST /api/calculate_from_saved HTTP/1.1" 200 -
+2025-09-26 00:40:09,094 - INFO - 127.0.0.1 - - [26/Sep/2025 00:40:09] "GET /?id=f68eb0c5-be0a-4c9f-afad-4d642f87ee6d&vscodeBrowserReqId=1758836408781 HTTP/1.1" 200 -
+2025-09-26 00:40:09,360 - INFO - 127.0.0.1 - - [26/Sep/2025 00:40:09] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-09-26 00:40:09,408 - INFO - 127.0.0.1 - - [26/Sep/2025 00:40:09] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-09-26 00:41:26,173 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-26 00:41:26,270 - INFO -  * Restarting with stat
+2025-09-26 00:41:27,089 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:41:27,093 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:41:27,093 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:41:27,093 - INFO - Debug Mode: True
+2025-09-26 00:41:27,106 - WARNING -  * Debugger is active!
+2025-09-26 00:41:27,109 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:41:35,513 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-26 00:41:35,647 - INFO -  * Restarting with stat
+2025-09-26 00:41:36,491 - INFO - At yarışı modülleri başarıyla yüklendi
+2025-09-26 00:41:36,495 - INFO - At Yarışı Analiz Sistemi başlatılıyor...
+2025-09-26 00:41:36,495 - INFO - Host: 0.0.0.0:5000
+2025-09-26 00:41:36,495 - INFO - Debug Mode: True
+2025-09-26 00:41:36,509 - WARNING -  * Debugger is active!
+2025-09-26 00:41:36,511 - INFO -  * Debugger PIN: 580-487-815
+2025-09-26 00:41:52,276 - INFO -  * Detected change in 'C:\\Users\\emir\\Desktop\\site\\app.py', reloading
+2025-09-26 00:41:52,366 - INFO -  * Restarting with stat

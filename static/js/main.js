@@ -129,10 +129,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Koşu sonuçlarını göster
     function showRaceResults(data) {
-        console.log('📊 Sonuçlar gösteriliyor...');
+        console.log('📊 Sonuçlar gösteriliyor...', data);
+        console.log('📊 Races array:', data.races);
+        console.log('📊 Results element:', results);
+        
+        if (!data.races || data.races.length === 0) {
+            console.log('❌ Koşu verisi bulunamadı!');
+            return;
+        }
+        
+        console.log('🔄 Gerçek tablo oluşturuluyor...');
+        console.log('📊 Toplam koşu sayısı:', data.races.length);
         
         let tabsHtml = '<div class="race-tabs-container"><div class="race-tabs">';
         let contentHtml = '<div class="race-content-container">';
+
+        // Kazanan çıktı sekmesini kaldırdık
 
         // Her koşu için sekme ve içerik oluştur
         data.races.forEach((race, index) => {
@@ -166,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <th width="120">At İsmi</th>
                                     <th width="80">Hipodrom</th>
                                     <th width="50">Çıktı</th>
+                                    <th width="80">1.Derece</th>
                                     <th width="60">Mesafe</th>
                                     <th width="50">Pist</th>
                                     <th width="50">S.Kilo</th>
@@ -187,13 +200,17 @@ document.addEventListener('DOMContentLoaded', function() {
             sortedHorses.forEach((horse, horseIndex) => {
                 const rank = horseIndex + 1;
                 const scoreText = typeof horse.skor === 'number' ? horse.skor.toFixed(2) : '-';
+                
+                // Çıktı değerini ayrı hesapla (backend'den gelen ham çıktı değeri)
+                const ciktiText = horse.cikti_degeri ? (typeof horse.cikti_degeri === 'number' ? horse.cikti_degeri.toFixed(2) : horse.cikti_degeri) : (scoreText === '-' ? '-' : scoreText);
 
                 contentHtml += `
                     <tr>
                         <td><strong>${rank}</strong></td>
                         <td class="horse-name"><strong>${horse.at_adi || 'Bilinmiyor'}</strong></td>
                         <td style="font-size: 10px;">${horse.son_hipodrom || '-'}</td>
-                        <td><strong style="color: ${typeof horse.skor === 'number' ? '#28a745' : '#dc3545'}">${scoreText}</strong></td>
+                        <td><strong style="color: ${typeof horse.skor === 'number' ? '#28a745' : '#dc3545'}">${ciktiText}</strong></td>
+                        <td style="font-size: 10px; color: #28a745;"><strong>${horse.kazanan_ismi || '-'}</strong></td>
                         <td>${horse.son_mesafe || '-'}m</td>
                         <td>${getPistType(horse.son_pist)}</td>
                         <td>${horse.son_kilo || '-'}kg</td>
@@ -219,6 +236,8 @@ document.addEventListener('DOMContentLoaded', function() {
             </button>
         `;
         
+        // Kazanan çıktı sekmesi kaldırıldı
+
         // Tüm koşular içeriği
         contentHtml += `
             <div class="race-content-tab" id="race-tab-content-all">
@@ -451,31 +470,77 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Hızlı hesaplama butonu
     quickCalculateBtn.addEventListener('click', async function() {
+        console.log('🔥 ANALİZ YAP BUTONUNA BASILDI!');
         const city = citySelect.value;
+        console.log('🔥 Seçilen şehir:', city);
         if (!city) {
             showStatus('❌ Lütfen bir şehir seçin!', 'warning');
             return;
         }
 
+        console.log('🔥 showLoading çağrılıyor...');
         showLoading(true, 'Kaydedilmiş verilerle analiz yapılıyor...');
+        console.log('🔥 fetch başlatılıyor...');
 
         try {
+            console.log('🔥 fetch isteği gönderiliyor...');
             const response = await fetch('/api/calculate_from_saved', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ city: city })
             });
 
-            const result = await response.json();
+            console.log('🔥 Response alındı:', response.status);
+            
+            let result;
+            try {
+                console.log('🔥 JSON parse başlatılıyor...');
+                result = await response.json();
+                console.log('🔥 JSON parse başarılı!');
+            } catch (error) {
+                console.error('❌ JSON parse hatası:', error);
+                console.log('📝 Response headers:', response.headers);
+                const text = await response.text();
+                console.log('📝 Response text (ilk 1000 karakter):', text.substring(0, 1000));
+                console.log('📝 NaN arıyoruz...');
+                const nanMatches = text.match(/:\s*NaN/g);
+                if (nanMatches) {
+                    console.log('🔍 Bulunan NaN değerleri:', nanMatches);
+                }
+                return;
+            }
+            
+            console.log('📊 Backend Response:', result);
+            console.log('📊 Response keys:', Object.keys(result));
+            console.log('📊 Races array:', result.races);
+            console.log('📊 Races length:', result.races ? result.races.length : 'races field yok');
+            
+            // Veri yapısını detaylı analiz edelim
+            console.log('🔍 Result type:', typeof result);
+            console.log('🔍 Result struktur:', JSON.stringify(result, null, 2));
 
             if (response.ok) {
+                console.log('✅ Response OK, races count:', result.races?.length);
+                console.log('✅ resultsContainer element:', resultsContainer);
+                
                 currentData = result;
                 showSummaryStats(result);
                 showRaceResults(result);
-                resultsContainer.style.display = 'block';
+                
+                if (resultsContainer) {
+                    resultsContainer.style.display = 'block';
+                    resultsContainer.style.visibility = 'visible';
+                    console.log('✅ resultsContainer görünür yapıldı');
+                    console.log('✅ resultsContainer display:', resultsContainer.style.display);
+                    console.log('✅ resultsContainer computed style:', getComputedStyle(resultsContainer).display);
+                } else {
+                    console.log('❌ resultsContainer bulunamadı!');
+                }
+                
                 downloadBtn.disabled = false;
                 showStatus('✅ Analiz tamamlandı! Koşulara tıklayarak detayları görüntüleyebilirsiniz.', 'success');
             } else {
+                console.log('❌ Response Error:', result);
                 showStatus('❌ Analiz hatası: ' + (result.message || 'Bilinmeyen hata'), 'danger');
             }
         } catch (error) {
@@ -536,4 +601,62 @@ document.addEventListener('DOMContentLoaded', function() {
         
         showStatus('📥 CSV dosyası indiriliyor...', 'info');
     });
+
+    // Kazanan çıktı fonksiyonları
+    window.createWinnerTable = function(winnerData) {
+        if (!winnerData || winnerData.length === 0) {
+            return '<div class="alert alert-warning">Henüz kazanan çıktı verisi bulunmuyor.</div>';
+        }
+
+        let tableHtml = `
+            <div class="table-responsive">
+                <table class="table table-striped table-hover winner-table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>At İsmi</th>
+                            <th>Bugünkü Koşu</th>
+                            <th>Önceki Koşu Birincisi</th>
+                            <th>Derece</th>
+                            <th>Ganyan</th>
+                            <th>Şehir</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        winnerData.forEach(winner => {
+            tableHtml += `
+                <tr>
+                    <td><strong>${winner.at_ismi || '-'}</strong></td>
+                    <td>${winner.bugun_kosu_no || '-'}. Koşu</td>
+                    <td><span class="winner-name">${winner.onceki_kosu_birinci_ismi || 'Veri yok'}</span></td>
+                    <td>${winner.onceki_kosu_birinci_derece || '-'}</td>
+                    <td>${winner.onceki_kosu_birinci_ganyan || '-'}</td>
+                    <td>${winner.bugun_sehir || '-'}</td>
+                </tr>
+            `;
+        });
+
+        tableHtml += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        return tableHtml;
+    };
+
+    window.showWinnerResults = function() {
+        // Tüm sekmeleri pasif yap
+        document.querySelectorAll('.race-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.race-content-tab').forEach(content => {
+            content.classList.remove('active');
+        });
+        
+        // Kazanan çıktı sekmesini aktif yap
+        document.getElementById('tab-winners').classList.add('active');
+        document.getElementById('race-tab-content-winners').classList.add('active');
+    };
 });

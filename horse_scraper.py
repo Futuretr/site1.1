@@ -13,6 +13,8 @@ from datetime import datetime
 import pandas as pd
 import time
 import os
+import json
+import re
 
 def normalize_weight(weight_str):
     """
@@ -632,34 +634,44 @@ def get_sehir_pist_key(sehir, pist):
 SEHIR_PIST_HIZLARI = {
     'adana_kum': 14.7505,
     'adana_çim': 15.7531,
+    'adana_sentetik': 15.2500,  # Eklendi
     'ankara_kum': 14.7742,
     'ankara_çim': 15.7185,
+    'ankara_sentetik': 15.2400,  # Eklendi
     'bursa_kum': 14.9345,
     'bursa_çim': 15.8318,
+    'bursa_sentetik': 15.3800,  # Eklendi
     'diyarbakir_kum': 13.6108,
+    'diyarbakir_çim': 14.6100,  # Eklendi
+    'diyarbakir_sentetik': 14.1000,  # Eklendi
     'elazig_kum': 14.0952,
+    'elazig_çim': 15.0900,  # Eklendi
+    'elazig_sentetik': 14.5900,  # Eklendi
+    'istanbul_kum': 14.9100,  # Eklendi
     'istanbul_sentetik': 15.5146,
     'istanbul_çim': 15.7403,
     'izmir_kum': 14.9163,
     'izmir_çim': 15.7113,
+    'izmir_sentetik': 15.3100,  # Eklendi
     'kocaeli_kum': 14.8824,
-    'sanliurfa_kum': 13.9314
+    'kocaeli_çim': 15.8800,  # Eklendi
+    'kocaeli_sentetik': 15.3800,  # Eklendi
+    'sanliurfa_kum': 13.9314,
+    'sanliurfa_çim': 14.9300,  # Eklendi
+    'sanliurfa_sentetik': 14.4300  # Eklendi
 }
 
 def calculate_kadapt(gecmis_sehir, gecmis_pist, hedef_sehir, hedef_pist):
     """k_adapt hesapla"""
     hedef_key = get_sehir_pist_key(hedef_sehir, hedef_pist)
     gecmis_key = get_sehir_pist_key(gecmis_sehir, gecmis_pist)
-    
     hedef_hiz = SEHIR_PIST_HIZLARI.get(hedef_key, None)
     gecmis_hiz = SEHIR_PIST_HIZLARI.get(gecmis_key, None)
-    
     if hedef_hiz is None or gecmis_hiz is None:
-        # Fallback: şehir bazlı katsayı kullan
         hedef_sehir_clean = get_sehir_pist_key(hedef_sehir, "").replace("_", "")
         gecmis_sehir_clean = get_sehir_pist_key(gecmis_sehir, "").replace("_", "")
-        return SEHIR_KATSAYILARI.get(hedef_sehir_clean, 1.0) / SEHIR_KATSAYILARI.get(gecmis_sehir_clean, 1.0)
-    
+        katsayi = SEHIR_KATSAYILARI.get(hedef_sehir_clean, 1.0) / SEHIR_KATSAYILARI.get(gecmis_sehir_clean, 1.0)
+        return katsayi
     kadapt = gecmis_hiz / hedef_hiz
     return kadapt
 
@@ -785,3 +797,411 @@ def process_calculation_for_city(horses_list, city_name):
         add_group_sorted(group, group_kosu)
     
     return data
+
+
+def get_winner_data_from_url(race_url):
+    """Verilen yarış URL'inden kazanan at bilgilerini çeker - SADECE DERCEYİ ÇEK"""
+    try:
+        print(f"[KAZANAN VERİSİ] URL çekiliyor: {race_url}")
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        response = requests.get(race_url, headers=headers, timeout=10)
+        if response.status_code != 200:
+            print(f"[KAZANAN VERİSİ HATASI] HTTP {response.status_code}: {race_url}")
+            return None
+            
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # kosanAtlar tablosunu bul
+        result_table = soup.find('table', class_='kosanAtlar')
+        if not result_table:
+            print(f"[KAZANAN VERİSİ HATASI] kosanAtlar tablosu bulunamadı: {race_url}")
+            return None
+            
+        tbody = result_table.find('tbody')
+        if not tbody:
+            print(f"[KAZANAN VERİSİ HATASI] tbody bulunamadı: {race_url}")
+            return None
+            
+        # İlk sıradaki (1. olan) at bilgilerini al
+        rows = tbody.find_all('tr')
+        for row in rows:
+            cells = row.find_all(['td', 'th'])
+            if len(cells) >= 9:  # En az 9 kolon olmalı
+                # Sıra numarasını kontrol et (ilk hücre)
+                sira_cell = cells[0]
+                sira = sira_cell.get_text(strip=True)
+                
+                if sira == '1':
+                    # At adını al (2. hücre, içindeki atisimlink'den)
+                    at_cell = cells[1]
+                    at_link = at_cell.find('a', class_='atisimlink')
+                    if at_link:
+                        at_adi = at_link.get_text(strip=True)
+                    else:
+                        at_adi = at_cell.get_text(strip=True)
+                    
+                    # Derece (9. hücre - "Derece" kolonu)
+                    derece_cell = cells[8]
+                    derece = derece_cell.get_text(strip=True)
+                    
+                    # Ganyan (10. hücre - "Gny" kolonu)
+                    ganyan = ""
+                    if len(cells) > 9:
+                        ganyan_cell = cells[9]
+                        ganyan = ganyan_cell.get_text(strip=True)
+                    
+                    # Yarış bilgilerini de al
+                    yarış_mesafe = ""
+                    yarış_pist = ""
+                    
+                    # Pist ve mesafe bilgisi için span'larda ara
+                    pist_spans = soup.find_all('span', class_=['kumpist', 'cimpist', 'sentetikpist'])
+                    for pist_span in pist_spans:
+                        span_text = pist_span.get_text().strip()
+                        span_class = ' '.join(pist_span.get('class', []))
+                        
+                        # Span text'inden mesafe ve pist çıkar: "1700 Çim" formatında
+                        import re
+                        if span_text:
+                            # Mesafe ara (sayı + boşluk + pist türü)
+                            match = re.match(r'(\d+)\s*(Çim|Kum|Sentetik)', span_text)
+                            if match:
+                                yarış_mesafe = match.group(1)
+                                yarış_pist = match.group(2)
+                                break
+                    
+                    # Eğer span text'inde bulamazsa class adından pist türünü çıkar
+                    if not yarış_pist and pist_spans:
+                        first_span = pist_spans[0]
+                        span_class = ' '.join(first_span.get('class', []))
+                        if 'kumpist' in span_class:
+                            yarış_pist = "Kum"
+                        elif 'cimpist' in span_class:
+                            yarış_pist = "Çim"
+                        elif 'sentetikpist' in span_class:
+                            yarış_pist = "Sentetik"
+                        
+                        # Mesafe için span text'inde sadece sayı ara
+                        if not yarış_mesafe and pist_spans:
+                            span_text = first_span.get_text().strip()
+                            mesafe_match = re.search(r'(\d+)', span_text)
+                            if mesafe_match:
+                                yarış_mesafe = mesafe_match.group(1)
+                    
+                    print(f"[KAZANAN BULUNDU] {at_adi} - {derece} - {ganyan} (Mesafe: {yarış_mesafe}, Pist: {yarış_pist})")
+                    return {
+                        'birinci_ismi': at_adi,
+                        'birinci_derece': derece,
+                        'birinci_ganyan': ganyan,
+                        'yarış_mesafe': yarış_mesafe,
+                        'yarış_pist': yarış_pist
+                    }
+        
+        print(f"[KAZANAN VERİSİ HATASI] Birinci bulunamadı: {race_url}")
+        return None
+        
+    except Exception as e:
+        print(f"[KAZANAN VERİSİ HATASI] {race_url}: {e}")
+        return None
+
+def get_horse_rank_from_url(race_url, horse_name):
+    """Verilen yarış URL'inden belirli atın derecesini çeker"""
+    try:
+        print(f"[AT DERECESİ] {horse_name} için {race_url} kontrol ediliyor...")
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        response = requests.get(race_url, headers=headers, timeout=10)
+        if response.status_code != 200:
+            print(f"[AT DERECESİ HATASI] HTTP {response.status_code}: {race_url}")
+            return None
+            
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # kosanAtlar tablosunu bul
+        result_table = soup.find('table', class_='kosanAtlar')
+        if not result_table:
+            print(f"[AT DERECESİ HATASI] kosanAtlar tablosu bulunamadı: {race_url}")
+            return None
+            
+        tbody = result_table.find('tbody')
+        if not tbody:
+            print(f"[AT DERECESİ HATASI] tbody bulunamadı: {race_url}")
+            return None
+            
+        # Tüm satırları kontrol et ve atı bul
+        rows = tbody.find_all('tr')
+        for row in rows:
+            cells = row.find_all(['td', 'th'])
+            if len(cells) >= 9:  # En az 9 kolon olmalı
+                # At adını al (2. hücre, içindeki atisimlink'den)
+                at_cell = cells[1]
+                at_link = at_cell.find('a', class_='atisimlink')
+                if at_link:
+                    at_adi = at_link.get_text(strip=True)
+                else:
+                    at_adi = at_cell.get_text(strip=True)
+                
+                # Eğer aradığımız at buysa
+                if at_adi.upper() == horse_name.upper():
+                    # Sıra numarasını al (ilk hücre)
+                    sira_cell = cells[0]
+                    sira = sira_cell.get_text(strip=True)
+                    
+                    # Derece (9. hücre - "Derece" kolonu)
+                    derece_cell = cells[8]
+                    derece = derece_cell.get_text(strip=True)
+                    
+                    print(f"[AT DERECESİ BULUNDU] {horse_name}: {sira}. sıra, derece: {derece}")
+                    return {
+                        'sira': sira,
+                        'derece': derece
+                    }
+        
+        print(f"[AT DERECESİ HATASI] {horse_name} bulunamadı: {race_url}")
+        return None
+        
+    except Exception as e:
+        print(f"[AT DERECESİ HATASI] {horse_name} - {race_url}: {e}")
+        return None
+
+
+def get_last_race_url_from_profile(profile_link):
+    """At profil linkinden son koşu URL'sini çeker"""
+    try:
+        # Profil linkini tam URL'e çevir
+        base_url = "https://yenibeygir.com"
+        if profile_link.startswith('/'):
+            full_profile_url = base_url + profile_link
+        else:
+            full_profile_url = profile_link
+            
+        print(f"[PROFİL URL] Çekiliyor: {full_profile_url}")
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        response = requests.get(full_profile_url, headers=headers, timeout=10)
+        if response.status_code != 200:
+            print(f"[PROFİL URL HATASI] HTTP {response.status_code}: {full_profile_url}")
+            return None
+            
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # at_Yarislar tablosunu bul
+        races_table = soup.find('table', class_='at_Yarislar')
+        if races_table:
+            tbody = races_table.find('tbody')
+            if tbody:
+                rows = tbody.find_all('tr')
+                for row in rows:
+                    cells = row.find_all(['td', 'th'])
+                    if len(cells) >= 1:
+                        # İlk hücredeki linki al (tarih hücresi)
+                        date_cell = cells[0]
+                        link = date_cell.find('a')
+                        if link and link.get('href'):
+                            href = link.get('href')
+                            # "Bugün" linkini atla, geçmiş yarışları al
+                            link_text = link.get_text(strip=True)
+                            if link_text != 'Bugün' and href:
+                                # Tarihi kontrol et - sadece geçmiş tarihler
+                                try:
+                                    # URL'den tarihi çıkar (örn: /19-09-2025/istanbul/...)
+                                    href_str = str(href)
+                                    if '/' in href_str:
+                                        date_part = href_str.split('/')[1]  # 19-09-2025
+                                        if len(date_part.split('-')) == 3:
+                                            day, month, year = date_part.split('-')
+                                            race_date = datetime(int(year), int(month), int(day))
+                                            today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                                            
+                                            # Sadece geçmiş tarihli koşuları al
+                                            if race_date < today:
+                                                # Eğer href tam URL değilse base_url ekle
+                                                if href_str.startswith('/'):
+                                                    race_url = base_url + href_str
+                                                else:
+                                                    race_url = href_str
+                                                print(f"[SON KOŞU URL] Bulundu: {race_url}")
+                                                return race_url
+                                            else:
+                                                print(f"[SON KOŞU URL] Gelecek tarih atlandı: {date_part}")
+                                except ValueError:
+                                    # Tarih parse edilemezse, URL'i kontrol etmeye devam et
+                                    pass
+        
+        print(f"[SON KOŞU URL] at_Yarislar tablosu bulunamadı: {full_profile_url}")
+        return None
+        
+    except Exception as e:
+        print(f"[PROFİL URL HATASI] {profile_link}: {e}")
+        return None
+
+
+def process_kazanan_cikti_for_json(json_file_path, city_name, output_date):
+    """JSON dosyasındaki her at için kazanan çıktı verilerini çeker"""
+    try:
+        print(f"[KAZANAN ANALİZİ] {city_name} için kazanan verileri çekiliyor...")
+        
+        # JSON dosyasını oku
+        with open(json_file_path, 'r', encoding='utf-8') as f:
+            horses_data = json.load(f)
+        
+        kazanan_data = []
+        
+        for horse in horses_data:
+            at_ismi = horse.get('At İsmi', '')
+            at_id = horse.get('At ID', '')
+            kosu_no = horse.get('Koşu', '')  # JSON'da "Koşu" alanı var
+            profil_linki = horse.get('Profil Linki', '')
+            
+            # Kazanan bilgilerini varsayılan olarak boş bırak
+            kazanan_row = {
+                'at_ismi': at_ismi,
+                'at_id': at_id,
+                'bugun_tarih': output_date,
+                'bugun_sehir': city_name.lower(),
+                'bugun_kosu_no': kosu_no,
+                'json_dosyasi': os.path.basename(json_file_path),
+                'onceki_kosu_url': '',
+                'at_derece': '',  # Atın kendi derecesi
+                'at_sira': '',    # Atın kendi sırası
+                'onceki_kosu_birinci_ismi': '',
+                'onceki_kosu_birinci_derece': '',
+                'onceki_kosu_birinci_ganyan': '',
+                'onceki_kosu_mesafe': '',  # Yarış mesafesi
+                'onceki_kosu_pist': ''     # Yarış pist türü
+            }
+            
+            # Profil linkinden son koşu URL'sini çek
+            if profil_linki and profil_linki.strip():
+                son_kosu_url = get_last_race_url_from_profile(profil_linki.strip())
+                kazanan_row['onceki_kosu_url'] = son_kosu_url or ''
+                
+                # Eğer son koşu URL'i bulunduysa hem kazanan hem de atın kendi derecesini çek
+                if son_kosu_url:
+                    # Kazanan verilerini çek
+                    winner_data = get_winner_data_from_url(son_kosu_url)
+                    if winner_data:
+                        kazanan_row['onceki_kosu_birinci_ismi'] = winner_data.get('birinci_ismi', '')
+                        kazanan_row['onceki_kosu_birinci_derece'] = winner_data.get('birinci_derece', '')
+                        kazanan_row['onceki_kosu_birinci_ganyan'] = winner_data.get('birinci_ganyan', '')
+                        kazanan_row['onceki_kosu_mesafe'] = winner_data.get('yarış_mesafe', '')
+                        kazanan_row['onceki_kosu_pist'] = winner_data.get('yarış_pist', '')
+                    
+                    # Bu atın kendi derecesini çek
+                    horse_rank = get_horse_rank_from_url(son_kosu_url, at_ismi)
+                    if horse_rank:
+                        kazanan_row['at_derece'] = horse_rank.get('derece', '')
+                        kazanan_row['at_sira'] = horse_rank.get('sira', '')
+                        print(f"[AT DERECESİ] {at_ismi}: {horse_rank.get('sira', 'X')}. sıra ({horse_rank.get('derece', 'Derece yok')})")
+                    else:
+                        print(f"[AT DERECESİ] {at_ismi}: Derece bulunamadı")
+                else:
+                    print(f"[KAZANAN] {at_ismi}: Son koşu URL bulunamadı")
+            else:
+                print(f"[KAZANAN] {at_ismi}: Profil linki yok")
+            
+            kazanan_data.append(kazanan_row)
+            
+            # Rate limiting - çok hızlı istekleri önle
+            time.sleep(1.0)  # Biraz daha yavaş yapalım
+        
+        print(f"[KAZANAN ANALİZİ] {city_name} için {len(kazanan_data)} at işlendi")
+        return kazanan_data
+        
+    except Exception as e:
+        print(f"[KAZANAN ANALİZİ HATASI] {city_name}: {e}")
+        return []
+
+
+def save_kazanan_cikti_csv(kazanan_data, city_name, output_date):
+    """Kazanan çıktı verilerini CSV dosyasına kaydet"""
+    try:
+        if not kazanan_data:
+            print(f"[KAZANAN CSV] {city_name}: Kaydedilecek veri yok")
+            return None
+            
+        # DataFrame oluştur
+        df = pd.DataFrame(kazanan_data)
+        
+        # Dosya adı oluştur
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"{city_name.lower()}_kazanan_cikti_{output_date}_{timestamp}.csv"
+        filepath = os.path.join('static', 'downloads', filename)
+        
+        # Downloads klasörü yoksa oluştur
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        
+        # CSV olarak kaydet
+        df.to_csv(filepath, index=False, encoding='utf-8-sig')
+        
+        print(f"[KAZANAN CSV] {city_name}: {filename} kaydedildi ({len(kazanan_data)} kayıt)")
+        return filepath
+        
+    except Exception as e:
+        print(f"[KAZANAN CSV HATASI] {city_name}: {e}")
+        return None
+
+# KULLANILMIYOR - calculate_average_time ile değiştirildi
+# def calculate_winner_score(winner_derece, winner_mesafe, winner_pist, bugun_mesafe, bugun_pist, city_name):
+#     """Birincinin derecesini bugünkü koşullara göre hesapla"""
+#     # Bu fonksiyon artık kullanılmıyor - tüm atlar için calculate_average_time kullanılıyor
+#     pass
+
+def get_kazanan_data_for_city(city_name):
+    """Şehir için en son kazanan verilerini oku"""
+    try:
+        downloads_dir = os.path.join('static', 'downloads')
+        bugun_tarih = datetime.now().strftime('%Y%m%d')
+        
+        # Bu şehir ve tarih için kazanan dosyalarını ara
+        kazanan_files = []
+        for filename in os.listdir(downloads_dir):
+            if filename.startswith(f"{city_name.lower()}_kazanan_cikti_{bugun_tarih}_") and filename.endswith('.csv'):
+                filepath = os.path.join(downloads_dir, filename)
+                timestamp = os.path.getmtime(filepath)
+                kazanan_files.append((timestamp, filepath, filename))
+        
+        if not kazanan_files:
+            print(f"[KAZANAN VERİSİ] {city_name} için bugünkü kazanan dosyası bulunamadı")
+            return {}
+        
+        # En son dosyayı al
+        kazanan_files.sort(reverse=True)  # En yeni dosya ilk
+        latest_file = kazanan_files[0][1]
+        
+        print(f"[KAZANAN VERİSİ] {city_name} kazanan verisi okunuyor: {os.path.basename(latest_file)}")
+        
+        df = pd.read_csv(latest_file)
+        
+        # At ismine göre dictionary oluştur
+        kazanan_dict = {}
+        for _, row in df.iterrows():
+            at_ismi = row.get('at_ismi', '').strip()
+            if at_ismi:
+                kazanan_dict[at_ismi] = {
+                    # Ham veriler
+                    'at_derece': row.get('at_derece', ''),
+                    'at_sira': row.get('at_sira', ''),
+                    'kazanan_ismi': row.get('onceki_kosu_birinci_ismi', ''),
+                    'kazanan_derece': row.get('onceki_kosu_birinci_derece', ''),
+                    'kazanan_ganyan': row.get('onceki_kosu_birinci_ganyan', ''),
+                    'onceki_mesafe': row.get('onceki_kosu_mesafe', ''),
+                    'onceki_pist': row.get('onceki_kosu_pist', '')
+                }
+        
+        print(f"[KAZANAN VERİSİ] {len(kazanan_dict)} at için kazanan verisi bulundu")
+        return kazanan_dict
+        
+    except Exception as e:
+        print(f"[KAZANAN VERİSİ HATASI] {city_name}: {e}")
+        return {}

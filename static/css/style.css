@@ -490,3 +490,56 @@ body {
     color: #666;
     font-size: 10px;
 }
+
+/* Kazanan Çıktı Stilleri */
+.winner-results-container {
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.winner-table {
+    font-size: 11px;
+}
+
+.winner-table th {
+    background-color: #343a40;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 8px 4px;
+    font-size: 10px;
+}
+
+.winner-table td {
+    padding: 6px 4px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.winner-name {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.winner-table .table-striped > tbody > tr:nth-of-type(odd) > td {
+    background-color: rgba(0,123,255,.05);
+}
+
+.winner-table .table-hover > tbody > tr:hover > td {
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+/* Kazanan Çıktı Sekmesi Vurgusu */
+#tab-winners {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+    font-weight: bold;
+    border-color: #ffc107 !important;
+}
+
+#tab-winners.active {
+    background-color: #ff9800 !important;
+    color: white !important;
+}
