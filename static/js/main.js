@@ -190,11 +190,26 @@ document.addEventListener('DOMContentLoaded', function() {
                             <tbody>
             `;
 
-            // Atları skora göre sırala (en düşük skordan en yükseğe - en iyi 1.)
+            // Atları çıktı değerine göre sırala (en düşük çıktıdan en yükseğe - en iyi 1.)
             const sortedHorses = [...race.horses].sort((a, b) => {
-                const scoreA = typeof a.skor === 'number' ? a.skor : 9999;
-                const scoreB = typeof b.skor === 'number' ? b.skor : 9999;
-                return scoreA - scoreB; // En düşük skor en iyi (1.)
+                // Çıktı değerini parse et
+                const parseOutput = (value) => {
+                    if (!value || value === 'geçersiz' || value === 'Veri yok') return 9999;
+                    // String formatı: "1.23.45" -> sayıya çevir
+                    const str = value.toString();
+                    if (str.includes('.')) {
+                        const parts = str.split('.');
+                        if (parts.length === 3) {
+                            // "1.23.45" formatı -> 83.45 saniye
+                            return parseFloat(parts[0]) * 60 + parseFloat(parts[1]) + parseFloat('0.' + parts[2]);
+                        }
+                    }
+                    return parseFloat(str) || 9999;
+                };
+                
+                const outputA = parseOutput(a.cikti_degeri);
+                const outputB = parseOutput(b.cikti_degeri);
+                return outputA - outputB; // En düşük çıktı en iyi (1.)
             });
 
             sortedHorses.forEach((horse, horseIndex) => {

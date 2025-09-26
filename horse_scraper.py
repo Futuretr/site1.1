@@ -667,12 +667,21 @@ def calculate_kadapt(gecmis_sehir, gecmis_pist, hedef_sehir, hedef_pist):
     gecmis_key = get_sehir_pist_key(gecmis_sehir, gecmis_pist)
     hedef_hiz = SEHIR_PIST_HIZLARI.get(hedef_key, None)
     gecmis_hiz = SEHIR_PIST_HIZLARI.get(gecmis_key, None)
+    
+    # DEBUG: Katsayı hesaplama kontrolü
+    print(f"[KADAPT-KONTROL] {gecmis_sehir}({gecmis_pist}) -> {hedef_sehir}({hedef_pist})")
+    print(f"[KADAPT-KONTROL] Keys: {gecmis_key} -> {hedef_key}")
+    print(f"[KADAPT-KONTROL] Hızlar: {gecmis_hiz} -> {hedef_hiz}")
     if hedef_hiz is None or gecmis_hiz is None:
         hedef_sehir_clean = get_sehir_pist_key(hedef_sehir, "").replace("_", "")
         gecmis_sehir_clean = get_sehir_pist_key(gecmis_sehir, "").replace("_", "")
         katsayi = SEHIR_KATSAYILARI.get(hedef_sehir_clean, 1.0) / SEHIR_KATSAYILARI.get(gecmis_sehir_clean, 1.0)
         return katsayi
-    kadapt = gecmis_hiz / hedef_hiz
+    
+    # Hızları zaman katsayısına çevir (yüksek hız = düşük zaman)
+    # Hızlı pistten yavaş piste = zaman artar (kötüleşir)
+    # Yavaş pistten hızlı piste = zaman azalır (iyileşir)
+    kadapt = gecmis_hiz / hedef_hiz  # GERİ ÇEVİRİLDİ: Hız mantığına göre
     return kadapt
 
 def process_calculation_for_city(horses_list, city_name):
