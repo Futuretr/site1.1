@@ -521,38 +521,7 @@ def time_to_seconds(time_str):
     
     return 0
 
-def calculate_average_time(run1, surface1, distance1, distance3, surface3):
-    time1 = time_to_seconds(run1)
-    base_time_per_100 = time1 / (distance1 / 100)
-    if surface1 != surface3:
-        surface_transition = {
-            (2, 1): -0.30,
-            (2, 3): -0.12,
-            (1, 2): +0.30,
-            (1, 3): +0.12,
-            (3, 2): +0.12,
-            (3, 1): -0.12
-        }
-        transition_adjustment = surface_transition.get((surface1, surface3), 0)
-        new_time_per_100 = base_time_per_100 + transition_adjustment
-    else:
-        new_time_per_100 = base_time_per_100
-    distance_diff = distance3 - distance1
-    if distance_diff != 0:
-        if surface3 == 1:
-            distance_factor = 0.03
-        elif surface3 == 2:
-            distance_factor = 0.05
-        elif surface3 == 3:
-            distance_factor = 0.04
-        else:
-            distance_factor = 0
-        if distance_diff > 0:
-            new_time_per_100 += (distance_diff / 100) * distance_factor
-        else:
-            new_time_per_100 -= (abs(distance_diff) / 100) * distance_factor
-    final_time = (distance3 / 100) * new_time_per_100
-    return final_time
+# calculate_average_time fonksiyonu kaldırıldı - artık sadece calculate_kadapt kullanılıyor
 
 def calculate_time_per_100m(total_seconds, distance):
     num_hundreds = distance / 100
@@ -754,11 +723,33 @@ def process_calculation_for_city(horses_list, city_name):
                 cikti = 'geçersiz'
             else:
                 try:
-                    pist1 = pist_to_int(son_pist)
-                    pist3 = pist_to_int(bugun_pist)
-                    toplam_sure = calculate_average_time(derece, pist1, son_mesafe, bugun_mesafe, pist3)
-                    ort_100m_sure = calculate_time_per_100m(toplam_sure, bugun_mesafe)
+                    # Sadece mesafe farkını hesapla (pist geçişi calculate_kadapt'ta)
+                    derece_saniye = time_to_seconds(derece)
+                    if derece_saniye <= 0:
+                        cikti = 'geçersiz'
+                        continue
                     
+                    # Mesafe farklılığını hesapla
+                    mesafe_farki = bugun_mesafe - son_mesafe
+                    if mesafe_farki != 0:
+                        # Mesafe başına zaman farkı (100m başına)
+                        mevcut_100m_sure = derece_saniye / (son_mesafe / 100)
+                        
+                        # Mesafe uzatma/kısaltma faktörü
+                        if mesafe_farki > 0:  # Uzun mesafe
+                            mesafe_faktoru = 0.04  # 100m başına +0.04 saniye
+                        else:  # Kısa mesafe
+                            mesafe_faktoru = -0.03  # 100m başına -0.03 saniye
+                        
+                        # Yeni 100m süresi
+                        yeni_100m_sure = mevcut_100m_sure + (abs(mesafe_farki) / 100) * mesafe_faktoru
+                        toplam_sure = yeni_100m_sure * (bugun_mesafe / 100)
+                    else:
+                        toplam_sure = derece_saniye
+                    
+                    ort_100m_sure = toplam_sure / (bugun_mesafe / 100)
+                    
+                    # Şehir+Pist adaptasyonu hesapla
                     gecmis_sehir = horse.get('Son Hipodrom', city_name)
                     hedef_sehir = city_name
                     kadapt = calculate_kadapt(gecmis_sehir, son_pist, hedef_sehir, bugun_pist)

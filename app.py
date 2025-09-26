@@ -20,9 +20,9 @@ from horse_scraper import (
     process_kazanan_cikti_for_json,
     save_kazanan_cikti_csv,
     get_kazanan_data_for_city,
-    calculate_average_time,
     calculate_time_per_100m,
-    calculate_kadapt
+    calculate_kadapt,
+    time_to_seconds
 )
 
 app = Flask(__name__)
@@ -288,20 +288,34 @@ def calculate_from_saved():
                             son_mesafe_float = 1200
                             bugun_mesafe_float = 1200
                         
-                        # 1. Toplam süreyi hesapla
-                        toplam_sure = calculate_average_time(
-                            kazanan_info.get('kazanan_derece'),
-                            pist1,
-                            son_mesafe_float,
-                            bugun_mesafe_float,
-                            pist3
-                        )
+                        # 1. Mesafe farkını hesapla (pist geçişi calculate_kadapt'ta)
+                        derece_saniye = time_to_seconds(kazanan_info.get('kazanan_derece'))
+                        if derece_saniye <= 0:
+                            continue
+                        
+                        # Mesafe farklılığını hesapla
+                        mesafe_farki = bugun_mesafe_float - son_mesafe_float
+                        if mesafe_farki != 0:
+                            # Mesafe başına zaman farkı (100m başına)
+                            mevcut_100m_sure = derece_saniye / (son_mesafe_float / 100)
+                            
+                            # Mesafe uzatma/kısaltma faktörü
+                            if mesafe_farki > 0:  # Uzun mesafe
+                                mesafe_faktoru = 0.04  # 100m başına +0.04 saniye
+                            else:  # Kısa mesafe
+                                mesafe_faktoru = -0.03  # 100m başına -0.03 saniye
+                            
+                            # Yeni 100m süresi
+                            yeni_100m_sure = mevcut_100m_sure + (abs(mesafe_farki) / 100) * mesafe_faktoru
+                            toplam_sure = yeni_100m_sure * (bugun_mesafe_float / 100)
+                        else:
+                            toplam_sure = derece_saniye
                         
                         if toplam_sure and toplam_sure > 0:
                             # 2. 100m ortalama süreyi hesapla
-                            ort_100m_sure = calculate_time_per_100m(toplam_sure, bugun_mesafe_float)
+                            ort_100m_sure = toplam_sure / (bugun_mesafe_float / 100)
 
-                            # 3. Şehir adaptasyonu hesapla (varsayılan değerlerle)
+                            # 3. Şehir+Pist adaptasyonu hesapla
                             gecmis_sehir = city_name  # Aynı şehir varsayımı
                             hedef_sehir = city_name
                             kadapt = calculate_kadapt(gecmis_sehir, onceki_pist, hedef_sehir, bugun_pist)
@@ -491,14 +505,28 @@ def calculate_from_saved():
                     print(f"  bugun_mesafe_float: {bugun_mesafe_float}")
                     print(f"  pist1 (önceki): {pist1}, pist3 (bugün): {pist3}")
                     
-                    # Aynı yöntemle hesapla (calculate_average_time)
-                    toplam_sure = calculate_average_time(
-                        kazanan_info.get('kazanan_derece'),
-                        pist1,
-                        onceki_mesafe_float,
-                        bugun_mesafe_float,
-                        pist3
-                    )
+                    # Mesafe farkını hesapla (pist geçişi calculate_kadapt'ta)
+                    derece_saniye = time_to_seconds(kazanan_info.get('kazanan_derece'))
+                    if derece_saniye <= 0:
+                        continue
+                    
+                    # Mesafe farklılığını hesapla
+                    mesafe_farki = bugun_mesafe_float - onceki_mesafe_float
+                    if mesafe_farki != 0:
+                        # Mesafe başına zaman farkı (100m başına)
+                        mevcut_100m_sure = derece_saniye / (onceki_mesafe_float / 100)
+                        
+                        # Mesafe uzatma/kısaltma faktörü
+                        if mesafe_farki > 0:  # Uzun mesafe
+                            mesafe_faktoru = 0.04  # 100m başına +0.04 saniye
+                        else:  # Kısa mesafe
+                            mesafe_faktoru = -0.03  # 100m başına -0.03 saniye
+                        
+                        # Yeni 100m süresi
+                        yeni_100m_sure = mevcut_100m_sure + (abs(mesafe_farki) / 100) * mesafe_faktoru
+                        toplam_sure = yeni_100m_sure * (bugun_mesafe_float / 100)
+                    else:
+                        toplam_sure = derece_saniye
                     
                     print(f"  toplam_sure: {toplam_sure}")
                     
