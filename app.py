@@ -547,8 +547,13 @@ def calculate_from_saved():
                     
                     if toplam_sure and toplam_sure > 0:
                         ort_100m_sure = calculate_time_per_100m(toplam_sure, bugun_mesafe_float)
-                        gecmis_sehir = city_name
-                        hedef_sehir = city_name
+                        
+                        # BİRİNCİNİN GERÇEK ŞEHRİNİ KULLAN
+                        birinci_sehir = kazanan_info.get('sehir', city_name)  # Kazanan veriden şehir al
+                        gecmis_sehir = birinci_sehir  # Birincinin gerçek şehri
+                        hedef_sehir = city_name       # Bugünkü koşu şehri
+                        
+                        print(f"  birinci_sehir: {birinci_sehir}")
                         kadapt = calculate_kadapt(gecmis_sehir, onceki_pist, hedef_sehir, bugun_pist)
                         raw_score = ort_100m_sure
                         adjusted_score = raw_score * kadapt

@@ -543,59 +543,44 @@ def get_sehir_pist_key(sehir, pist):
     if not sehir or not pist:
         return "unknown_unknown"
     
-    # Şehir normalleştirme
-    sehir_clean = str(sehir).lower().strip()
+    # Şehir normalleştirme - basitleştirilmiş
+    def normalize_sehir_simple(s):
+        s_clean = str(s).lower().strip()
+        s_clean = s_clean.replace('ı', 'i').replace('ü', 'u').replace('ğ', 'g').replace('ş', 's').replace('ç', 'c').replace('ö', 'o')
+        if 'istanbul' in s_clean:
+            return 'istanbul'
+        elif 'ankara' in s_clean:
+            return 'ankara'
+        elif 'izmir' in s_clean:
+            return 'izmir'
+        elif 'bursa' in s_clean:
+            return 'bursa'
+        elif 'adana' in s_clean:
+            return 'adana'
+        elif 'kocaeli' in s_clean:
+            return 'kocaeli'
+        elif 'elazig' in s_clean:
+            return 'elazig'
+        elif 'diyarbakir' in s_clean:
+            return 'diyarbakir'
+        elif 'sanliurfa' in s_clean or 'urfa' in s_clean:
+            return 'sanliurfa'
+        return 'unknown'
     
-    # Unicode normalleştirme
-    import unicodedata
-    sehir_clean = unicodedata.normalize('NFD', sehir_clean)
-    sehir_clean = ''.join(c for c in sehir_clean if not unicodedata.combining(c))
+    # Pist normalleştirme - basitleştirilmiş
+    def normalize_pist_simple(p):
+        p_clean = str(p).lower().strip()
+        p_clean = p_clean.replace('ı', 'i').replace('ü', 'u').replace('ğ', 'g').replace('ş', 's').replace('ç', 'c').replace('ö', 'o')
+        if 'cim' in p_clean:
+            return 'çim'
+        elif 'kum' in p_clean and 'sentetik' not in p_clean:
+            return 'kum'
+        elif 'sentetik' in p_clean or 'sentet' in p_clean:
+            return 'sentetik'
+        return 'unknown'
     
-    # Türkçe karakterleri temizle
-    replacements = {
-        'ı': 'i', 'ş': 's', 'ğ': 'g', 'ü': 'u', 'ö': 'o', 'ç': 'c',
-        'İ': 'i', 'Ş': 's', 'Ğ': 'g', 'Ü': 'u', 'Ö': 'o', 'Ç': 'c'
-    }
-    for old, new in replacements.items():
-        sehir_clean = sehir_clean.replace(old, new)
-    
-    # Şehir ismi normalize et
-    if any(x in sehir_clean for x in ['istanbul', 'istanbu']):
-        sehir_clean = 'istanbul'
-    elif any(x in sehir_clean for x in ['ankara', 'ankar']):
-        sehir_clean = 'ankara'
-    elif any(x in sehir_clean for x in ['izmir', 'izmi']):
-        sehir_clean = 'izmir'
-    elif any(x in sehir_clean for x in ['bursa', 'burs']):
-        sehir_clean = 'bursa'
-    elif any(x in sehir_clean for x in ['adana', 'adan']):
-        sehir_clean = 'adana'
-    elif any(x in sehir_clean for x in ['kocaeli', 'kocael']):
-        sehir_clean = 'kocaeli'
-    elif any(x in sehir_clean for x in ['elazig', 'elazi']):
-        sehir_clean = 'elazig'
-    elif any(x in sehir_clean for x in ['diyarbakir', 'diyarba']):
-        sehir_clean = 'diyarbakir'
-    elif any(x in sehir_clean for x in ['sanliurfa', 'urfa', 'sanli']):
-        sehir_clean = 'sanliurfa'
-    
-    # Pist normalleştirme
-    pist_clean = str(pist).lower().strip()
-    pist_clean = unicodedata.normalize('NFD', pist_clean)
-    pist_clean = ''.join(c for c in pist_clean if not unicodedata.combining(c))
-    
-    for old, new in replacements.items():
-        pist_clean = pist_clean.replace(old, new)
-    
-    # Pist türü normalleştir
-    if any(x in pist_clean for x in ['cim', 'çim']):
-        pist_clean = 'çim'
-    elif 'kum' in pist_clean and 'sentetik' not in pist_clean:
-        pist_clean = 'kum'
-    elif any(x in pist_clean for x in ['sentetik', 'sentet']):
-        pist_clean = 'sentetik'
-    else:
-        pist_clean = 'unknown'
+    sehir_clean = normalize_sehir_simple(sehir)
+    pist_clean = normalize_pist_simple(pist)
     
     return f"{sehir_clean}_{pist_clean}"
 
@@ -631,7 +616,7 @@ SEHIR_PIST_HIZLARI = {
 }
 
 def calculate_kadapt(gecmis_sehir, gecmis_pist, hedef_sehir, hedef_pist):
-    """k_adapt hesapla"""
+    """k_adapt hesapla - HEDEF ŞEHİR REFERANS (1.0) OLARAK KULLANILIR"""
     hedef_key = get_sehir_pist_key(hedef_sehir, hedef_pist)
     gecmis_key = get_sehir_pist_key(gecmis_sehir, gecmis_pist)
     hedef_hiz = SEHIR_PIST_HIZLARI.get(hedef_key, None)
@@ -641,17 +626,63 @@ def calculate_kadapt(gecmis_sehir, gecmis_pist, hedef_sehir, hedef_pist):
     print(f"[KADAPT-KONTROL] {gecmis_sehir}({gecmis_pist}) -> {hedef_sehir}({hedef_pist})")
     print(f"[KADAPT-KONTROL] Keys: {gecmis_key} -> {hedef_key}")
     print(f"[KADAPT-KONTROL] Hızlar: {gecmis_hiz} -> {hedef_hiz}")
+    # HİZ TABLOSUNA DAYALI HESAPLAMA (YENİ SİSTEM)
+    if hedef_hiz is not None and gecmis_hiz is not None:
+        # Pist bazlı hız katsayısı hesapla
+        pist_kadapt = gecmis_hiz / hedef_hiz
+        
+        # ŞEHİR İSİMLERİNİ NORMALIZE ET
+        def normalize_sehir(sehir):
+            sehir_clean = str(sehir).lower().strip()
+            sehir_clean = sehir_clean.replace('ı', 'i').replace('ü', 'u').replace('ğ', 'g').replace('ş', 's').replace('ç', 'c').replace('ö', 'o')
+            if 'istanbul' in sehir_clean:
+                return 'istanbul'
+            elif 'ankara' in sehir_clean:
+                return 'ankara'
+            elif 'izmir' in sehir_clean:
+                return 'izmir'
+            elif 'bursa' in sehir_clean:
+                return 'bursa'
+            elif 'adana' in sehir_clean:
+                return 'adana'
+            elif 'kocaeli' in sehir_clean:
+                return 'kocaeli'
+            elif 'elazig' in sehir_clean:
+                return 'elazig'
+            elif 'diyarbakir' in sehir_clean:
+                return 'diyarbakir'
+            elif 'sanliurfa' in sehir_clean or 'urfa' in sehir_clean:
+                return 'sanliurfa'
+            return 'unknown'
+        
+        # ŞEHİR FARKI KATSAYISI EKLE - HEDEF ŞEHİR REFERANS!
+        hedef_sehir_clean = normalize_sehir(hedef_sehir)
+        gecmis_sehir_clean = normalize_sehir(gecmis_sehir)
+        
+        # HEDEF ŞEHİR 1.0 REFERANS
+        hedef_sehir_katsayi = 1.0
+        gecmis_sehir_katsayi = SEHIR_KATSAYILARI.get(gecmis_sehir_clean, 1.0) / SEHIR_KATSAYILARI.get(hedef_sehir_clean, 1.0)
+        
+        sehir_kadapt = gecmis_sehir_katsayi / hedef_sehir_katsayi
+        
+        # TOPLAM KATSAYI = PİST × ŞEHİR
+        toplam_kadapt = pist_kadapt * sehir_kadapt
+        
+        print(f"[KADAPT-KONTROL] Pist katsayı: {pist_kadapt:.3f}, Şehir katsayı: {sehir_kadapt:.3f}, TOPLAM: {toplam_kadapt:.3f}")
+        return toplam_kadapt
+    
+    # HIZ TABLOSU YOK - SADECE ŞEHİR KATSAYISI
     if hedef_hiz is None or gecmis_hiz is None:
         hedef_sehir_clean = get_sehir_pist_key(hedef_sehir, "").replace("_", "")
         gecmis_sehir_clean = get_sehir_pist_key(gecmis_sehir, "").replace("_", "")
-        katsayi = SEHIR_KATSAYILARI.get(hedef_sehir_clean, 1.0) / SEHIR_KATSAYILARI.get(gecmis_sehir_clean, 1.0)
+        
+        # HEDEF ŞEHİR REFERANS: Hedef şehrin katsayısını 1.0 kabul et
+        hedef_katsayi = 1.0
+        gecmis_katsayi = SEHIR_KATSAYILARI.get(gecmis_sehir_clean, 1.0) / SEHIR_KATSAYILARI.get(hedef_sehir_clean, 1.0)
+        
+        katsayi = gecmis_katsayi / hedef_katsayi
+        print(f"[KADAPT-KONTROL] Şehir katsayıları - Geçmiş: {gecmis_katsayi:.3f}, Hedef: {hedef_katsayi:.3f}, Sonuç: {katsayi:.3f}")
         return katsayi
-    
-    # Hızları zaman katsayısına çevir (yüksek hız = düşük zaman)
-    # Hızlı pistten yavaş piste = zaman artar (kötüleşir)
-    # Yavaş pistten hızlı piste = zaman azalır (iyileşir)
-    kadapt = gecmis_hiz / hedef_hiz  # GERİ ÇEVİRİLDİ: Hız mantığına göre
-    return kadapt
 
 def process_calculation_for_city(horses_list, city_name):
     """Şehir için hesaplama işlemi yap"""
