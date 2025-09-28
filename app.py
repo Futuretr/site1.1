@@ -60,6 +60,10 @@ def index():
     """Ana sayfa"""
     return render_template('index.html')
 
+@app.route('/test')
+def test():
+    return {'status': 'ok', 'message': 'Flask çalışıyor'}
+
 @app.route('/api/scrape_city', methods=['POST'])
 def scrape_city():
     """Tek şehir için at verilerini çek"""
@@ -227,13 +231,17 @@ def calculate_from_saved():
             horses = json.load(f)
         
         print(f"[HESAP] {city_name} için kaydedilmiş veriden hesaplama yapılıyor...")
+        print(f"[DEBUG] Ham veri sayısı: {len(horses)}")
+        print(f"[DEBUG] İlk ham veri örneği: {horses[0] if horses else 'Yok'}")
         
         # Kazanan verilerini oku
         kazanan_data = get_kazanan_data_for_city(city_name)
         print(f"[STAT] {len(kazanan_data)} at için kazanan verisi bulundu")
         
         # Hesaplama yap
+        print(f"[HESAP-DEBUG] process_calculation_for_city çağrılıyor...")
         calculated_data = process_calculation_for_city(horses, city_name)
+        print(f"[HESAP-DEBUG] Hesaplama tamamlandı. Sonuç sayısı: {len(calculated_data)}")
         
         # Verileri koşu bazında grupla
         races_data = {}
@@ -297,9 +305,13 @@ def calculate_from_saved():
                         
                         # Mesafe değerlerini float'a çevir
                         try:
-                            son_mesafe_float = float(str(onceki_mesafe).replace(',', '.'))
-                            bugun_mesafe_float = float(str(bugun_mesafe).replace(',', '.'))
-                        except:
+                            onceki_clean = str(onceki_mesafe).replace(',', '.').strip()
+                            bugun_clean = str(bugun_mesafe).replace(',', '.').strip()
+                            
+                            son_mesafe_float = float(onceki_clean) if onceki_clean and onceki_clean != '' else 1200
+                            bugun_mesafe_float = float(bugun_clean) if bugun_clean and bugun_clean != '' else 1200
+                        except Exception as e:
+                            print(f"[MESAFE HATASI] {at_ismi}: onceki='{onceki_mesafe}', bugun='{bugun_mesafe}', hata: {e}")
                             son_mesafe_float = 1200
                             bugun_mesafe_float = 1200
                         
@@ -342,14 +354,16 @@ def calculate_from_saved():
                             adjusted_score = raw_score * kadapt
 
                             # 5. Kilo etkisi (gerçek kilo)
-                            try:
-                                kilo_onceki = float(item.get('Son Kilo', 50.5))
-                            except (ValueError, TypeError):
-                                kilo_onceki = 50.5
-                            try:
-                                kilo_bugun = float(item.get('Kilo', 50.5))
-                            except (ValueError, TypeError):
-                                kilo_bugun = 50.5
+                            def safe_float_kilo(value, default=50.5):
+                                if value is None or str(value).strip() == '':
+                                    return default
+                                try:
+                                    return float(str(value).replace(',', '.'))
+                                except (ValueError, TypeError):
+                                    return default
+                            
+                            kilo_onceki = safe_float_kilo(item.get('Son Kilo'), 50.5)
+                            kilo_bugun = safe_float_kilo(item.get('Kilo'), 50.5)
                             if item['At İsmi'] == 'PARİSLİ':
                                 print(f"[PARISLI-ÇIKTI] onceki_mesafe: {onceki_mesafe}, bugun_mesafe: {bugun_mesafe}, onceki_pist: {onceki_pist}, bugun_pist: {bugun_pist}, kilo_onceki: {kilo_onceki}, kilo_bugun: {kilo_bugun}")
                             kilo_fark = kilo_bugun - kilo_onceki
@@ -383,28 +397,35 @@ def calculate_from_saved():
                             cikti_str = str(item.get('Çıktı', '')).strip()
                             birinci_derece_str = str(calculated_winner_score).strip()
                             
-                            if (cikti_str and cikti_str != 'geçersiz' and 
-                                birinci_derece_str and birinci_derece_str != 'geçersiz' and birinci_derece_str != ''):
+                            if (cikti_str and cikti_str != 'geçersiz' and cikti_str.strip() and
+                                birinci_derece_str and birinci_derece_str != 'geçersiz' and birinci_derece_str.strip()):
                                 try:
-                                    cikti_val = float(cikti_str.replace(',', '.'))
-                                    birinci_derece_val = float(birinci_derece_str.replace(',', '.'))
+                                    # Boş string kontrolü
+                                    cikti_clean = cikti_str.replace(',', '.').strip()
+                                    birinci_clean = birinci_derece_str.replace(',', '.').strip()
                                     
-                                    # Skor hesapla: (Çıktı + Birinci Derece) / 2
-                                    skor = (cikti_val + birinci_derece_val) / 2
-                                    if not (skor != skor):  # NaN kontrolü (NaN != NaN is True)
-                                        skor_value = skor
-                                        print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Manuel skor hesaplandı: {cikti_val} + {birinci_derece_val} = {skor}")
+                                    if cikti_clean and birinci_clean:
+                                        cikti_val = float(cikti_clean)
+                                        birinci_derece_val = float(birinci_clean)
+                                        
+                                        # Skor hesapla: (Çıktı + Birinci Derece) / 2
+                                        skor = (cikti_val + birinci_derece_val) / 2
+                                        if not (skor != skor):  # NaN kontrolü (NaN != NaN is True)
+                                            skor_value = skor
+                                            print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Manuel skor hesaplandı: {cikti_val} + {birinci_derece_val} = {skor}")
                                 except ValueError as e:
                                     print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Hesaplama hatası: {e}")
                                     pass
                             
                             # Hâlâ yoksa, sadece Çıktı değerini kullan (fallback)
-                            if skor_value == 'Veri yok' and cikti_str and cikti_str != 'geçersiz':
+                            if skor_value == 'Veri yok' and cikti_str and cikti_str != 'geçersiz' and cikti_str.strip():
                                 try:
-                                    skor_float = float(cikti_str)
-                                    if not (skor_float != skor_float):  # NaN kontrolü (NaN != NaN is True)
-                                        skor_value = skor_float
-                                        print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Fallback Çıktı kullanıldı: {skor_value}")
+                                    cikti_clean = cikti_str.strip()
+                                    if cikti_clean:
+                                        skor_float = float(cikti_clean)
+                                        if not (skor_float != skor_float):  # NaN kontrolü (NaN != NaN is True)
+                                            skor_value = skor_float
+                                            print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Fallback Çıktı kullanıldı: {skor_value}")
                                 except ValueError:
                                     print(f"[SAVED-WEB-SKOR-DEBUG] {at_adi}: Çıktı parse hatası: {cikti_str}")
                                     pass
@@ -448,9 +469,13 @@ def calculate_from_saved():
             print(f"[YARISSONUC] Koşu {race['race_number']}: {len(race['horses'])} at")
         
         # Hesaplanmış CSV dosyası oluştur
+        print(f"[DF-DEBUG] DataFrame oluşturuluyor. Veri sayısı: {len(calculated_data)}")
         calc_df = pd.DataFrame(calculated_data)
+        print(f"[DF-DEBUG] DataFrame oluşturuldu. Shape: {calc_df.shape}")
+        
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         calc_filename = f"{city}_hesaplamali_{timestamp}.csv"
+        print(f"[DF-DEBUG] CSV dosya adı: {calc_filename}")
         calc_filepath = os.path.join('static', 'downloads', calc_filename)
         
         # Downloads klasörü yoksa oluştur
@@ -559,8 +584,16 @@ def calculate_from_saved():
                         adjusted_score = raw_score * kadapt
                         
                         # Gerçek kilo değerlerini kullan (varsayılan değil)
-                        kilo_onceki = float(item.get('Son Kilo', 50.5))  # Atın geçmiş kilosu
-                        kilo_bugun = float(item.get('Kilo', 50.5))      # Atın bugünkü kilosu
+                        def safe_float(value, default=50.5):
+                            if value is None or str(value).strip() == '':
+                                return default
+                            try:
+                                return float(str(value).replace(',', '.'))
+                            except (ValueError, TypeError):
+                                return default
+                        
+                        kilo_onceki = safe_float(item.get('Son Kilo'), 50.5)  # Atın geçmiş kilosu
+                        kilo_bugun = safe_float(item.get('Kilo'), 50.5)      # Atın bugünkü kilosu
                         kilo_fark = kilo_bugun - kilo_onceki
                         calc_score = adjusted_score - (kilo_fark * 0.02)
                         
@@ -632,7 +665,16 @@ def calculate_from_saved():
             if col not in calc_df.columns:
                 calc_df[col] = ''
         calc_df = calc_df.reindex(columns=cols)
-        calc_df.to_csv(calc_filepath, index=False, encoding='utf-8-sig')
+        
+        print(f"[CSV-DEBUG] CSV dosyası oluşturuluyor: {calc_filepath}")
+        print(f"[CSV-DEBUG] DataFrame shape: {calc_df.shape}")
+        
+        try:
+            calc_df.to_csv(calc_filepath, index=False, encoding='utf-8-sig')
+            print(f"[CSV-SUCCESS] CSV dosyası başarıyla oluşturuldu: {calc_filename}")
+        except Exception as csv_error:
+            print(f"[CSV-ERROR] CSV dosyası oluşturulamadı: {csv_error}")
+            raise csv_error
         
         # İstatistikler
         total_horses = len(horses)
@@ -662,9 +704,21 @@ def calculate_from_saved():
         return jsonify(clean_json_data(response_data))
         
     except Exception as e:
+        import traceback
+        error_msg = str(e)
+        trace = traceback.format_exc()
+        print(f"[HATA] calculate_from_saved exception: {error_msg}")
+        print(f"[TRACEBACK] {trace}")
+        
+        # Console'a da yazdır
+        import sys
+        sys.stderr.write(f"FLASK ERROR: {error_msg}\n")
+        sys.stderr.write(f"FLASK TRACEBACK: {trace}\n")
+        sys.stderr.flush()
+        
         return jsonify({
             'status': 'error',
-            'message': f'Hata: {str(e)}'
+            'message': f'Hata: {error_msg}'
         }), 500
 
 @app.route('/api/scrape_and_save', methods=['POST'])
