@@ -1109,10 +1109,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card mb-4">
                     <div class="card-header ${raceStatus} text-white">
                         <h6 class="mb-0">
-                            ${statusIcon} Koşu ${race.race_number} 
-                            - Tahmin: <strong>${race.predicted_winner}</strong> 
-                            | Kazanan: <strong>${race.actual_winner}</strong>
+                            ${statusIcon} Koşu ${race.race_number}
                         </h6>
+                        <small>
+                            İlk 3 Tahmin: <strong>${race.top_3_predictions ? race.top_3_predictions.join(', ') : 'Yok'}</strong><br>
+                            Kazanan: <strong>${race.actual_winner}</strong>
+                            ${race.successful_horse ? ` | ✅ Başarılı: <strong>${race.successful_horse}</strong>` : ''}
+                        </small>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -1120,6 +1123,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <thead class="table-dark">
                                     <tr>
                                         <th>At İsmi</th>
+                                        <th>Tahmin Sırası</th>
                                         <th>Tahmini Süre</th>
                                         <th>Skor</th>
                                         <th>Koşu Mesafe</th>
@@ -1161,9 +1165,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 const trackType = trackTypeMap[horse.track_type] || horse.track_type || '-';
 
+                // Tahmin sırası badge'i
+                let predictionRank = '';
+                if (horse.prediction_rank) {
+                    // Farklı sıralar için farklı renkler
+                    let rankColor = 'bg-secondary';
+                    if (horse.prediction_rank === 1) {
+                        rankColor = 'bg-primary';      // Mavi - 1. tahmin
+                    } else if (horse.prediction_rank === 2) {
+                        rankColor = 'bg-info';         // Açık mavi - 2. tahmin
+                    } else if (horse.prediction_rank === 3) {
+                        rankColor = 'bg-warning';      // Sarı - 3. tahmin
+                    } else if (horse.prediction_rank <= 5) {
+                        rankColor = 'bg-success';      // Yeşil - 4-5. tahmin
+                    } else if (horse.prediction_rank <= 10) {
+                        rankColor = 'bg-secondary';    // Gri - 6-10. tahmin
+                    } else {
+                        rankColor = 'bg-dark';         // Siyah - 10+ tahmin
+                    }
+                    predictionRank = `<span class="badge ${rankColor}">${horse.prediction_rank}</span>`;
+                }
+
                 html += `
                     <tr class="${rowClass}">
                         <td><strong>${horse.name}</strong></td>
+                        <td>${predictionRank || '-'}</td>
                         <td>${horse.predicted_time || '-'}</td>
                         <td>${horse.calculated_score > 0 ? horse.calculated_score.toFixed(2) : '-'}</td>
                         <td>${horse.distance || '-'}m</td>

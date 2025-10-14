@@ -465,18 +465,36 @@ def perform_detailed_comparison(predictions, results, debug=False):
             # En iyi tahmini işaretle
             if predicted_winner:
                 predicted_winner['is_winner_prediction'] = True
-                
-                # Başarılı tahmin mi kontrol et
-                if predicted_winner['is_actual_winner']:
+            
+            # Atları skorlarına göre sırala (tüm atlara sıra ver)
+            sorted_horses = sorted(all_horses, key=lambda x: x['calculated_score'] if x['calculated_score'] > 0 else 999)
+            top_3_predictions = sorted_horses[:3]
+            
+            # Tüm atlara tahmin sırası ver
+            for i, horse in enumerate(sorted_horses, 1):
+                if horse['calculated_score'] > 0:  # Geçerli skor varsa
+                    horse['prediction_rank'] = i
+            
+            # Başarılı tahmin kontrolü - İlk 3 tahminimizden biri kazandı mı?
+            is_successful = False
+            successful_horse = None
+            
+            for horse in top_3_predictions:
+                if horse.get('calculated_score', 0) > 0 and horse.get('is_actual_winner', False):
+                    is_successful = True
+                    successful_horse = horse
                     comparison_results['successful_predictions'] += 1
+                    break
             
             # Koşu verilerini ekle
             race_data = {
                 'race_number': race_num,
-                'horses': sorted(all_horses, key=lambda x: x['calculated_score'] if x['calculated_score'] > 0 else 999),
+                'horses': sorted_horses,
                 'predicted_winner': predicted_winner['name'] if predicted_winner else '',
                 'actual_winner': clean_horse_name(winner['at_ismi']),
-                'is_successful': predicted_winner and predicted_winner['is_actual_winner'] if predicted_winner else False
+                'top_3_predictions': [h['name'] for h in top_3_predictions if h.get('calculated_score', 0) > 0],
+                'successful_horse': successful_horse['name'] if successful_horse else None,
+                'is_successful': is_successful
             }
             
             comparison_results['detailed_races'].append(race_data)
@@ -484,8 +502,10 @@ def perform_detailed_comparison(predictions, results, debug=False):
             if debug:
                 status = "✓ DOĞRU" if race_data['is_successful'] else "✗ YANLIŞ"
                 print(f"[KOŞU {race_num}] {status}")
-                print(f"  Tahmin: {race_data['predicted_winner']}")
-                print(f"  Gerçek: {race_data['actual_winner']}")
+                print(f"  İlk 3 Tahmin: {', '.join(race_data['top_3_predictions'])}")
+                print(f"  Gerçek Kazanan: {race_data['actual_winner']}")
+                if race_data['successful_horse']:
+                    print(f"  Başarılı Tahmin: {race_data['successful_horse']}")
                 print(f"  Toplam At: {len(all_horses)}")
         
         # Başarı oranını hesapla
