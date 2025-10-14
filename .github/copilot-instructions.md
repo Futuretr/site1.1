@@ -1,28 +1,70 @@
-<!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
-- [x] Verify that the copilot-instructions.md file in the .github directory is created. ✅ Created
+# 🏇 At Yarışı Analiz Sistemi - Copilot Talimatları
 
-- [x] Clarify Project Requirements ✅ Python Flask web application for existing Python code
+## Proje Özeti
+Bu proje, Türkiye'deki tüm hipodromlardan at yarışı verilerini çeken ve analiz eden bir Flask web uygulamasıdır.
 
-- [x] Scaffold the Project ✅ Flask web application structure created with templates, static files, and main app
+## ✅ Tamamlanan Özellikler
 
-- [x] Customize the Project ✅ Ready for user's Python code integration
+### 🏗️ Temel Altyapı
+- [x] Flask web uygulaması kurulumu
+- [x] Python sanal ortam konfigürasyonu 
+- [x] HTML/CSS/JS arayüz tasarımı
+- [x] Responsive mobil uyumlu tasarım
 
-- [x] Install Required Extensions ✅ No extensions needed
+### 🔄 Veri Çekme Sistemi
+- [x] 9 şehirden (İstanbul, Ankara, İzmir, Bursa, Adana, Kocaeli, Şanlıurfa, Diyarbakır, Elazığ) veri çekme
+- [x] yenibeygir.com web scraping entegrasyonu
+- [x] Gerçek zamanlı at profili ve son koşu verisi analizi
+- [x] CSV export işlevselliği
 
-- [x] Compile the Project ✅ Dependencies installed, Python environment configured
+### 📊 Analiz Motoru
+- [x] Gelişmiş skor hesaplama algoritması
+- [x] Mesafe, pist, kilo, şehir adaptasyon faktörleri
+- [x] Önceki koşu birincilerinin performans projeksiyonu
+- [x] Koşu bazlı sıralama ve tahmin sistemi
 
-- [x] Create and Run Task ✅ Flask development server started on http://localhost:5000
+### ✨ Sonuç Karşılaştırma Sistemi (YENİ!)
+- [x] Otomatik dünkü sonuç çekme işlevi
+- [x] Tahmin vs gerçek sonuç karşılaştırması
+- [x] Başarı oranı hesaplama ve raporlama
+- [x] Otomatik gece kontrolü zamanlaması (00:30)
+- [x] JSON formatında karşılaştırma raporları
 
-- [x] Launch the Project ✅ Flask development server started on http://localhost:5000
+### 🖥️ Web Arayüzü
+- [x] Modern Bootstrap 5 tasarımı
+- [x] Real-time durum göstergeleri
+- [x] Koşu bazlı sonuç görüntüleme
+- [x] Karşılaştırma sonuçları paneli
+- [x] CSV dosya indirme özellikleri
 
-	<!--
-	Verify that all previous steps have been completed.
-	Prompt user for debug mode, launch only if confirmed.
-	 -->
+## 🛠️ Teknik Detaylar
 
-- [ ] Ensure Documentation is Complete
-	<!--
-	Verify that all previous steps have been completed.
-	Verify that README.md and the copilot-instructions.md file in the .github directory exists and contains current project information.
-	Clean up the copilot-instructions.md file in the .github directory by removing all HTML comments.
-	 -->
+### Dosya Yapısı
+- `app.py` - Ana Flask uygulaması ve API endpoint'leri
+- `horse_scraper.py` - Web scraping ve veri işleme modülü
+- `results_scraper.py` - Sonuç çekme ve karşılaştırma sistemi
+- `comparison_scheduler.py` - Otomatik gece kontrol zamanlaması
+- `templates/index.html` - Ana web arayüzü
+- `static/` - CSS, JS ve indirilebilir dosyalar
+
+### API Endpoint'leri
+- `/api/scrape_city` - Tek şehir veri çekme
+- `/api/calculate_from_saved` - Kaydedilmiş veriden analiz
+- `/api/get_results` - Dünkü sonuçları getir
+- `/api/compare_predictions` - Tahmin karşılaştırması
+- `/api/compare_all_cities` - Tüm şehirler karşılaştırması
+
+### Veri Akışı
+1. Web scraping ile ham veri toplanır
+2. Gelişmiş algoritmalarla analiz edilir  
+3. Skor hesaplaması yapılır
+4. Koşu bazlı sıralama oluşturulur
+5. Gece otomatik sonuç kontrolü
+6. Başarı oranı hesaplama ve raporlama
+
+## 🎯 Kullanım Senaryoları
+- Günlük at yarışı analizi
+- Tahmin performans takibi
+- Şehir bazlı başarı oranları
+- Otomatik gece raporlaması
+- CSV export ve veri analizi

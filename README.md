@@ -12,6 +12,13 @@ Türkiye'deki tüm hipodromlardan günlük at yarışı verilerini çeken Flask 
 - 📱 **Responsive Tasarım**: Mobil uyumlu modern arayüz
 - 🔍 **Debug Modu**: Detaylı çekme işlemi takibi
 
+### ✨ YENİ! Sonuç Karşılaştırma Sistemi
+- 🌙 **Otomatik Gece Kontrolü**: Saat 00:30'da önceki günün sonuçlarını çeker
+- ⚖️ **Tahmin Doğrulaması**: Yapılan tahminleri gerçek sonuçlarla karşılaştırır  
+- 📈 **Başarı Oranı**: Koşu ve şehir bazında detaylı performans analizi
+- 🎯 **Doğruluk Takibi**: Her tahmin için doğru/yanlış durumu ve detayları
+- 📋 **Karşılaştırma Raporları**: Excel formatında indirilebilir sonuç analizleri
+
 ## Kurulum
 
 1. **Gereksinimları yükleyin:**
@@ -43,6 +50,44 @@ http://localhost:5000
 
 ### 🧪 Sistem Testi
 "Test Et" butonu ile sistemin çalıştığını kontrol edin.
+
+### ⚖️ Sonuç Karşılaştırma (YENİ!)
+1. **Dünkü Sonuçları Çek**: Bir önceki günün koşu sonuçlarını görüntüle
+2. **Karşılaştır**: Yapılan tahminleri gerçek sonuçlarla karşılaştır
+3. **Tümünü Karşılaştır**: Tüm şehirler için toplu karşılaştırma yap
+
+#### Otomatik Gece Kontrolü
+Sistem her gece saat 00:30'da otomatik olarak:
+- Bir önceki günün sonuçlarını çeker
+- Yapılan tahminlerle karşılaştırır  
+- Başarı oranlarını hesaplar
+- Sonuçları JSON formatında kaydeder
+
+**Manuel Zamanlamacı Başlatma:**
+```bash
+# Otomatik zamanlamacıyı başlat (gece 00:30'da çalışır)
+python comparison_scheduler.py
+
+# Manuel test çalıştır
+python comparison_scheduler.py test
+```
+
+## 🚀 Hızlı Başlangıç
+
+1. **Projeyi klonlayın ve kurulum yapın**
+2. **Flask uygulamasını başlatın**
+3. **Bir şehir seçip "Veri Çek" butonuna basın**
+4. **"Analiz Yap" ile tahminleri görün**  
+5. **Ertesi gün "Dünkü Sonuçları Çek" ile sonuçları kontrol edin**
+6. **"Karşılaştır" ile tahmin başarınızı ölçün**
+
+## 📊 Örnek Kullanım Akışı
+
+```
+1. Bugün: Bursa için veri çek → Analiz yap → Tahminleri kaydet
+2. Yarın: Dünkü sonuçları çek → Tahminlerle karşılaştır → Başarı oranını gör
+3. Otomatik: Her gece 00:30'da sistem kendi kendine kontrol eder
+```
 
 ## Veri Çekilen Şehirler
 

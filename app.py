@@ -25,6 +25,13 @@ from horse_scraper import (
     time_to_seconds
 )
 
+from results_scraper import (
+    get_previous_day_results,
+    compare_predictions_with_results,
+    get_detailed_race_comparison,
+    schedule_midnight_check
+)
+
 app = Flask(__name__)
 
 def clean_json_data(obj):
@@ -1093,6 +1100,204 @@ def process_data():
         return jsonify({
             'status': 'error',
             'message': str(e)
+        }), 500
+
+@app.route('/api/get_results', methods=['POST'])
+def get_results():
+    """Bir önceki günün sonuçlarını çek"""
+    try:
+        data = request.get_json()
+        city = data.get('city', '').lower()
+        debug = data.get('debug', False)
+        
+        if city not in CITY_FUNCTIONS:
+            return jsonify({
+                'status': 'error',
+                'message': f'Desteklenmeyen şehir: {city}'
+            }), 400
+        
+        city_name = CITY_FUNCTIONS[city][0]
+        
+        print(f"[SONUÇ] {city_name} sonuçları çekiliyor...")
+        
+        # Sonuçları çek
+        results = get_previous_day_results(city, debug)
+        
+        if results:
+            return jsonify({
+                'status': 'success',
+                'message': f'{city_name} sonuçları başarıyla çekildi',
+                'data': {
+                    'city': city_name,
+                    'results': results,
+                    'total_races': len(results)
+                }
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': f'{city_name} için sonuç bulunamadı'
+            }), 404
+            
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Hata: {str(e)}'
+        }), 500
+
+@app.route('/api/compare_predictions', methods=['POST'])
+def compare_predictions():
+    """Tahminleri sonuçlarla karşılaştır"""
+    try:
+        data = request.get_json()
+        city = data.get('city', '').lower()
+        debug = data.get('debug', False)
+        
+        if city not in CITY_FUNCTIONS:
+            return jsonify({
+                'status': 'error',
+                'message': f'Desteklenmeyen şehir: {city}'
+            }), 400
+        
+        city_name = CITY_FUNCTIONS[city][0]
+        
+        print(f"[KARŞILAŞTIRMA] {city_name} tahminleri sonuçlarla karşılaştırılıyor...")
+        
+        # Karşılaştırmayı yap
+        comparison = compare_predictions_with_results(city, debug)
+        
+        if 'error' not in comparison:
+            return jsonify({
+                'status': 'success',
+                'message': f'{city_name} karşılaştırması tamamlandı',
+                'data': {
+                    'city': city_name,
+                    'success_rate': comparison['success_rate'],
+                    'total_races': comparison['total_races'],
+                    'successful_predictions': comparison['successful_predictions'],
+                    'detailed_results': comparison['detailed_results']
+                }
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': comparison['error']
+            }), 404
+            
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Hata: {str(e)}'
+        }), 500
+
+@app.route('/api/detailed_comparison', methods=['POST'])
+def detailed_comparison():
+    """Tüm atların detaylı karşılaştırmasını yap"""
+    try:
+        data = request.get_json()
+        city = data.get('city', '').lower()
+        debug = data.get('debug', False)
+        
+        if city not in CITY_FUNCTIONS:
+            return jsonify({
+                'status': 'error',
+                'message': f'Desteklenmeyen şehir: {city}'
+            }), 400
+        
+        city_name = CITY_FUNCTIONS[city][0]
+        
+        print(f"[DETAYLI KARŞILAŞTIRMA] {city_name} tüm atlar analiz ediliyor...")
+        
+        # Detaylı karşılaştırmayı yap
+        comparison = get_detailed_race_comparison(city, debug)
+        
+        if 'error' not in comparison:
+            return jsonify({
+                'status': 'success',
+                'message': f'{city_name} detaylı karşılaştırması tamamlandı',
+                'data': {
+                    'city': city_name,
+                    'success_rate': comparison['success_rate'],
+                    'total_races': comparison['total_races'],
+                    'successful_predictions': comparison['successful_predictions'],
+                    'detailed_races': comparison['detailed_races']
+                }
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': comparison['error']
+            }), 404
+            
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Hata: {str(e)}'
+        }), 500
+
+@app.route('/api/compare_all_cities', methods=['POST'])
+def compare_all_cities():
+    """Tüm şehirler için karşılaştırma yap"""
+    try:
+        data = request.get_json()
+        debug = data.get('debug', False)
+        
+        print("[KARŞILAŞTIRMA] Tüm şehirler için karşılaştırma yapılıyor...")
+        
+        all_results = {}
+        total_success = 0
+        total_races = 0
+        
+        for city_key, (city_name, _) in CITY_FUNCTIONS.items():
+            print(f"\n=== {city_name} ===")
+            try:
+                comparison = compare_predictions_with_results(city_key, debug)
+                
+                if 'error' not in comparison:
+                    all_results[city_key] = {
+                        'city_name': city_name,
+                        'success_rate': comparison['success_rate'],
+                        'total_races': comparison['total_races'],
+                        'successful_predictions': comparison['successful_predictions'],
+                        'detailed_results': comparison['detailed_results']
+                    }
+                    
+                    total_success += comparison['successful_predictions']
+                    total_races += comparison['total_races']
+                    
+                    print(f"{city_name}: %{comparison['success_rate']:.1f} ({comparison['successful_predictions']}/{comparison['total_races']})")
+                else:
+                    all_results[city_key] = {
+                        'city_name': city_name,
+                        'error': comparison['error']
+                    }
+                    print(f"{city_name}: HATA - {comparison['error']}")
+                    
+            except Exception as e:
+                all_results[city_key] = {
+                    'city_name': city_name,
+                    'error': str(e)
+                }
+                print(f"{city_name}: HATA - {str(e)}")
+        
+        # Genel başarı oranı
+        overall_success_rate = (total_success / total_races * 100) if total_races > 0 else 0
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Tüm şehirler için karşılaştırma tamamlandı',
+            'data': {
+                'overall_success_rate': round(overall_success_rate, 1),
+                'total_races': total_races,
+                'total_successful_predictions': total_success,
+                'city_results': all_results
+            }
+        })
+            
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Hata: {str(e)}'
         }), 500
 
 @app.route('/upload', methods=['POST'])

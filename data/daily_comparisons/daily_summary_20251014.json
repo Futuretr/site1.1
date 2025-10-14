@@ -1,0 +1,50 @@
+{
+  "timestamp": "2025-10-14T03:53:08.689369",
+  "total_cities": 9,
+  "successful_cities": 2,
+  "total_races": 0,
+  "total_successful_predictions": 0,
+  "city_results": {
+    "bursa": {
+      "success_rate": 0,
+      "total_races": 0,
+      "successful_predictions": 0,
+      "status": "success"
+    },
+    "istanbul": {
+      "error": "Tahmin dosyası bulunamadı",
+      "status": "error"
+    },
+    "ankara": {
+      "error": "Tahmin dosyası bulunamadı",
+      "status": "error"
+    },
+    "izmir": {
+      "error": "Tahmin dosyası bulunamadı",
+      "status": "error"
+    },
+    "adana": {
+      "error": "Tahmin dosyası bulunamadı",
+      "status": "error"
+    },
+    "kocaeli": {
+      "error": "Tahmin dosyası bulunamadı",
+      "status": "error"
+    },
+    "sanliurfa": {
+      "success_rate": 0,
+      "total_races": 0,
+      "successful_predictions": 0,
+      "status": "success"
+    },
+    "diyarbakir": {
+      "error": "Tahmin dosyası bulunamadı",
+      "status": "error"
+    },
+    "elazig": {
+      "error": "Tahmin dosyası bulunamadı",
+      "status": "error"
+    }
+  },
+  "overall_success_rate": 0
+}

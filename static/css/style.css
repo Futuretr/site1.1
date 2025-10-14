@@ -93,6 +93,87 @@ body {
     color: #333;
 }
 
+/* Karşılaştırma Sonuçları */
+.comparison-container {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.comparison-header {
+    background: linear-gradient(135deg, #ffc107, #ff8f00);
+    color: white;
+    padding: 10px 15px;
+    font-weight: bold;
+    border-radius: 8px 8px 0 0;
+}
+
+.comparison-stats {
+    padding: 15px;
+    background-color: #fffbf0;
+}
+
+.success-indicator {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.success-indicator.correct {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.success-indicator.incorrect {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Dünkü Sonuçlar */
+.yesterday-container {
+    background-color: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.yesterday-header {
+    background: linear-gradient(135deg, #17a2b8, #007bff);
+    color: white;
+    padding: 10px 15px;
+    font-weight: bold;
+    border-radius: 8px 8px 0 0;
+}
+
+.result-rank {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    line-height: 25px;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.result-rank.first {
+    background-color: #ffd700;
+    color: #333;
+}
+
+.result-rank.second {
+    background-color: #c0c0c0;
+    color: #333;
+}
+
+.result-rank.third {
+    background-color: #cd7f32;
+    color: white;
+}
+
 /* Alt Sekmeler */
 .sub-tabs-container {
     background-color: #ffffff;

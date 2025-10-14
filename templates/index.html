@@ -44,6 +44,22 @@
                 <button id="downloadBtn" class="btn btn-outline-secondary btn-sm" disabled>
                     CSV<span class="d-none d-md-inline"> İndir</span>
                 </button>
+                
+                <div class="vr d-none d-md-block"></div>
+                
+                <!-- Sonuç Karşılaştırma Butonları -->
+                <button id="getResultsBtn" class="btn btn-outline-warning btn-sm" disabled>
+                    <i class="fas fa-search"></i> <span class="d-none d-md-inline">Dünkü </span>Sonuç
+                </button>
+                <button id="compareBtn" class="btn btn-warning btn-sm" disabled>
+                    <i class="fas fa-balance-scale"></i> <span class="d-none d-md-inline">Karşılaştır</span>
+                </button>
+                <button id="detailedCompareBtn" class="btn btn-info btn-sm" disabled>
+                    <i class="fas fa-list-alt"></i> <span class="d-none d-md-inline">Detaylı</span>
+                </button>
+                <button id="compareAllBtn" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-globe"></i> <span class="d-none d-md-inline">Tümünü Karşılaştır</span>
+                </button>
             </div>
         </div>
 
@@ -59,6 +75,22 @@
             
             <!-- Koşu Sonuçları -->
             <div id="results" class="race-results"></div>
+        </div>
+        
+        <!-- Karşılaştırma Sonuçları -->
+        <div id="comparisonContainer" style="display: none;">
+            <div class="p-3">
+                <h4><i class="fas fa-balance-scale text-warning"></i> Tahmin vs Gerçek Sonuçlar</h4>
+                <div id="comparisonResults"></div>
+            </div>
+        </div>
+        
+        <!-- Dünkü Sonuçlar -->
+        <div id="yesterdayContainer" style="display: none;">
+            <div class="p-3">
+                <h4><i class="fas fa-calendar-day text-info"></i> Dünkü Koşu Sonuçları</h4>
+                <div id="yesterdayResults"></div>
+            </div>
         </div>
     </div>
 
