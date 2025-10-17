@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Kullanıcı Mesajları - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4><i class="fas fa-envelope"></i> Kullanıcı Mesajları</h4>
+                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-arrow-left"></i> Admin Panel
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Kullanıcı</th>
+                                    <th>Konu</th>
+                                    <th>Paket</th>
+                                    <th>Durum</th>
+                                    <th>Tarih</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for message in messages %}
+                                <tr>
+                                    <td>{{ message.user.email }}</td>
+                                    <td>{{ message.subject }}</td>
+                                    <td>
+                                        {% if message.package_type == '1hafta' %}<span class="badge bg-primary">1 Hafta (150₺)</span>
+                                        {% elif message.package_type == '1ay' %}<span class="badge bg-success">1 Ay (500₺)</span>
+                                        {% elif message.package_type == '3ay' %}<span class="badge bg-warning">3 Ay (1400₺)</span>
+                                        {% elif message.package_type == '6ay' %}<span class="badge bg-info">6 Ay (2400₺)</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if message.status == 'pending' %}<span class="badge bg-warning">Beklemede</span>
+                                        {% elif message.status == 'replied' %}<span class="badge bg-success">Yanıtlandı</span>
+                                        {% elif message.status == 'closed' %}<span class="badge bg-secondary">Kapatıldı</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ message.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#messageModal{{ message.id }}">
+                                            <i class="fas fa-eye"></i> Görüntüle
+                                        </button>
+                                        {% if message.status == 'pending' %}
+                                        <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#replyModal{{ message.id }}">
+                                            <i class="fas fa-reply"></i> Yanıtla
+                                        </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mesaj Görüntüleme Modalları -->
+                    {% for message in messages %}
+                    <div class="modal fade" id="messageModal{{ message.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">{{ message.subject }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <strong>Kullanıcı:</strong> {{ message.user.email }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong>Tarih:</strong> {{ message.created_at.strftime('%d.%m.%Y %H:%M') }}
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <strong>Paket:</strong> 
+                                            {% if message.package_type == '1hafta' %}1 Hafta (150₺)
+                                            {% elif message.package_type == '1ay' %}1 Ay (500₺)
+                                            {% elif message.package_type == '3ay' %}3 Ay (1400₺)
+                                            {% elif message.package_type == '6ay' %}6 Ay (2400₺)
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong>Durum:</strong> 
+                                            {% if message.status == 'pending' %}<span class="badge bg-warning">Beklemede</span>
+                                            {% elif message.status == 'replied' %}<span class="badge bg-success">Yanıtlandı</span>
+                                            {% elif message.status == 'closed' %}<span class="badge bg-secondary">Kapatıldı</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>Mesaj:</strong>
+                                        <div class="border p-3 mt-2">{{ message.message }}</div>
+                                    </div>
+                                    {% if message.admin_response %}
+                                    <div class="alert alert-success">
+                                        <strong>Admin Yanıtı:</strong><br>
+                                        {{ message.admin_response }}
+                                        <div class="small text-muted mt-2">
+                                            Yanıt tarihi: {{ message.responded_at.strftime('%d.%m.%Y %H:%M') if message.responded_at }}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Yanıt Modalları -->
+                    {% if message.status == 'pending' %}
+                    <div class="modal fade" id="replyModal{{ message.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form method="POST" action="{{ url_for('admin.reply_message', message_id=message.id) }}">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Mesaja Yanıt Ver</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <strong>Kullanıcı:</strong> {{ message.user.email }}<br>
+                                            <strong>Paket:</strong> 
+                                            {% if message.package_type == '1hafta' %}1 Hafta (150₺)
+                                            {% elif message.package_type == '1ay' %}1 Ay (500₺)
+                                            {% elif message.package_type == '3ay' %}3 Ay (1400₺)
+                                            {% elif message.package_type == '6ay' %}6 Ay (2400₺)
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="response{{ message.id }}" class="form-label">Yanıt:</label>
+                                            <textarea class="form-control" id="response{{ message.id }}" name="response" rows="5" required 
+                                                placeholder="Ödeme talimatları, onay durumu veya diğer bilgileri yazın..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-paper-plane"></i> Yanıt Gönder
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Henüz mesaj bulunmuyor</h5>
+                        <p class="text-muted">Kullanıcılar premium paket talebinde bulunduğunda burada görünecektir.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

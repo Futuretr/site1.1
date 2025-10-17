@@ -1,9 +1,65 @@
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash
 import os
 import json
 from datetime import datetime
 import pandas as pd
 import math
+
+# Yeni importlar
+from flask_login import LoginManager, login_required, current_user
+from flask_migrate import Migrate
+# Güvenlik paketleri (opsiyonel import)
+try:
+    from flask_limiter import Limiter
+    from flask_limiter.util import get_remote_address
+    LIMITER_AVAILABLE = True
+except ImportError:
+    LIMITER_AVAILABLE = False
+
+try:
+    from flask_talisman import Talisman
+    TALISMAN_AVAILABLE = True
+except ImportError:
+    TALISMAN_AVAILABLE = False
+from models import db, User, AnalysisHistory, Notification, Conversation, ConversationMessage
+from forms import ConversationForm, ConversationMessageForm
+from auth import auth
+from admin import admin
+
+# Güvenlik importları (opsiyonel)
+try:
+    from security_config import (
+        SecurityConfig, SecurityHeaders, validate_input, 
+        secure_file_upload, log_security_event
+    )
+    SECURITY_CONFIG_AVAILABLE = True
+except ImportError:
+    # Güvenlik config yoksa temel ayarlar
+    SECURITY_CONFIG_AVAILABLE = False
+    class SecurityConfig:
+        @staticmethod
+        def get_secret_key():
+            return os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+        
+        WTF_CSRF_ENABLED = True
+        SESSION_COOKIE_SECURE = False  # Development için
+        SESSION_COOKIE_HTTPONLY = True
+        SESSION_COOKIE_SAMESITE = 'Lax'
+        MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+        
+    class SecurityHeaders:
+        @staticmethod
+        def apply_security_headers(response):
+            return response
+            
+    def validate_input(data, input_type='string', **kwargs):
+        return data
+        
+    def secure_file_upload(file, **kwargs):
+        return file.filename
+        
+    def log_security_event(event, user_id=None, ip=None, details=None):
+        print(f"Security Event: {event}")
 from horse_scraper import (
     get_istanbul_races_and_horse_last_race,
     get_ankara_races_and_horse_last_race,
@@ -34,6 +90,53 @@ from results_scraper import (
 
 app = Flask(__name__)
 
+# Güvenlik başlıklarını aktive et
+@app.after_request
+def apply_security_headers(response):
+    """Her response'a güvenlik başlıklarını ekle"""
+    return SecurityHeaders.apply_security_headers(response)
+
+# Basit Konfigürasyon (Development)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///horse_analysis.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# CSRF ve Session güvenliği
+app.config['WTF_CSRF_ENABLED'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# File upload güvenliği
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
+
+# Veritabanı başlatma
+db.init_app(app)
+migrate = Migrate(app, db)
+
+# Login manager
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login'
+login_manager.login_message = 'Bu sayfaya erişmek için giriş yapmanız gerekiyor.'
+login_manager.login_message_category = 'info'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# Blueprint kayıtları
+app.register_blueprint(auth)
+app.register_blueprint(admin)
+
+# Template context processor - Jinja2 template'lerde kullanılacak fonksiyonlar
+@app.context_processor
+def inject_template_vars():
+    """Template'lerde kullanılacak değişken ve fonksiyonları ekle"""
+    return {
+        'now': datetime.utcnow,  # now() fonksiyonunu template'lerde kullanılabilir yap
+        'datetime': datetime     # datetime modülünü de ekle
+    }
+
 def clean_json_data(obj):
     """JSON serialize edilebilir hale getir - NaN ve None değerlerini temizle"""
     if isinstance(obj, dict):
@@ -48,6 +151,48 @@ def clean_json_data(obj):
         return None
     else:
         return obj
+
+def premium_required(f):
+    """Premium üyelik kontrolü decorator'ı"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return jsonify({
+                'status': 'error',
+                'message': 'Bu işlem için giriş yapmanız gerekiyor.',
+                'code': 'LOGIN_REQUIRED'
+            }), 401
+        
+        if not current_user.is_premium_active():
+            return jsonify({
+                'status': 'error',
+                'message': 'Bu özellik premium üyeler için özeldir. Premium üyelik satın alın.',
+                'code': 'PREMIUM_REQUIRED'
+            }), 403
+            
+        return f(*args, **kwargs)
+    return decorated_function
+
+def save_analysis_history(city, analysis_type, result_data):
+    """Analiz geçmişini kaydet"""
+    if current_user.is_authenticated:
+        try:
+            analysis = AnalysisHistory(
+                user_id=current_user.id,
+                city=city,
+                analysis_type=analysis_type,
+                race_count=result_data.get('race_count', 0),
+                success_rate=result_data.get('success_rate'),
+                total_races=result_data.get('total_races'),
+                successful_predictions=result_data.get('successful_predictions'),
+                analysis_data=json.dumps(result_data, ensure_ascii=False)
+            )
+            db.session.add(analysis)
+            db.session.commit()
+        except Exception as e:
+            print(f"[HATA] Analiz geçmişi kaydedilemedi: {e}")
+            db.session.rollback()
 
 # Şehir fonksiyonları mapping
 CITY_FUNCTIONS = {
@@ -64,87 +209,189 @@ CITY_FUNCTIONS = {
 
 @app.route('/')
 def index():
-    """Ana sayfa"""
+    """Ana sayfa - giriş yapmamış kullanıcılar için"""
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
     return render_template('index.html')
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    """Kullanıcı dashboard'u"""
+    # Kullanıcının premium durumunu kontrol et
+    is_premium = current_user.is_premium_active()
+    premium_days_left = current_user.get_premium_days_left()
+    
+    # Kullanıcının analiz geçmişi
+    recent_analyses = AnalysisHistory.query.filter_by(
+        user_id=current_user.id
+    ).order_by(AnalysisHistory.analysis_date.desc()).limit(10).all()
+    
+    return render_template('dashboard.html', 
+                         title='Dashboard',
+                         is_premium=is_premium,
+                         premium_days_left=premium_days_left,
+                         recent_analyses=recent_analyses)
 
 @app.route('/test')
 def test():
     return {'status': 'ok', 'message': 'Flask çalışıyor'}
 
 @app.route('/api/scrape_city', methods=['POST'])
+@login_required
 def scrape_city():
-    """Tek şehir için at verilerini çek"""
+    """Tek şehir için at verilerini analiz et - Güvenlik kontrolleriyle"""
     try:
+        # Günlük analiz limiti kontrolü
+        can_analyze, message = current_user.can_make_analysis()
+        if not can_analyze:
+            return jsonify({
+                'success': False,
+                'status': 'error',
+                'message': message
+            }), 429  # Too Many Requests
+        
+        # Input validasyonu
         data = request.get_json()
-        city = data.get('city', '').lower()
+        if not data:
+            return jsonify({'success': False, 'message': 'Geçersiz veri'}), 400
+            
+        city = data.get('city', '').lower().strip()
+        allowed_cities = ['istanbul', 'ankara', 'izmir', 'bursa', 'adana', 'kocaeli', 'sanliurfa', 'diyarbakir', 'elazig']
+        
+        if not city or city not in allowed_cities:
+            return jsonify({'success': False, 'message': 'Geçersiz şehir adı'}), 400
         debug = data.get('debug', False)
         
         if city not in CITY_FUNCTIONS:
             return jsonify({
+                'success': False,
                 'status': 'error',
                 'message': f'Desteklenmeyen şehir: {city}'
             }), 400
         
         city_name, city_function = CITY_FUNCTIONS[city]
         
-        print(f"[AT] {city_name} at verileri çekiliyor...")
+        # Önce bugünkü kaydedilmiş veriyi kontrol et
+        today = datetime.now().strftime('%Y%m%d')
+        json_filename = f"{city}_atlari_{today}.json"
+        json_filepath = os.path.join('data', json_filename)
         
-        # At verilerini çek
-        horses = city_function(debug)
+        horses = []
+        data_source = "cache"  # Verinin nereden geldiğini takip et
+        
+        # Kaydedilmiş veri varsa kullan
+        if os.path.exists(json_filepath):
+            print(f"[VERİ] {city_name} için kaydedilmiş veri kullanılıyor: {json_filepath}")
+            try:
+                with open(json_filepath, 'r', encoding='utf-8') as f:
+                    horses = json.load(f)
+                    data_source = "saved"
+            except Exception as e:
+                print(f"[HATA] Kaydedilmiş veri okunamadı: {e}")
+                horses = []
+        
+        # Eğer kaydedilmiş veri yoksa veya boşsa, çek
+        if not horses:
+            print(f"[AT] {city_name} - Kaydedilmiş veri yok, yeni veri çekiliyor...")
+            horses = city_function(debug)
+            data_source = "fresh"
         
         if horses:
-            # CSV dosyası oluştur
-            df = pd.DataFrame(horses)
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            filename = f"{city}_atlari_{timestamp}.csv"
-            filepath = os.path.join('static', 'downloads', filename)
+            # Eğer yeni veri çektiyse kaydet
+            if data_source == "fresh":
+                # CSV dosyası oluştur
+                df = pd.DataFrame(horses)
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                filename = f"{city}_atlari_{timestamp}.csv"
+                filepath = os.path.join('static', 'downloads', filename)
+                
+                # Downloads klasörü yoksa oluştur
+                os.makedirs(os.path.dirname(filepath), exist_ok=True)
+                df.to_csv(filepath, index=False, encoding='utf-8-sig')
+                
+                # JSON dosyası da kaydet (analiz için gerekli)
+                os.makedirs('data', exist_ok=True)
+                with open(json_filepath, 'w', encoding='utf-8') as f:
+                    json.dump(horses, f, ensure_ascii=False, indent=2)
+                
+                print(f"[DOSYA] {city_name} yeni verileri kaydedildi:")
+                print(f"   CSV: {filepath}")
+                print(f"   JSON: {json_filepath}")
+            else:
+                print(f"[VERİ] {city_name} - Kaydedilmiş veri kullanılıyor ({data_source})")
             
-            # Downloads klasörü yoksa oluştur
-            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            # VERİYİ ANALİZ ET (en önemli kısım!)
+            print(f"[ANALİZ] {city_name} verileri analiz ediliyor...")
+            import horse_scraper
+            analyzed_horses = horse_scraper.process_calculation_for_city(horses, city_name)
             
-            df.to_csv(filepath, index=False, encoding='utf-8-sig')
-            
-            # JSON dosyası da kaydet (analiz için gerekli)
-            today = datetime.now().strftime('%Y%m%d')
-            json_filename = f"{city}_atlari_{today}.json"
-            json_filepath = os.path.join('data', json_filename)
-            
-            # Data klasörü yoksa oluştur
-            os.makedirs('data', exist_ok=True)
-            
-            with open(json_filepath, 'w', encoding='utf-8') as f:
-                json.dump(horses, f, ensure_ascii=False, indent=2)
-            
-            print(f"[DOSYA] {city_name} verileri kaydedildi:")
-            print(f"   CSV: {filepath}")
-            print(f"   JSON: {json_filepath}")
-            
-            # İstatistik hesapla
-            basarili = sum(1 for h in horses if h['Son Derece'])
-            oran = (basarili / len(horses) * 100) if horses else 0
-            
-            return jsonify({
-                'status': 'success',
-                'message': f'{city_name} verileri başarıyla çekildi!',
-                'data': {
+            if analyzed_horses:
+                # Analiz sonuçlarını CSV olarak kaydet (kullanıcı ID'si ile)
+                df_analyzed = pd.DataFrame(analyzed_horses)
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                analyzed_filename = f"{city}_analiz_{timestamp}_user{current_user.id}.csv"
+                analyzed_filepath = os.path.join('static', 'downloads', analyzed_filename)
+                
+                df_analyzed.to_csv(analyzed_filepath, index=False, encoding='utf-8-sig')
+                print(f"[ANALİZ] Analiz sonuçları kaydedildi: {analyzed_filepath}")
+                
+                # İstatistik hesapla
+                basarili = sum(1 for h in horses if h.get('Son Derece'))
+                oran = (basarili / len(horses) * 100) if horses else 0
+                
+                # Analiz geçmişini kaydet
+                result_data = {
                     'city': city_name,
                     'total_horses': len(horses),
                     'successful': basarili,
                     'success_rate': round(oran, 1),
-                    'horses': horses[:10],  # İlk 10 atı önizleme olarak gönder
-                    'download_url': f'/download/{filename}',
-                    'filename': filename
+                    'analysis_type': 'analyze',
+                    'data_source': data_source
                 }
-            })
+                save_analysis_history(city, 'analyze', result_data)
+                
+                # Başarılı analiz sonrası sayacı artır
+                current_user.increment_analysis_count()
+                
+                return jsonify({
+                    'success': True,
+                    'status': 'success',
+                    'message': f'{city_name} analizi tamamlandı! ({data_source} veri kullanıldı)',
+                    'data': {
+                        'city': city_name,
+                        'total_horses': len(horses),
+                        'analyzed_horses': len(analyzed_horses),
+                        'successful': basarili,
+                        'success_rate': round(oran, 1),
+                        'horses': analyzed_horses[:10],  # İlk 10 sonucu önizleme
+                        'download_url': f'/download/{analyzed_filename}',
+                        'filename': analyzed_filename,
+                        'data_source': data_source
+                    }
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'status': 'error',
+                    'error': f'{city_name} analizi yapılamadı',
+                    'message': f'{city_name} analizi yapılamadı'
+                }), 500
         else:
+            print(f"[UYARI] {city_name} için veri çekilemedi - horses listesi boş")
             return jsonify({
+                'success': False,
                 'status': 'error',
+                'error': f'{city_name} için veri çekilemedi',
                 'message': f'{city_name} için veri çekilemedi'
             }), 500
             
     except Exception as e:
+        print(f"[HATA] /api/scrape_city endpoint'inde hata: {str(e)}")
         return jsonify({
+            'success': False,
             'status': 'error',
+            'error': f'Hata: {str(e)}',
             'message': f'Hata: {str(e)}'
         }), 500
 
@@ -1070,9 +1317,14 @@ def test_system_api():
         }), 500
 
 @app.route('/download/<filename>')
+@login_required
 def download_file(filename):
     """CSV dosyasını indir"""
     try:
+        # GÜVENLİK KONTROLÜ: Sadece kullanıcının kendi dosyalarına erişim
+        if not filename.endswith(f'_user{current_user.id}.csv'):
+            return jsonify({'error': 'Bu dosyaya erişim yetkiniz yok'}), 403
+            
         filepath = os.path.join('static', 'downloads', filename)
         if os.path.exists(filepath):
             return send_file(filepath, as_attachment=True, download_name=filename)
@@ -1300,20 +1552,461 @@ def compare_all_cities():
             'message': f'Hata: {str(e)}'
         }), 500
 
+@app.route('/api/get_analysis_files', methods=['GET'])
+@login_required
+def get_analysis_files():
+    """Kullanıcının analiz dosyalarını listele"""
+        
+    try:
+        import os
+        import glob
+        from datetime import datetime
+        
+        downloads_dir = os.path.join('static', 'downloads')
+        data_dir = 'data'
+        
+        files = {}
+        
+        # Kullanıcının analiz geçmişini al
+        user_analyses = AnalysisHistory.query.filter_by(
+            user_id=current_user.id
+        ).order_by(AnalysisHistory.analysis_date.desc()).all()
+        
+        print(f"[DEBUG] Kullanıcı {current_user.email} için {len(user_analyses)} analiz kaydı bulundu")
+        
+        # Downloads klasöründeki CSV dosyalarını bul - sadece bu kullanıcının dosyaları
+        if os.path.exists(downloads_dir):
+            # Sadece bu kullanıcıya ait dosyaları filtrele
+            user_pattern = f"*_user{current_user.id}.csv"
+            csv_files = glob.glob(os.path.join(downloads_dir, user_pattern))
+            
+            print(f"[DEBUG] Kullanıcı {current_user.id} için pattern: {user_pattern}")
+            print(f"[DEBUG] Bulunan dosyalar: {csv_files}")
+            
+            for file_path in csv_files:
+                filename = os.path.basename(file_path)
+                
+                print(f"[DEBUG] Kullanıcı dosyası: {filename}")
+                
+                # Şehir adını dosya adından çıkar
+                city = None
+                city_key_matched = None
+                
+                # Önce İngilizce key'lerle kontrol et
+                for city_key in CITY_FUNCTIONS.keys():
+                    if filename.startswith(city_key):
+                        city = CITY_FUNCTIONS[city_key][0]  # Türkçe şehir adı
+                        city_key_matched = city_key
+                        break
+                
+                # Eğer eşleşme bulunamazsa, Türkçe şehir isimleriyle de kontrol et
+                if not city:
+                    filename_lower = filename.lower()
+                    city_mapping = {
+                        'şanlıurfa': 'Şanlıurfa',
+                        'şanliurfa': 'Şanlıurfa',
+                        'diyarbakır': 'Diyarbakır',
+                        'diyarbakir': 'Diyarbakır',
+                        'elazığ': 'Elazığ',
+                        'elazig': 'Elazığ',
+                        'istanbul': 'İstanbul',
+                        'izmir': 'İzmir',
+                        'ankara': 'Ankara',
+                        'adana': 'Adana',
+                        'bursa': 'Bursa',
+                        'kocaeli': 'Kocaeli'
+                    }
+                    
+                    for file_prefix, turkish_name in city_mapping.items():
+                        if filename_lower.startswith(file_prefix):
+                            city = turkish_name
+                            city_key_matched = file_prefix
+                            break
+                
+                if city:
+                    if city not in files:
+                        files[city] = []
+                    
+                    # Dosya bilgilerini ekle
+                    file_stat = os.stat(file_path)
+                    files[city].append({
+                        'filename': filename,
+                        'size': file_stat.st_size,
+                        'date_created': datetime.fromtimestamp(file_stat.st_ctime).strftime('%Y-%m-%d %H:%M:%S')
+                    })
+        
+        # Her şehirin dosyalarını tarihe göre sırala (en yeni önce)
+        for city in files:
+            files[city] = sorted(files[city], key=lambda x: x['date_created'], reverse=True)
+        
+        return jsonify({
+            'success': True,
+            'files': files
+        })
+        
+    except Exception as e:
+        print(f"[HATA] get_analysis_files API hatası: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'error_type': type(e).__name__
+        }), 500
+
+@app.route('/api/test_analysis_files', methods=['GET'])
+@login_required  
+def test_analysis_files():
+    """Test endpoint - analiz dosyalarını basitçe listele"""
+    try:
+        import os
+        import glob
+        
+        downloads_dir = os.path.join('static', 'downloads')
+        csv_files = []
+        
+        if os.path.exists(downloads_dir):
+            csv_files = glob.glob(os.path.join(downloads_dir, '*.csv'))
+            csv_files = [os.path.basename(f) for f in csv_files]
+        
+        return jsonify({
+            'success': True,
+            'downloads_dir_exists': os.path.exists(downloads_dir),
+            'csv_count': len(csv_files),
+            'csv_files': csv_files[:10]  # İlk 10 dosya
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/view_analysis_file/<filename>', methods=['GET'])
+@login_required
+def view_analysis_file(filename):
+    """Analiz dosyasının içeriğini görüntüle"""
+    try:
+        import pandas as pd
+        import os
+        
+        # GÜVENLİK KONTROLÜ: Sadece kullanıcının kendi dosyalarına erişim
+        if not filename.endswith(f'_user{current_user.id}.csv'):
+            return jsonify({
+                'success': False,
+                'error': 'Bu dosyaya erişim yetkiniz yok'
+            }), 403
+        
+        file_path = os.path.join('static', 'downloads', filename)
+        
+        if not os.path.exists(file_path):
+            return jsonify({
+                'success': False,
+                'error': 'Dosya bulunamadı'
+            }), 404
+        
+        # CSV dosyasını oku
+        try:
+            df = pd.read_csv(file_path, encoding='utf-8-sig')
+        except UnicodeDecodeError:
+            # UTF-8 okuma hatası varsa farklı encoding'ler dene
+            try:
+                df = pd.read_csv(file_path, encoding='latin1')
+            except:
+                df = pd.read_csv(file_path, encoding='cp1254')
+        
+        # NaN değerlerini boş string ile değiştir
+        df = df.fillna('')
+        
+        # Sütun isimlerini temizle (boşlukları kaldır)
+        df.columns = df.columns.str.strip()
+        
+        # DataFrame'i dictionary listesine dönüştür
+        data = df.to_dict('records')
+        
+        # Koşu bilgilerini düzgün işle
+        processed_data = []
+        current_race = 'Bilinmeyen Koşu'
+        
+        for row in data:
+            at_ismi = str(row.get('At İsmi', '')).strip()
+            
+            # Koşu başlığı: At İsmi boş ama Koşu sütununda koşu bilgisi var
+            if not at_ismi:
+                # Koşu bilgisini bul - sütunlarda "Koşu" kelimesi geçen değeri ara
+                for key, value in row.items():
+                    value_str = str(value).strip()
+                    if 'Koşu' in value_str and ('.' in value_str or value_str.isdigit()):
+                        current_race = value_str
+                        print(f"[DEBUG] Yeni koşu bulundu: {current_race}")
+                        break
+                continue  # Koşu başlığı satırını atla
+            
+            # At verisi olan satırları işle
+            if at_ismi:
+                row['Koşu'] = current_race  # Koşu bilgisini güncelle
+                processed_data.append(row)
+        
+        data = processed_data
+        print(f"[DEBUG] İşlenmiş veri: {len(data)} at, koşular: {list(set([row['Koşu'] for row in data]))}")
+        
+        # Veri temizliği - sayısal değerleri kontrol et
+        for record in data:
+            for key, value in record.items():
+                # NaN, inf, -inf değerlerini temizle
+                if pd.isna(value) or value in [float('inf'), float('-inf')]:
+                    record[key] = ''
+                # Çok büyük sayıları string'e çevir
+                elif isinstance(value, (int, float)) and abs(value) > 1e10:
+                    record[key] = str(value)
+        
+        return jsonify({
+            'success': True,
+            'data': data,
+            'filename': filename,
+            'total_records': len(data)
+        })
+        
+    except Exception as e:
+        print(f"[HATA] view_analysis_file API hatası: {str(e)}")
+        print(f"[DEBUG] Dosya yolu: static/downloads/{filename}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'error_type': type(e).__name__
+        }), 500
+
 @app.route('/upload', methods=['POST'])
+@login_required
 def upload_file():
     """Dosya yükleme endpoint'i"""
-    if 'file' not in request.files:
-        return jsonify({'error': 'Dosya bulunamadı'}), 400
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'Dosya bulunamadı'}), 400
+        
+        file = request.files['file']
+        if not file.filename:
+            return jsonify({'error': 'Dosya seçilmedi'}), 400
+        
+        filename = file.filename
+        # Basit güvenlik kontrolü
+        allowed_extensions = {'csv', 'json', 'txt'}
+        if '.' not in filename or filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
+            return jsonify({'error': 'İzin verilmeyen dosya türü'}), 400
+            
+        # Dosyayı kaydet
+        upload_path = os.path.join('static/uploads', filename)
+        os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+        file.save(upload_path)
+        
+        return jsonify({'message': 'Dosya başarıyla yüklendi', 'filename': file.filename})
+            
+    except Exception as e:
+        return jsonify({'error': 'Dosya yükleme hatası'}), 500
+
+if __name__ == '__main__':
+    # Scheduler'ı başlat
+    try:
+        from data_scheduler import init_scheduler
+        init_scheduler(app)
+        print("✅ Otomatik veri çekme scheduler'ı başlatıldı")
+    except Exception as e:
+        print(f"⚠️ Scheduler başlatılamadı: {e}")
+
+# ================== MESAJLAŞMA VE BİLDİRİM SİSTEMİ ==================
+
+def create_notification(user_id, title, message, notification_type='info', related_message_id=None):
+    """Bildirim oluştur"""
+    notification = Notification(
+        user_id=user_id,
+        title=title,
+        message=message,
+        type=notification_type,
+        related_message_id=related_message_id
+    )
+    db.session.add(notification)
+    db.session.commit()
+    return notification
+
+@app.route('/conversations')
+@app.route('/conversations/<int:conversation_id>')
+@login_required
+def conversations(conversation_id=None):
+    """Kullanıcı konuşmaları sayfası"""
+    # Kullanıcının tüm konuşmaları
+    user_conversations = Conversation.query.filter_by(user_id=current_user.id).order_by(Conversation.updated_at.desc()).all()
     
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'Dosya seçilmedi'}), 400
+    # Her konuşma için okunmamış mesaj sayısı
+    for conv in user_conversations:
+        conv.unread_count = ConversationMessage.query.filter_by(
+            conversation_id=conv.id, 
+            is_admin=True, 
+            is_read=False
+        ).count()
     
-    # Dosyayı işleme
-    # Burada dosyayı mevcut Python kodunuzla işleyebilirsiniz
+    # Seçili konuşma
+    selected_conversation = None
+    if conversation_id:
+        selected_conversation = Conversation.query.filter_by(id=conversation_id, user_id=current_user.id).first()
+        if selected_conversation:
+            # Mesajları okundu işaretle (admin mesajları)
+            ConversationMessage.query.filter_by(
+                conversation_id=conversation_id, 
+                is_admin=True, 
+                is_read=False
+            ).update({'is_read': True})
+            db.session.commit()
     
-    return jsonify({'message': 'Dosya başarıyla yüklendi ve işlendi'})
+    # Formlar
+    conversation_form = ConversationForm()
+    message_form = ConversationMessageForm()
+    
+    return render_template('conversations.html',
+                         conversations=user_conversations,
+                         selected_conversation=selected_conversation,
+                         selected_conversation_id=conversation_id,
+                         conversation_form=conversation_form,
+                         message_form=message_form)
+
+@app.route('/conversations/new', methods=['POST'])
+@login_required
+def new_conversation():
+    """Yeni konuşma başlat"""
+    form = ConversationForm()
+    if form.validate_on_submit():
+        # Yeni konuşma oluştur
+        conversation = Conversation(
+            user_id=current_user.id,
+            subject=form.subject.data,
+            status='active'
+        )
+        db.session.add(conversation)
+        db.session.flush()  # ID'yi al
+        
+        # İlk mesajı ekle
+        message = ConversationMessage(
+            conversation_id=conversation.id,
+            sender_id=current_user.id,
+            message=form.message.data,
+            is_admin=False
+        )
+        db.session.add(message)
+        
+        # Conversation güncelleme zamanını ayarla
+        conversation.updated_at = datetime.utcnow()
+        
+        # Admin'e bildirim gönder
+        create_notification(
+            user_id=None,  # Admin bildirimi
+            title='Yeni Kullanıcı Mesajı',
+            message=f'{current_user.first_name} yeni bir konuşma başlattı: {form.subject.data}',
+            notification_type='info',
+            related_message_id=conversation.id
+        )
+        
+        db.session.commit()
+        flash('Konuşma başarıyla başlatıldı!', 'success')
+        return redirect(url_for('conversations', conversation_id=conversation.id))
+    
+    flash('Konuşma oluşturulurken hata oluştu.', 'error')
+    return redirect(url_for('conversations'))
+
+@app.route('/conversations/<int:conversation_id>/send', methods=['POST'])
+@login_required
+def send_message(conversation_id):
+    """Konuşmaya mesaj gönder"""
+    conversation = Conversation.query.filter_by(id=conversation_id, user_id=current_user.id).first_or_404()
+    
+    if conversation.status != 'active':
+        flash('Bu konuşma kapatılmıştır.', 'error')
+        return redirect(url_for('conversations', conversation_id=conversation_id))
+    
+    form = ConversationMessageForm()
+    if form.validate_on_submit():
+        # Yeni mesaj ekle
+        message = ConversationMessage(
+            conversation_id=conversation_id,
+            sender_id=current_user.id,
+            message=form.message.data,
+            is_admin=False
+        )
+        db.session.add(message)
+        
+        # Conversation güncelleme zamanını ayarla
+        conversation.updated_at = datetime.utcnow()
+        
+        # Admin'e bildirim gönder
+        create_notification(
+            user_id=None,  # Admin bildirimi
+            title='Yeni Mesaj',
+            message=f'{current_user.first_name} bir mesaj gönderdi: {conversation.subject}',
+            notification_type='info',
+            related_message_id=conversation.id
+        )
+        
+        db.session.commit()
+        flash('Mesaj gönderildi!', 'success')
+    
+    return redirect(url_for('conversations', conversation_id=conversation_id))
+
+# ================== BİLDİRİM API ENDPOİNTLERİ ==================
+
+@app.route('/api/notifications')
+@login_required
+def api_notifications():
+    """Kullanıcı bildirimleri API"""
+    notifications = Notification.query.filter_by(user_id=current_user.id).order_by(Notification.created_at.desc()).limit(20).all()
+    unread_count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
+    
+    return jsonify({
+        'success': True,
+        'notifications': [{
+            'id': n.id,
+            'title': n.title,
+            'message': n.message,
+            'type': n.type,
+            'is_read': n.is_read,
+            'created_at': n.created_at.isoformat()
+        } for n in notifications],
+        'unread_count': unread_count
+    })
+
+@app.route('/api/notifications/<int:notification_id>/read', methods=['POST'])
+@login_required
+def mark_notification_read(notification_id):
+    """Bildirimi okundu işaretle"""
+    notification = Notification.query.filter_by(id=notification_id, user_id=current_user.id).first()
+    if notification:
+        notification.is_read = True
+        db.session.commit()
+        return jsonify({'success': True})
+    return jsonify({'success': False, 'message': 'Bildirim bulunamadı'})
+
+@app.route('/api/notifications/mark-all-read', methods=['POST'])
+@login_required
+def mark_all_notifications_read():
+    """Tüm bildirimleri okundu işaretle"""
+    Notification.query.filter_by(user_id=current_user.id, is_read=False).update({'is_read': True})
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/conversations/unread-count')
+@login_required
+def api_unread_message_count():
+    """Okunmamış mesaj sayısı API"""
+    # Kullanıcının konuşmalarındaki okunmamış admin mesajları
+    count = db.session.query(ConversationMessage).join(Conversation).filter(
+        Conversation.user_id == current_user.id,
+        ConversationMessage.is_admin == True,
+        ConversationMessage.is_read == False
+    ).count()
+    
+    return jsonify({
+        'success': True,
+        'count': count
+    })
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

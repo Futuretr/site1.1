@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-4">
+                <i class="fas fa-crown text-warning"></i> Premium Üyelik
+            </h1>
+            <p class="lead text-muted">At yarışı analizlerinde profesyonel seviyeye çıkın!</p>
+        </div>
+        
+        <!-- Premium Özellikleri -->
+        <div class="row mb-5">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-primary">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-4x text-primary mb-3"></i>
+                        <h5>Gelişmiş Analiz</h5>
+                        <p>9 farklı şehir için detaylı at yarışı analizi. Tüm hipodromlardan güncel veriler.</p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success"></i> İstanbul, Ankara, İzmir</li>
+                            <li><i class="fas fa-check text-success"></i> Bursa, Adana, Kocaeli</li>
+                            <li><i class="fas fa-check text-success"></i> Şanlıurfa, Diyarbakır, Elazığ</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-success">
+                    <div class="card-body text-center">
+                        <i class="fas fa-download fa-4x text-success mb-3"></i>
+                        <h5>CSV İndirme</h5>
+                        <p>Analiz sonuçlarını Excel formatında indirin. Kendi analizlerinizi yapın.</p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success"></i> Excel uyumlu format</li>
+                            <li><i class="fas fa-check text-success"></i> Detaylı at bilgileri</li>
+                            <li><i class="fas fa-check text-success"></i> Skor hesaplamaları</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-info">
+                    <div class="card-body text-center">
+                        <i class="fas fa-balance-scale fa-4x text-info mb-3"></i>
+                        <h5>Sonuç Karşılaştırma</h5>
+                        <p>Tahminlerinizi gerçek sonuçlarla karşılaştırın. Başarı oranınızı takip edin.</p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success"></i> Otomatik sonuç çekme</li>
+                            <li><i class="fas fa-check text-success"></i> Başarı istatistikleri</li>
+                            <li><i class="fas fa-check text-success"></i> Detaylı raporlar</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Premium Paket Seçimi -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark text-center">
+                        <h4><i class="fas fa-crown"></i> Premium Paketleri</h4>
+                        <p class="mb-0">Paket seçin ve satın alma talebinizi gönderin</p>
+                    </div>
+                    <div class="card-body">
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.is_premium_active() %}
+                                <div class="alert alert-success text-center">
+                                    <i class="fas fa-check-circle"></i> <strong>Zaten premium üyesiniz!</strong><br>
+                                    <small>{{ current_user.get_premium_days_left() }} gün kaldı</small>
+                                </div>
+                            {% else %}
+                                <div class="row">
+                                    <div class="col-md-6 col-lg-3 mb-3">
+                                        <div class="card h-100 border-primary">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-primary">1 Hafta</h5>
+                                                <div class="h2 text-primary">150₺</div>
+                                                <ul class="list-unstyled">
+                                                    <li><i class="fas fa-check text-success"></i> 7 gün premium</li>
+                                                    <li><i class="fas fa-check text-success"></i> Günde 10 analiz</li>
+                                                    <li><i class="fas fa-check text-success"></i> CSV indirme</li>
+                                                </ul>
+                                                <a href="{{ url_for('auth.contact_admin', package='1hafta') }}" class="btn btn-primary btn-block">
+                                                    Satın Al
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-3 mb-3">
+                                        <div class="card h-100 border-success">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-success">1 Ay</h5>
+                                                <div class="h2 text-success">500₺</div>
+                                                <div class="small text-muted">En Popüler</div>
+                                                <ul class="list-unstyled">
+                                                    <li><i class="fas fa-check text-success"></i> 30 gün premium</li>
+                                                    <li><i class="fas fa-check text-success"></i> Günde 10 analiz</li>
+                                                    <li><i class="fas fa-check text-success"></i> CSV indirme</li>
+                                                    <li><i class="fas fa-check text-success"></i> Analiz geçmişi</li>
+                                                </ul>
+                                                <a href="{{ url_for('auth.contact_admin', package='1ay') }}" class="btn btn-success btn-block">
+                                                    Satın Al
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-3 mb-3">
+                                        <div class="card h-100 border-warning">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-warning">3 Ay</h5>
+                                                <div class="h2 text-warning">1400₺</div>
+                                                <div class="small text-success">%7 İndirim</div>
+                                                <ul class="list-unstyled">
+                                                    <li><i class="fas fa-check text-success"></i> 90 gün premium</li>
+                                                    <li><i class="fas fa-check text-success"></i> Günde 10 analiz</li>
+                                                    <li><i class="fas fa-check text-success"></i> CSV indirme</li>
+                                                    <li><i class="fas fa-check text-success"></i> Öncelikli destek</li>
+                                                </ul>
+                                                <a href="{{ url_for('auth.contact_admin', package='3ay') }}" class="btn btn-warning btn-block">
+                                                    Satın Al
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-3 mb-3">
+                                        <div class="card h-100 border-info">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-info">6 Ay</h5>
+                                                <div class="h2 text-info">2400₺</div>
+                                                <div class="small text-success">%20 İndirim</div>
+                                                <ul class="list-unstyled">
+                                                    <li><i class="fas fa-check text-success"></i> 180 gün premium</li>
+                                                    <li><i class="fas fa-check text-success"></i> Günde 10 analiz</li>
+                                                    <li><i class="fas fa-check text-success"></i> CSV indirme</li>
+                                                    <li><i class="fas fa-check text-success"></i> VIP destek</li>
+                                                </ul>
+                                                <a href="{{ url_for('auth.contact_admin', package='6ay') }}" class="btn btn-info btn-block">
+                                                    Satın Al
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-warning text-center">
+                                Premium paket satın almak için önce <a href="{{ url_for('auth.register') }}">kayıt olmanız</a> gerekmektedir.
+                            </div>
+                            <div class="text-center">
+                                <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg">
+                                    <i class="fas fa-user-plus"></i> Kayıt Ol
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ödeme Bilgileri -->
+        {% if current_user.is_authenticated and not current_user.is_premium_active() %}
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-8">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning text-dark text-center">
+                        <h5><i class="fas fa-credit-card"></i> Ödeme Bilgileri</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> 
+                            Paket satın almak için aşağıdaki hesaba ödeme yapın ve "Satın Al" butonuna tıklayarak talebinizi gönderin.
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Ad Soyad:</label>
+                                <div class="form-control-plaintext bg-light p-2 rounded">Emir Arslan</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">IBAN:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="ibanNumberMain" value="TR83 0004 6009 9588 8000 1632 66" readonly>
+                                    <button class="btn btn-outline-warning" type="button" onclick="copyIbanMain()" title="IBAN'ı Kopyala">
+                                        <i class="fas fa-copy"></i> Kopyala
+                                    </button>
+                                </div>
+                                <small class="text-muted">IBAN numarasını kopyalamak için butona tıklayın</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="alert alert-warning mb-0">
+                                    <small>
+                                        <i class="fas fa-exclamation-triangle"></i> 
+                                        <strong>Önemli:</strong> Ödeme yaptıktan sonra mutlaka "Satın Al" butonuna tıklayarak talebinizi gönderin. 
+                                        Dekont görselinizi mesaj olarak ekleyebilirsiniz.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Başarı İstatistikleri -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h4 class="text-center mb-4"><i class="fas fa-chart-bar"></i> Sistem Başarı İstatistikleri</h4>
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <div class="h2 text-success">%77.3</div>
+                                <p class="text-muted">Ortalama Başarı Oranı</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="h2 text-primary">9</div>
+                                <p class="text-muted">Desteklenen Şehir</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="h2 text-warning">1500+</div>
+                                <p class="text-muted">Analiz Edilen Koşu</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="h2 text-info">24/7</div>
+                                <p class="text-muted">Otomatik Güncelleme</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SSS -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-question-circle"></i> Sıkça Sorulan Sorular</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="faqAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="faq1">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                                        Premium üyelik nasıl aktivasyon edilir?
+                                    </button>
+                                </h2>
+                                <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Şu anda premium üyelik aktivasyonu manuel olarak yapılmaktadır. Kayıt olduktan sonra sistem yöneticisi ile iletişime geçerek premium üyeliğinizi aktifleştirebilirsiniz.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="faq2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                                        Analiz sonuçları ne kadar güvenilir?
+                                    </button>
+                                </h2>
+                                <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Sistemimiz gerçek yarış verilerini analiz ederek %77.3 ortalama başarı oranı sunmaktadır. Bu oran at yarışlarında oldukça yüksek bir değerdir. Ancak hiçbir sistem %100 garanti vermez.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="faq3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                                        Hangi şehirleri destekliyorsunuz?
+                                    </button>
+                                </h2>
+                                <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        İstanbul, Ankara, İzmir, Bursa, Adana, Kocaeli, Şanlıurfa, Diyarbakır ve Elazığ hipodromlarını destekliyoruz. Tüm hipodromlardan güncel veriler çekilmektedir.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyIbanMain() {
+    const ibanInput = document.getElementById('ibanNumberMain');
+    ibanInput.select();
+    ibanInput.setSelectionRange(0, 99999); // Mobil cihazlar için
+    
+    try {
+        document.execCommand('copy');
+        
+        // Başarılı kopyalama mesajı
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
+        button.classList.remove('btn-outline-warning');
+        button.classList.add('btn-success');
+        
+        // 2 saniye sonra orijinal haline dön
+        setTimeout(function() {
+            button.innerHTML = originalText;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-warning');
+        }, 2000);
+        
+    } catch (err) {
+        // Hata durumunda alternatif yöntem
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(ibanInput.value).then(function() {
+                const button = event.target.closest('button');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
+                button.classList.remove('btn-outline-warning');
+                button.classList.add('btn-success');
+                
+                setTimeout(function() {
+                    button.innerHTML = originalText;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-outline-warning');
+                }, 2000);
+            });
+        } else {
+            alert('IBAN: ' + ibanInput.value + '\n\nLütfen manuel olarak kopyalayın.');
+        }
+    }
+}
+</script>
+
+{% endblock %}

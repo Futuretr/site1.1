@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-chart-line text-primary"></i> Analiz Geçmişi</h2>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Admin Panel
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filtreler -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Şehir Filtresi</label>
+                        <select name="city" class="form-select">
+                            <option value="">Tüm Şehirler</option>
+                            {% for city in cities %}
+                            <option value="{{ city }}" {% if city == city_filter %}selected{% endif %}>
+                                {{ city.title() }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Filtrele
+                        </button>
+                        {% if city_filter %}
+                        <a href="{{ url_for('admin.analyses') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i> Temizle
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <small class="text-muted">
+                            Toplam {{ analyses.total }} analiz
+                        </small>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analiz Listesi -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> Analiz Listesi</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if analyses.items %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Kullanıcı</th>
+                                <th>Tarih</th>
+                                <th>Şehir</th>
+                                <th>Analiz Türü</th>
+                                <th>Koşu Sayısı</th>
+                                <th>Başarı Oranı</th>
+                                <th>Başarılı/Toplam</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for analysis in analyses.items %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle me-2">
+                                            {{ analysis.user.first_name[0]|upper }}{{ analysis.user.last_name[0]|upper }}
+                                        </div>
+                                        <div>
+                                            <strong>{{ analysis.user.first_name }} {{ analysis.user.last_name }}</strong>
+                                            <div class="small text-muted">@{{ analysis.user.username }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>{{ analysis.analysis_date.strftime('%d.%m.%Y') }}</strong>
+                                    <div class="small text-muted">{{ analysis.analysis_date.strftime('%H:%M') }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ analysis.city.title() }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ analysis.analysis_type.title() }}</span>
+                                </td>
+                                <td class="text-center">
+                                    {% if analysis.race_count %}
+                                        <strong>{{ analysis.race_count }}</strong>
+                                    {% elif analysis.total_races %}
+                                        <strong>{{ analysis.total_races }}</strong>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if analysis.success_rate %}
+                                        <span class="badge bg-{% if analysis.success_rate >= 70 %}success{% elif analysis.success_rate >= 50 %}warning{% else %}danger{% endif %} fs-6">
+                                            {{ "%.1f"|format(analysis.success_rate) }}%
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if analysis.successful_predictions and analysis.total_races %}
+                                        <strong class="text-success">{{ analysis.successful_predictions }}</strong>
+                                        /
+                                        <strong class="text-primary">{{ analysis.total_races }}</strong>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-chart-line fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">Analiz Bulunamadı</h5>
+                    {% if city_filter %}
+                    <p class="text-muted">{{ city_filter.title() }} için analiz bulunamadı</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if analyses.pages > 1 %}
+            <div class="card-footer">
+                <nav aria-label="Analiz sayfaları">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if analyses.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.analyses', page=analyses.prev_num, city=city_filter) }}">Önceki</a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for page_num in analyses.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != analyses.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.analyses', page=page_num, city=city_filter) }}">{{ page_num }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                                {% endif %}
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">…</span>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if analyses.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.analyses', page=analyses.next_num, city=city_filter) }}">Sonraki</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 11px;
+}
+</style>
+{% endblock %}

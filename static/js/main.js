@@ -3,6 +3,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // DOM elementleri
     const citySelect = document.getElementById('citySelect');
+    
+    // Eğer ana sayfa değilse (citySelect yoksa) main.js'i çalıştırma
+    if (!citySelect) {
+        console.log('Ana sayfa değil, main.js atlanıyor...');
+        return;
+    }
     const checkDataBtn = document.getElementById('checkDataBtn');
     const scrapeAndSaveBtn = document.getElementById('scrapeAndSaveBtn');
     const quickCalculateBtn = document.getElementById('quickCalculateBtn');
@@ -52,17 +58,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     });
 
-    // Şehir seçimi değiştiğinde butonları aktif et
-    citySelect.addEventListener('change', function() {
-        const hasCity = this.value !== '';
-        checkDataBtn.disabled = !hasCity;
-        scrapeAndSaveBtn.disabled = !hasCity;
-        quickCalculateBtn.disabled = !hasCity;
-        scrapeBtn.disabled = !hasCity;
-        getResultsBtn.disabled = !hasCity;
-        compareBtn.disabled = !hasCity;
-        detailedCompareBtn.disabled = !hasCity;
-    });
+    // Şehir seçimi değiştiğinde butonları aktif et (sadece citySelect varsa)
+    if (citySelect) {
+        citySelect.addEventListener('change', function() {
+            const hasCity = this.value !== '';
+            checkDataBtn.disabled = !hasCity;
+            scrapeAndSaveBtn.disabled = !hasCity;
+            quickCalculateBtn.disabled = !hasCity;
+            scrapeBtn.disabled = !hasCity;
+            getResultsBtn.disabled = !hasCity;
+            compareBtn.disabled = !hasCity;
+            detailedCompareBtn.disabled = !hasCity;
+        });
+    }
 
     // Yükleme göstergesi
     function showLoading(show, message = 'İşlem yapılıyor...') {
@@ -140,7 +148,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Koşu sonuçlarını göster
     function showRaceResults(data) {
-        console.log('📊 Sonuçlar gösteriliyor...', data);
+        console.log('� RENK TESTİ - showRaceResults çalışıyor!', data);
+        console.log('�📊 Sonuçlar gösteriliyor...', data);
         console.log('📊 Races array:', data.races);
         console.log('📊 Results element:', results);
         
@@ -173,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Sekme
             tabsHtml += `
                 <button class="race-tab ${index === 0 ? 'active' : ''}" onclick="showRaceTab(${index})" id="tab-${index}">
-                    ${raceNumber}. Koşu ${raceTime}
+                    ${raceNumber}. Koşu - ${validHorses.length} At
                 </button>
             `;
 
@@ -189,13 +198,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <th width="120">At İsmi</th>
                                     <th width="80">Hipodrom</th>
                                     <th width="50">Çıktı</th>
-                                    <th width="80">1.Derece</th>
                                     <th width="60">Mesafe</th>
                                     <th width="50">Pist</th>
                                     <th width="50">S.Kilo</th>
                                     <th width="50">M.Kilo</th>
-                                    <th width="60">Derece</th>
-                                    <th width="60">Skor</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -223,6 +229,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return outputA - outputB; // En düşük çıktı en iyi (1.)
             });
 
+            // 1. sıradaki atın derecesini bul
+            const firstPlaceHorse = sortedHorses[0];
+            const firstPlaceDerece = firstPlaceHorse && firstPlaceHorse.son_derece ? firstPlaceHorse.son_derece : '-';
+
             sortedHorses.forEach((horse, horseIndex) => {
                 const rank = horseIndex + 1;
                 const scoreText = typeof horse.skor === 'number' ? horse.skor.toFixed(2) : '-';
@@ -230,19 +240,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Çıktı değerini ayrı hesapla (backend'den gelen ham çıktı değeri)
                 const ciktiText = horse.cikti_degeri ? (typeof horse.cikti_degeri === 'number' ? horse.cikti_degeri.toFixed(2) : horse.cikti_degeri) : (scoreText === '-' ? '-' : scoreText);
 
+                // Sıralamaya göre at ismi CSS class'ı belirle
+                let rankClass = 'rank-default';
+                if (rank === 1) {
+                    rankClass = 'rank-1';
+                } else if (rank === 2 || rank === 3) {
+                    rankClass = 'rank-2';
+                } else if (rank === 4 || rank === 5) {
+                    rankClass = 'rank-4';
+                }
+                console.log(`🐎 At: ${horse.at_adi}, Rank: ${rank}, Class: ${rankClass}`);
+
+                // İnline style ile renklendirme (kesin çalışır)
+                let inlineStyle = 'color: #000000; font-weight: bold;';
+                if (rank === 1) {
+                    inlineStyle = 'color: #28a745; font-weight: bold;';
+                } else if (rank === 2 || rank === 3) {
+                    inlineStyle = 'color: #007bff; font-weight: bold;';
+                } else if (rank === 4 || rank === 5) {
+                    inlineStyle = 'color: #fd7e14; font-weight: bold;';
+                }
+
                 contentHtml += `
                     <tr>
                         <td><strong>${rank}</strong></td>
-                        <td class="horse-name"><strong>${horse.at_adi || 'Bilinmiyor'}</strong></td>
+                        <td class="horse-name" style="${inlineStyle}"><strong>${horse.at_adi || 'Bilinmiyor'}</strong></td>
                         <td style="font-size: 10px;">${horse.son_hipodrom || '-'}</td>
                         <td><strong style="color: ${typeof horse.skor === 'number' ? '#28a745' : '#dc3545'}">${ciktiText}</strong></td>
-                        <td style="font-size: 10px; color: #28a745;"><strong>${horse.kazanan_ismi || '-'}</strong></td>
                         <td>${horse.son_mesafe || '-'}m</td>
                         <td>${getPistType(horse.son_pist)}</td>
                         <td>${horse.son_kilo || '-'}kg</td>
                         <td>${horse.agirlik || '-'}kg</td>
-                        <td>${horse.son_derece || '-'}</td>
-                        <td><strong style="color: ${typeof horse.skor === 'number' ? '#007bff' : '#6c757d'}">${scoreText}</strong></td>
                     </tr>
                 `;
             });
@@ -289,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
             contentHtml += `
                 <div class="col-md-4 col-sm-6 mb-3">
                     <div class="race-overview-card">
-                        <h6>${raceNumber}. Koşu ${raceTime}</h6>
+                        <h6>${raceNumber}. Koşu - ${validHorses.length} At</h6>
                         <p class="card-text">
                             <strong>En İyi:</strong> ${topHorse?.at_adi || 'Veri yok'}<br>
                             <strong>Skor:</strong> ${typeof topHorse?.skor === 'number' ? topHorse.skor.toFixed(2) : 'Veri yok'}<br>

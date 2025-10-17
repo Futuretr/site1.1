@@ -1,0 +1,352 @@
+/* Landing Page Özel Stilleri */
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(255,255,255,0.05) 0%, transparent 50%);
+}
+
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+/* Animasyonlar */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-out;
+}
+
+.animate-fade-in-delay {
+    animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Hero Stats */
+.hero-stats {
+    background: rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Floating Cards */
+.floating-card {
+    position: absolute;
+    z-index: 10;
+    animation: float 4s ease-in-out infinite;
+}
+
+.card-1 {
+    top: 20%;
+    right: 10%;
+    animation-delay: -1s;
+}
+
+.card-2 {
+    bottom: 30%;
+    right: 15%;
+    animation-delay: -2s;
+}
+
+/* Feature Cards */
+.feature-card {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+}
+
+.feature-icon {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: -webkit-linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+}
+
+/* Process Steps */
+.process-step {
+    position: relative;
+}
+
+.process-step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 60px;
+    height: 30px;
+    width: 2px;
+    background: linear-gradient(to bottom, #007bff, transparent);
+}
+
+.step-number .badge {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* Testimonials */
+.testimonial-card {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.testimonial-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+    transition: all 0.3s ease;
+}
+
+.testimonial-card:hover::before {
+    left: 0;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.stars i {
+    font-size: 0.9rem;
+    margin-right: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: auto;
+        padding: 60px 0;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .floating-card {
+        display: none;
+    }
+    
+    .hero-buttons .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .hero-stats {
+        margin: 30px 0;
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+@media (max-width: 576px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .lead {
+        font-size: 1.1rem;
+    }
+    
+    .hero-stats h3 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Custom Gradient Backgrounds */
+.bg-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Button Enhancements */
+.btn-warning {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(45deg, #ffed4e, #ffd700);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+/* Badge Styles */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.5em 0.8em;
+}
+
+/* Image Enhancements */
+.img-fluid {
+    transition: all 0.3s ease;
+}
+
+.img-fluid:hover {
+    transform: scale(1.02);
+}
+
+/* Section Spacing */
+.py-5 {
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+}
+
+/* Success Story Section */
+.bg-gradient-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 50%, #17a2b8 100%);
+}
+
+.success-story-content .badge {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.highlight-item {
+    background: rgba(255,255,255,0.1);
+    padding: 8px 12px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.live-prediction-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.horse-name {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900;
+}
+
+.object-fit-cover {
+    object-fit: cover;
+}
+
+/* Tooltips for stats */
+.stat-item {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: scale(1.05);
+}
+
+.stat-item[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+.stat-item[data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-bottom-color: rgba(0,0,0,0.8);
+    z-index: 1000;
+}
+
+/* Counter animation */
+.counter {
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+/* CTA Section */
+.cta-buttons .btn {
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.cta-buttons .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}

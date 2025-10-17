@@ -15,6 +15,84 @@ import time
 import os
 import json
 import re
+from urllib.parse import urljoin, urlparse
+import ssl
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+# Güvenli HTTP oturumu
+def create_secure_session():
+    """Güvenli HTTP oturumu oluştur"""
+    session = requests.Session()
+    
+    # SSL doğrulama aktif
+    session.verify = True
+    
+    # User-Agent güvenliği
+    session.headers.update({
+        'User-Agent': 'At-Yarisi-Analiz-Bot/1.0',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'tr-TR,tr;q=0.8,en-US;q=0.5,en;q=0.3',
+        'Accept-Encoding': 'gzip, deflate',
+        'DNT': '1',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+    })
+    
+    # Retry stratejisi
+    retry_strategy = Retry(
+        total=3,
+        status_forcelist=[429, 500, 502, 503, 504],
+        method_whitelist=["HEAD", "GET", "OPTIONS"],
+        backoff_factor=1
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    
+    # Timeout ayarları
+    session.timeout = 30
+    
+    return session
+
+def validate_url(url, allowed_domains=['www.yenibeygir.com']):
+    """URL güvenlik validasyonu"""
+    try:
+        parsed = urlparse(url)
+        
+        # HTTPS zorunluluğu (development'ta HTTP'ye izin ver)
+        if not parsed.scheme in ['http', 'https']:
+            raise ValueError("Sadece HTTP/HTTPS protokollerine izin verilir")
+            
+        # Domain whitelist kontrolü
+        if parsed.netloc not in allowed_domains:
+            raise ValueError(f"İzin verilmeyen domain: {parsed.netloc}")
+            
+        # Path traversal koruması
+        if '..' in parsed.path or '//' in parsed.path:
+            raise ValueError("Güvenlik riski: path traversal tespit edildi")
+            
+        return True
+        
+    except Exception as e:
+        print(f"URL validasyon hatası: {e}")
+        return False
+
+def sanitize_html_content(content):
+    """HTML içeriğini güvenli hale getir"""
+    if not content:
+        return ""
+        
+    # BeautifulSoup ile parse et ve temizle
+    soup = BeautifulSoup(content, 'html.parser')
+    
+    # Potansiyel tehlikeli tag'leri kaldır
+    dangerous_tags = ['script', 'iframe', 'object', 'embed', 'form', 'input']
+    for tag in dangerous_tags:
+        for element in soup.find_all(tag):
+            element.decompose()
+            
+    return str(soup)
 
 def normalize_weight(weight_str):
     """

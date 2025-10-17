@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-user text-primary"></i> {{ user.first_name }} {{ user.last_name }}</h2>
+            <div>
+                <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Düzenle
+                </a>
+                {% if user.id != current_user.id %}
+                <button class="btn btn-danger" onclick="deleteUser({{ user.id }}, '{{ user.username }}')">
+                    <i class="fas fa-trash"></i> Sil
+                </button>
+                {% endif %}
+                <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Geri
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kullanıcı Bilgileri -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-user-circle"></i> Kullanıcı Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="avatar-circle mx-auto mb-2" style="width: 80px; height: 80px; font-size: 24px;">
+                        {{ user.first_name[0]|upper }}{{ user.last_name[0]|upper }}
+                    </div>
+                    <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+                    <p class="text-muted">@{{ user.username }}</p>
+                </div>
+                
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        {% if user.is_active %}
+                            <span class="badge bg-success w-100">Aktif</span>
+                        {% else %}
+                            <span class="badge bg-danger w-100">Pasif</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-6">
+                        {% if user.is_admin %}
+                            <span class="badge bg-danger w-100">Admin</span>
+                        {% else %}
+                            <span class="badge bg-secondary w-100">Kullanıcı</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <table class="table table-sm">
+                    <tr>
+                        <th width="40%">Email:</th>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Telefon:</th>
+                        <td>{{ user.phone or '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Kayıt Tarihi:</th>
+                        <td>{{ user.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Son Giriş:</th>
+                        <td>
+                            {% if user.last_login %}
+                                {{ user.last_login.strftime('%d.%m.%Y %H:%M') }}
+                            {% else %}
+                                <span class="text-muted">Hiç giriş yapmamış</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-{% if user.is_premium_active() %}warning{% else %}secondary{% endif %} text-white">
+                <h5><i class="fas fa-crown"></i> Premium Durum</h5>
+            </div>
+            <div class="card-body">
+                {% if user.is_premium_active() %}
+                    <div class="text-center mb-3">
+                        <i class="fas fa-crown fa-3x text-warning mb-2"></i>
+                        <h5 class="text-success">Premium Aktif</h5>
+                    </div>
+                    
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Başlangıç:</th>
+                            <td>{{ user.premium_start_date.strftime('%d.%m.%Y') if user.premium_start_date else '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Bitiş:</th>
+                            <td>{{ user.premium_end_date.strftime('%d.%m.%Y') if user.premium_end_date else 'Sınırsız' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Kalan Süre:</th>
+                            <td>
+                                <strong class="text-primary">{{ user.get_premium_days_left() }} gün</strong>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <div class="d-grid">
+                        <button class="btn btn-outline-danger btn-sm" onclick="togglePremium({{ user.id }}, '{{ user.username }}')">
+                            <i class="fas fa-times"></i> Premium İptal Et
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="text-center mb-3">
+                        <i class="fas fa-lock fa-3x text-muted mb-2"></i>
+                        <h5 class="text-muted">Premium Pasif</h5>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-warning" onclick="activatePremium({{ user.id }}, '{{ user.username }}', 30)">
+                            <i class="fas fa-crown"></i> 30 Gün Premium
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="activatePremium({{ user.id }}, '{{ user.username }}', 365)">
+                            <i class="fas fa-crown"></i> 1 Yıl Premium
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-bar"></i> İstatistikler</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="h3 text-primary">{{ analyses|length }}</div>
+                        <small>Toplam Analiz</small>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="h3 text-success">
+                            {% set success_analyses = analyses|selectattr('success_rate')|selectattr('success_rate', '>', 0)|list %}
+                            {% if success_analyses %}
+                                {{ "%.1f"|format(success_analyses|sum(attribute='success_rate')/success_analyses|length) }}%
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                        <small>Ortalama Başarı</small>
+                    </div>
+                </div>
+                
+                {% if analyses and city_counts %}
+                    <div class="mb-2">
+                        <strong>En Çok Kullanılan Şehirler:</strong>
+                    </div>
+                    {% for city, count in city_counts.items() %}
+                        {% if loop.index <= 3 %}
+                        <div class="d-flex justify-content-between mb-1">
+                            <small>{{ city.title() }}</small>
+                            <span class="badge bg-primary">{{ count }}</span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analiz Geçmişi -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-history"></i> Son Analiz Geçmişi</h5>
+            </div>
+            <div class="card-body">
+                {% if analyses %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Şehir</th>
+                                    <th>Analiz Türü</th>
+                                    <th>Koşu Sayısı</th>
+                                    <th>Başarı Oranı</th>
+                                    <th>Başarılı/Toplam</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for analysis in analyses %}
+                                <tr>
+                                    <td>{{ analysis.analysis_date.strftime('%d.%m.%Y %H:%M') }}</td>
+                                    <td><span class="badge bg-primary">{{ analysis.city.title() }}</span></td>
+                                    <td>{{ analysis.analysis_type.title() }}</td>
+                                    <td>{{ analysis.race_count or analysis.total_races or '-' }}</td>
+                                    <td>
+                                        {% if analysis.success_rate %}
+                                            <span class="badge bg-{% if analysis.success_rate >= 70 %}success{% elif analysis.success_rate >= 50 %}warning{% else %}danger{% endif %}">
+                                                {{ "%.1f"|format(analysis.success_rate) }}%
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if analysis.successful_predictions and analysis.total_races %}
+                                            {{ analysis.successful_predictions }}/{{ analysis.total_races }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">Henüz analiz yapılmamış</h6>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+</style>
+
+<script>
+function togglePremium(userId, username) {
+    if (!confirm(`${username} kullanıcısının premium durumunu değiştirmek istediğinizden emin misiniz?`)) {
+        return;
+    }
+    
+    fetch(`/admin/user/${userId}/toggle_premium`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({days: 30})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Hata: ' + (data.message || 'Bilinmeyen hata'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('İşlem sırasında hata oluştu');
+    });
+}
+
+function activatePremium(userId, username, days) {
+    if (!confirm(`${username} kullanıcısına ${days} günlük premium vermek istediğinizden emin misiniz?`)) {
+        return;
+    }
+    
+    fetch(`/admin/user/${userId}/toggle_premium`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({days: days})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Hata: ' + (data.message || 'Bilinmeyen hata'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('İşlem sırasında hata oluştu');
+    });
+}
+
+function deleteUser(userId, username) {
+    if (!confirm(`"${username}" kullanıcısını silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz ve kullanıcının tüm verileri silinecektir.`)) {
+        return;
+    }
+    
+    // İkinci onay
+    if (!confirm(`UYARI: Bu işlem kalıcıdır!\n\n"${username}" kullanıcısı ve tüm analiz geçmişi silinecektir.\n\nDevam etmek istediğinizden emin misiniz?`)) {
+        return;
+    }
+    
+    fetch(`/admin/user/${userId}/delete`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Kullanıcı başarıyla silindi');
+            window.location.href = '/admin/users';
+        } else {
+            alert('Kullanıcı silinirken hata oluştu');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('İşlem sırasında hata oluştu');
+    });
+}
+</script>
+{% endblock %}

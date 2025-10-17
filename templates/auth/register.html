@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid min-vh-100" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+    <div class="row justify-content-center align-items-center min-vh-100 py-5">
+        <div class="col-md-8 col-lg-6 col-xl-5">
+            <!-- Modern Register Card -->
+            <div class="card shadow-lg border-0" style="border-radius: 20px; backdrop-filter: blur(10px);">
+                <!-- Logo ve Başlık -->
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <div class="bg-success rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-user-plus text-white fa-2x"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark mb-2">Hesap Oluştur</h3>
+                        <p class="text-muted">At yarışı analiz sistemine katılın</p>
+                    </div>
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <!-- Ad Soyad -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="fas fa-user text-muted"></i>
+                                </span>
+                                {{ form.first_name(class="form-control border-0 py-3" + (" is-invalid" if form.first_name.errors else ""), 
+                                   placeholder="Adınız", style="background: #f8f9fa;") }}
+                            </div>
+                            {% if form.first_name.errors %}
+                                <div class="text-danger mt-1">
+                                    <small><i class="fas fa-exclamation-circle"></i> {% for error in form.first_name.errors %}{{ error }}{% endfor %}</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="fas fa-user text-muted"></i>
+                                </span>
+                                {{ form.last_name(class="form-control border-0 py-3" + (" is-invalid" if form.last_name.errors else ""), 
+                                   placeholder="Soyadınız", style="background: #f8f9fa;") }}
+                            </div>
+                            {% if form.last_name.errors %}
+                                <div class="text-danger mt-1">
+                                    <small><i class="fas fa-exclamation-circle"></i> {% for error in form.last_name.errors %}{{ error }}{% endfor %}</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Kullanıcı Adı -->
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0">
+                                <i class="fas fa-at text-muted"></i>
+                            </span>
+                            {{ form.username(class="form-control border-0 py-3" + (" is-invalid" if form.username.errors else ""), 
+                               placeholder="Kullanıcı Adı", style="background: #f8f9fa;") }}
+                        </div>
+                        {% if form.username.errors %}
+                            <div class="text-danger mt-1">
+                                <small><i class="fas fa-exclamation-circle"></i> {% for error in form.username.errors %}{{ error }}{% endfor %}</small>
+                            </div>
+                        {% else %}
+                            <div class="text-muted mt-1">
+                                <small><i class="fas fa-info-circle"></i> 3-20 karakter arası, sadece harf ve rakam</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0">
+                                <i class="fas fa-envelope text-muted"></i>
+                            </span>
+                            {{ form.email(class="form-control border-0 py-3" + (" is-invalid" if form.email.errors else ""), 
+                               placeholder="Email Adresiniz", style="background: #f8f9fa;") }}
+                        </div>
+                        {% if form.email.errors %}
+                            <div class="text-danger mt-1">
+                                <small><i class="fas fa-exclamation-circle"></i> {% for error in form.email.errors %}{{ error }}{% endfor %}</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Telefon -->
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0">
+                                <i class="fas fa-phone text-muted"></i>
+                            </span>
+                            {{ form.phone(class="form-control border-0 py-3" + (" is-invalid" if form.phone.errors else ""), 
+                               placeholder="0555 123 45 67", style="background: #f8f9fa;") }}
+                        </div>
+                        {% if form.phone.errors %}
+                            <div class="text-danger mt-1">
+                                <small><i class="fas fa-exclamation-circle"></i> {% for error in form.phone.errors %}{{ error }}{% endfor %}</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Şifreler -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                {{ form.password(class="form-control border-0 py-3" + (" is-invalid" if form.password.errors else ""), 
+                                   placeholder="Şifreniz", style="background: #f8f9fa;") }}
+                            </div>
+                            {% if form.password.errors %}
+                                <div class="text-danger mt-1">
+                                    <small><i class="fas fa-exclamation-circle"></i> {% for error in form.password.errors %}{{ error }}{% endfor %}</small>
+                                </div>
+                            {% else %}
+                                <div class="text-muted mt-1">
+                                    <small><i class="fas fa-info-circle"></i> En az 6 karakter</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                {{ form.password2(class="form-control border-0 py-3" + (" is-invalid" if form.password2.errors else ""), 
+                                   placeholder="Şifre Tekrar", style="background: #f8f9fa;") }}
+                            </div>
+                            {% if form.password2.errors %}
+                                <div class="text-danger mt-1">
+                                    <small><i class="fas fa-exclamation-circle"></i> {% for error in form.password2.errors %}{{ error }}{% endfor %}</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Sözleşme Onayları -->
+                    <div class="mb-4">
+                        <div class="bg-light p-3 rounded-3 mb-3">
+                            <h6 class="text-muted mb-3">
+                                <i class="fas fa-file-contract me-2"></i>Sözleşme Onayları
+                            </h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="agreementTerms" name="agreement_terms" required>
+                                <label class="form-check-label small" for="agreementTerms">
+                                    <a href="#" class="text-success text-decoration-none fw-bold" data-bs-toggle="modal" data-bs-target="#termsModal">
+                                        Üyelik Sözleşmesini
+                                    </a> okudum ve kabul ediyorum.
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="agreementDistance" name="agreement_distance" required>
+                                <label class="form-check-label small" for="agreementDistance">
+                                    <a href="#" class="text-success text-decoration-none fw-bold" data-bs-toggle="modal" data-bs-target="#distanceModal">
+                                        Mesafeli Satış Sözleşmesini
+                                    </a> okudum ve kabul ediyorum.
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agreementPrivacy" name="agreement_privacy" required>
+                                <label class="form-check-label small" for="agreementPrivacy">
+                                    <a href="#" class="text-success text-decoration-none fw-bold" data-bs-toggle="modal" data-bs-target="#privacyModal">
+                                        Gizlilik ve Çerez Politikasını
+                                    </a> okudum ve kabul ediyorum.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Register Button -->
+                    <div class="d-grid mb-4">
+                        <button type="submit" class="btn btn-success btn-lg py-3 fw-bold" 
+                                style="border-radius: 15px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border: none;">
+                            <i class="fas fa-user-plus me-2"></i>Hesap Oluştur
+                        </button>
+                    </div>
+                    
+                    <!-- Login Link -->
+                    <div class="text-center">
+                        <p class="text-muted mb-0">
+                            Zaten hesabınız var mı? 
+                            <a href="{{ url_for('auth.login') }}" class="text-success fw-bold text-decoration-none">
+                                Giriş Yapın
+                            </a>
+                        </p>
+                    </div>
+                </form>
+                </div>
+            </div>
+            
+            <!-- Alt Bilgi -->
+            <div class="text-center py-4">
+                <div class="card bg-white bg-opacity-90 border-0 shadow-sm" style="border-radius: 15px;">
+                    <div class="card-body py-3">
+                        <h6 class="text-success mb-2">
+                            <i class="fas fa-chart-line me-2"></i>Hemen Başlayın!
+                        </h6>
+                        <p class="text-muted mb-0 small">
+                            <span class="text-success fw-bold">Ücretsiz hesap</span> ile 2 analiz hakkı kazanın.
+                            Premium üyelik ile sınırsız analiz yapın!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sözleşme Modalları -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-file-contract me-2"></i>Üyelik Sözleşmesi</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <h6 class="text-primary mb-3">ÜYELİK SÖZLEŞMESİ</h6>
+                    
+                    <div class="mb-4">
+                        <h6 class="fw-bold">1. Taraflar</h6>
+                        <p>Bu Üyelik Sözleşmesi ("Sözleşme"), atyarisianaliz.com internet sitesi ve mobil uygulaması üzerinden hizmet sunan bireysel geliştirici ("Hizmet Sağlayıcı") ile siteye üye olan kişi ("Kullanıcı") arasında akdedilmiştir.</p>
+                        <p>Kullanıcı, siteye üye olarak bu sözleşmede yer alan tüm koşulları kabul etmiş sayılır.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">2. Sözleşmenin Konusu</h6>
+                        <p>Bu Sözleşme, Kullanıcı'nın atyarisianaliz.com üzerinden sunulan dijital analiz, istatistik, veri ve benzeri hizmetlerden hangi şartlarla yararlanacağını düzenler.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">3. Kullanıcı Yükümlülükleri</h6>
+                        <ul>
+                            <li>Kullanıcı, siteye kayıt olurken doğru ve güncel bilgi verdiğini kabul eder.</li>
+                            <li>Kullanıcı, platformu yasa dışı faaliyetler için kullanamaz.</li>
+                            <li>Kullanıcı hesabının güvenliğinden sorumludur.</li>
+                            <li>Kullanıcı, platformdaki hiçbir içeriği izinsiz çoğaltamaz veya ticari amaçla kullanamaz.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">4. Hizmet Sağlayıcının Sorumluluk Reddi</h6>
+                        <ul>
+                            <li>atyarisianaliz.com üzerinden sunulan bilgiler yalnızca bilgilendirme amaçlıdır, bahis tavsiyesi değildir.</li>
+                            <li>Verilerin doğruluğu, eksiksizliği veya güncelliği garanti edilmez.</li>
+                            <li>Kullanıcının bu verilere dayanarak alacağı karar ve işlemlerden doğacak zararlardan Hizmet Sağlayıcı sorumlu değildir.</li>
+                            <li>Hizmet Sağlayıcı, sistem hataları veya üçüncü taraf servis sağlayıcılardan kaynaklı kesintilerden sorumlu değildir.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">5. Fesih</h6>
+                        <ul>
+                            <li>Kullanıcı dilediği anda üyeliğini sonlandırabilir.</li>
+                            <li>Hizmet Sağlayıcı, sözleşmeye aykırı davranan kullanıcıların üyeliklerini tek taraflı sonlandırabilir.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="distanceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-shopping-cart me-2"></i>Mesafeli Satış Sözleşmesi</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <h6 class="text-success mb-3">MESAFELİ SATIŞ SÖZLEŞMESİ (DİJİTAL HİZMET/ABONELİK)</h6>
+                    
+                    <div class="mb-4">
+                        <h6 class="fw-bold">1. Taraflar</h6>
+                        <p><strong>Satıcı (Hizmet Sağlayıcı):</strong> atyarisianaliz.com</p>
+                        <p><strong>Alıcı (Kullanıcı):</strong> Siteye kayıtlı ve hizmet satın alan kişi</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">2. Sözleşmenin Konusu</h6>
+                        <p>Bu sözleşme, Kullanıcı'nın atyarisianaliz.com üzerinde sunulan dijital analiz ve abonelik hizmetlerini satın almasıyla ilgili hak ve yükümlülüklerini belirler.</p>
+                        <p>6502 Sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği hükümlerine uygundur.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">3. Hizmetin Niteliği</h6>
+                        <ul>
+                            <li>Satın alınan hizmet dijital içeriktir, fiziksel ürün teslimatı yapılmaz.</li>
+                            <li>Hizmet, ödeme tamamlanır tamamlanmaz Kullanıcı hesabına tanımlanır.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">4. Cayma Hakkı</h6>
+                        <ul>
+                            <li>Dijital içeriklerde, Kullanıcı içeriğe erişim sağladıktan sonra cayma hakkı ortadan kalkar.</li>
+                            <li>Kullanıcı hizmeti kullanmaya başladığında ücret iadesi talep edemez.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">5. Ücret ve Ödeme</h6>
+                        <ul>
+                            <li>Hizmet bedeli, ödeme sırasında belirtilir.</li>
+                            <li>Ödemeler IBAN, kredi kartı veya Shopier üzerinden güvenli bir şekilde alınır.</li>
+                            <li>Ödeme sistemlerinden kaynaklanan teknik hatalardan Hizmet Sağlayıcı sorumlu değildir.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">6. Sorumluluk Reddi</h6>
+                        <ul>
+                            <li>Hizmet yalnızca bilgilendirme amaçlıdır; yatırım veya bahis tavsiyesi içermez.</li>
+                            <li>Kullanıcının elde ettiği sonuçlardan doğacak kar veya zarar, tamamen Kullanıcı sorumluluğundadır.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="privacyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-shield-alt me-2"></i>Gizlilik ve Çerez Politikası</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <h6 class="text-info mb-3">GİZLİLİK VE ÇEREZ POLİTİKASI</h6>
+                    
+                    <div class="mb-4">
+                        <h6 class="fw-bold">1. Genel Bilgi</h6>
+                        <p>atyarisianaliz.com, kullanıcıların gizliliğini korumayı taahhüt eder. Bu politika, siteyi kullanan kişilerin hangi verilerinin toplandığını, nasıl kullanıldığını ve nasıl korunduğunu açıklar.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">2. Toplanan Veriler</h6>
+                        <ul>
+                            <li>E-posta, kullanıcı adı, şifre (şifrelenmiş)</li>
+                            <li>Kullanım istatistikleri (sayfa görüntüleme, tıklama, oturum süresi)</li>
+                            <li>Çerez (cookie) bilgileri</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">3. Verilerin Kullanım Amaçları</h6>
+                        <ul>
+                            <li>Hesap ve abonelik hizmetleri sunmak</li>
+                            <li>Hizmet kalitesini artırmak ve istatistik yapmak</li>
+                            <li>Kullanıcıya özel içerik ve bildirim sağlamak</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">4. Çerezler (Cookies)</h6>
+                        <ul>
+                            <li>Site, kullanıcı deneyimini iyileştirmek için çerez kullanır.</li>
+                            <li>Tarayıcı ayarları ile çerezler devre dışı bırakılabilir.</li>
+                            <li>Google Analytics ve Meta Pixel gibi araçlar anonim veri toplar.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">5. Veri Güvenliği</h6>
+                        <ul>
+                            <li>Kullanıcı bilgileri SSL sertifikalı sunucularda güvenle saklanır.</li>
+                            <li>Kredi kartı bilgileri site üzerinde depolanmaz; yalnızca güvenli ödeme altyapısı üzerinden işlenir.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">6. Yasal Uyum</h6>
+                        <p>Bu politika, 6698 Sayılı Kişisel Verilerin Korunması Kanunu (KVKK) hükümlerine uygundur.</p>
+                        <p>Kullanıcı siteyi kullanarak bu gizlilik ve çerez politikasını okuduğunu ve kabul ettiğini beyan eder.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold">7. İletişim</h6>
+                        <p>Gizlilik veya verilerle ilgili sorular için:</p>
+                        <p><strong>E-posta:</strong> <a href="mailto:info@atyarisianaliz.com" class="text-info">info@atyarisianaliz.com</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

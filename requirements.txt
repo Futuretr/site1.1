@@ -5,3 +5,9 @@ beautifulsoup4
 pandas
 lxml
 schedule
+flask-login
+flask-sqlalchemy
+flask-wtf
+flask-migrate
+werkzeug
+email-validator

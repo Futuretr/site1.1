@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-tachometer-alt text-primary"></i> Admin Dashboard</h2>
+            <span class="badge bg-success fs-6">Yönetici Paneli</span>
+        </div>
+    </div>
+</div>
+
+<!-- İstatistik Kartları -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3>{{ stats.total_users }}</h3>
+                        <p class="mb-0">Toplam Kullanıcı</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('admin.users') }}" class="text-white text-decoration-none">
+                    <small>Detayları gör <i class="fas fa-arrow-right"></i></small>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3>{{ stats.premium_users }}</h3>
+                        <p class="mb-0">Premium Üye</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-crown fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <small class="text-white-50">
+                    %{{ stats.premium_rate }} premium oranı
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3>{{ stats.active_users }}</h3>
+                        <p class="mb-0">Aktif Kullanıcı</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-user-check fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <small class="text-white-50">
+                    Aktif hesap sayısı
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3>{{ stats.total_analyses }}</h3>
+                        <p class="mb-0">Toplam Analiz</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('admin.analyses') }}" class="text-white text-decoration-none">
+                    <small>Detayları gör <i class="fas fa-arrow-right"></i></small>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hızlı İşlemler -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-bolt"></i> Hızlı İşlemler</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-outline-primary w-100 p-3">
+                            <i class="fas fa-users fa-2x d-block mb-2"></i>
+                            <strong>Kullanıcı Yönetimi</strong>
+                            <div class="small">Kullanıcıları görüntüle ve düzenle</div>
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('admin.analyses') }}" class="btn btn-outline-success w-100 p-3">
+                            <i class="fas fa-chart-line fa-2x d-block mb-2"></i>
+                            <strong>Analiz Geçmişi</strong>
+                            <div class="small">Tüm analizleri görüntüle</div>
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('admin.data_management') }}" class="btn btn-outline-warning w-100 p-3">
+                            <i class="fas fa-database fa-2x d-block mb-2"></i>
+                            <strong>Veri Yönetimi</strong>
+                            <div class="small">Otomatik veri çekme</div>
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('admin.settings') }}" class="btn btn-outline-info w-100 p-3">
+                            <i class="fas fa-cog fa-2x d-block mb-2"></i>
+                            <strong>Sistem Ayarları</strong>
+                            <div class="small">Sistem konfigürasyonu</div>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="row g-3 mt-2">
+                    <div class="col-md-4">
+                        <a href="{{ url_for('admin.conversations') }}" class="btn btn-outline-purple w-100 p-3">
+                            <i class="fas fa-comments fa-2x d-block mb-2"></i>
+                            <strong>Kullanıcı Konuşmaları</strong>
+                            <div class="small">Sürekli mesajlaşma sistemi</div>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary w-100 p-3">
+                            <i class="fas fa-home fa-2x d-block mb-2"></i>
+                            <strong>Ana Sayfa</strong>
+                            <div class="small">Kullanıcı paneline dön</div>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-danger w-100 p-3" onclick="location.reload()">
+                            <i class="fas fa-sync-alt fa-2x d-block mb-2"></i>
+                            <strong>Sayfayı Yenile</strong>
+                            <div class="small">İstatistikleri güncelle</div>
+                        </button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- İçerik Alanları -->
+<div class="row">
+    <!-- Son Kullanıcılar -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-user-plus"></i> Son Kayıtlar</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_users %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Kullanıcı</th>
+                                    <th>Email</th>
+                                    <th>Durum</th>
+                                    <th>Kayıt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in recent_users %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                                        <div class="small text-muted">@{{ user.username }}</div>
+                                    </td>
+                                    <td>
+                                        <small>{{ user.email }}</small>
+                                    </td>
+                                    <td>
+                                        {% if user.is_premium %}
+                                            <span class="badge bg-warning text-dark">Premium</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Free</span>
+                                        {% endif %}
+                                        {% if user.is_admin %}
+                                            <span class="badge bg-danger">Admin</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ user.created_at.strftime('%d.%m.%Y') }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center">
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-sm btn-outline-primary">
+                            Tümünü Gör <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <p>Henüz kullanıcı kaydı yok</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Son Analizler -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-bar"></i> Son Analizler</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_analyses %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Kullanıcı</th>
+                                    <th>Şehir</th>
+                                    <th>Tür</th>
+                                    <th>Tarih</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for analysis in recent_analyses %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ analysis.user.username }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ analysis.city.title() }}</span>
+                                    </td>
+                                    <td>
+                                        <small>{{ analysis.analysis_type.title() }}</small>
+                                    </td>
+                                    <td>
+                                        <small>{{ analysis.analysis_date.strftime('%d.%m %H:%M') }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center">
+                        <a href="{{ url_for('admin.analyses') }}" class="btn btn-sm btn-outline-success">
+                            Tümünü Gör <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted">
+                        <i class="fas fa-chart-line fa-3x mb-3"></i>
+                        <p>Henüz analiz yapılmamış</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

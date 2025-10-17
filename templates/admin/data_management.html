@@ -1,0 +1,396 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-database text-primary"></i> Veri Yönetimi</h2>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Admin Panel
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Veri Çekme Kontrolleri -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-download"></i> Manuel Veri Çekme</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <button class="btn btn-success w-100" onclick="fetchAllData()">
+                            <i class="fas fa-globe"></i> Tüm Şehirler
+                            <div class="small">9 şehirden veri çek</div>
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-city"></i> Tek Şehir Seç
+                            </button>
+                            <ul class="dropdown-menu w-100">
+                                {% for city in cities %}
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="fetchCityData('{{ city }}')">
+                                        <i class="fas fa-map-marker-alt"></i> {{ city.title() }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- İlerleme Çubuğu -->
+                <div id="progressContainer" style="display: none;">
+                    <div class="progress mb-3">
+                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <div id="progressText" class="text-center text-muted">Hazırlanıyor...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5><i class="fas fa-clock"></i> Otomatik Veri Çekme</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="autoFetchEnabled">
+                    <label class="form-check-label" for="autoFetchEnabled">
+                        Otomatik çekmeyi aktifleştir
+                    </label>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="autoFetchTime" class="form-label">Çekme Saati</label>
+                    <input type="time" class="form-control" id="autoFetchTime" value="08:00">
+                </div>
+                
+                <button class="btn btn-warning w-100" onclick="scheduleAutoFetch()">
+                    <i class="fas fa-save"></i> Zamanlamayı Kaydet
+                </button>
+                
+                <hr>
+                
+                <div class="alert alert-info alert-sm">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Bilgi:</strong> Otomatik çekme her gün belirtilen saatte çalışır.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mevcut Veri Dosyaları -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-folder-open"></i> Mevcut Veri Dosyaları</h5>
+                    <button class="btn btn-outline-danger btn-sm" onclick="showClearDataModal()">
+                        <i class="fas fa-trash"></i> Eski Verileri Temizle
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if data_files %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Dosya Adı</th>
+                                <th>Şehir</th>
+                                <th>Boyut</th>
+                                <th>Son Güncelleme</th>
+                                <th>Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in data_files %}
+                            <tr>
+                                <td>
+                                    <code class="text-primary">{{ file.name }}</code>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ file.city.title() }}</span>
+                                </td>
+                                <td>{{ file.size }} KB</td>
+                                <td>{{ file.modified.strftime('%d.%m.%Y %H:%M') }}</td>
+                                <td>
+                                    {% set hours_ago = (now() - file.modified).total_seconds() / 3600 %}
+                                    {% if hours_ago < 12 %}
+                                        <span class="badge bg-success">Güncel</span>
+                                    {% elif hours_ago < 24 %}
+                                        <span class="badge bg-warning">Eski</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Çok Eski</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                    <h6 class="text-muted">Henüz veri dosyası bulunamadı</h6>
+                    <p class="text-muted">Yukarıdaki butonları kullanarak veri çekmeye başlayın.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Son Çekme Zamanları -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="fas fa-history"></i> Son Veri Çekme Zamanları</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for city in cities %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card border-primary">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">
+                                    <i class="fas fa-map-marker-alt"></i> {{ city.title() }}
+                                </h6>
+                                {% if last_fetch_times[city] %}
+                                    <p class="card-text">
+                                        <small class="text-muted">{{ last_fetch_times[city].strftime('%d.%m.%Y') }}</small><br>
+                                        <strong>{{ last_fetch_times[city].strftime('%H:%M') }}</strong>
+                                    </p>
+                                    {% set hours_ago = (now() - last_fetch_times[city]).total_seconds() / 3600 %}
+                                    {% if hours_ago < 12 %}
+                                        <span class="badge bg-success">Güncel</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ hours_ago|int }} saat önce</span>
+                                    {% endif %}
+                                {% else %}
+                                    <p class="text-muted">
+                                        <i class="fas fa-question-circle"></i><br>
+                                        Veri yok
+                                    </p>
+                                    <span class="badge bg-secondary">Hiç çekilmemiş</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Veri Temizleme Modal -->
+<div class="modal fade" id="clearDataModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Eski Verileri Temizle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="cleanupDays" class="form-label">Kaç günden eski veriler silinsin?</label>
+                    <select class="form-select" id="cleanupDays">
+                        <option value="3">3 günden eski</option>
+                        <option value="7" selected>7 günden eski</option>
+                        <option value="14">14 günden eski</option>
+                        <option value="30">30 günden eski</option>
+                    </select>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Uyarı:</strong> Bu işlem geri alınamaz. Silinen veriler kalıcı olarak kaybolacaktır.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-danger" onclick="clearOldData()">
+                    <i class="fas fa-trash"></i> Temizle
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Yükleme Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Yükleniyor...</span>
+                </div>
+                <p class="mt-3" id="loadingText">Veriler çekiliyor...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showLoading(text = 'Veriler çekiliyor...') {
+    document.getElementById('loadingText').textContent = text;
+    new bootstrap.Modal(document.getElementById('loadingModal')).show();
+}
+
+function hideLoading() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
+    if (modal) modal.hide();
+}
+
+function showProgress(current, total, text) {
+    const container = document.getElementById('progressContainer');
+    const bar = document.getElementById('progressBar');
+    const textEl = document.getElementById('progressText');
+    
+    container.style.display = 'block';
+    const percentage = (current / total) * 100;
+    bar.style.width = percentage + '%';
+    textEl.textContent = text + ` (${current}/${total})`;
+}
+
+function hideProgress() {
+    document.getElementById('progressContainer').style.display = 'none';
+}
+
+// Tek şehir veri çekme
+function fetchCityData(city) {
+    showLoading(`${city} şehri için veri çekiliyor...`);
+    
+    fetch(`/admin/fetch_city_data/${city}`)
+    .then(response => response.json())
+    .then(data => {
+        hideLoading();
+        if (data.success) {
+            alert(`${city} şehri verisi başarıyla çekildi!`);
+            location.reload();
+        } else {
+            alert('Hata: ' + (data.error || 'Bilinmeyen hata'));
+        }
+    })
+    .catch(error => {
+        hideLoading();
+        console.error('Error:', error);
+        alert('Bağlantı hatası: ' + error.message);
+    });
+}
+
+// Tüm şehirler veri çekme
+function fetchAllData() {
+    const cities = {{ cities|tojson }};
+    let current = 0;
+    
+    showProgress(0, cities.length, 'Başlatılıyor...');
+    
+    fetch('/admin/fetch_all_data')
+    .then(response => response.json())
+    .then(data => {
+        hideProgress();
+        if (data.success) {
+            alert(`Toplu veri çekme tamamlandı! ${data.success_count}/${data.total_count} şehir başarılı.`);
+            location.reload();
+        } else {
+            alert('Hata: ' + (data.error || 'Bilinmeyen hata'));
+        }
+    })
+    .catch(error => {
+        hideProgress();
+        console.error('Error:', error);
+        alert('Bağlantı hatası: ' + error.message);
+    });
+}
+
+// Otomatik çekme zamanlaması
+function scheduleAutoFetch() {
+    const enabled = document.getElementById('autoFetchEnabled').checked;
+    const time = document.getElementById('autoFetchTime').value;
+    
+    fetch('/admin/schedule_auto_fetch', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            enabled: enabled,
+            time: time
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Otomatik çekme ayarları kaydedildi!');
+        } else {
+            alert('Hata: ' + (data.error || 'Bilinmeyen hata'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Bağlantı hatası: ' + error.message);
+    });
+}
+
+// Veri temizleme modal göster
+function showClearDataModal() {
+    new bootstrap.Modal(document.getElementById('clearDataModal')).show();
+}
+
+// Eski verileri temizle
+function clearOldData() {
+    const days = document.getElementById('cleanupDays').value;
+    
+    if (!confirm(`${days} günden eski tüm veri dosyaları silinecek. Emin misiniz?`)) {
+        return;
+    }
+    
+    fetch('/admin/clear_old_data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            days: parseInt(days)
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        bootstrap.Modal.getInstance(document.getElementById('clearDataModal')).hide();
+        if (data.success) {
+            alert(`${data.deleted_count} adet dosya temizlendi.`);
+            location.reload();
+        } else {
+            alert('Hata: ' + (data.error || 'Bilinmeyen hata'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Bağlantı hatası: ' + error.message);
+    });
+}
+
+// Sayfa yüklendiğinde mevcut ayarları yükle
+document.addEventListener('DOMContentLoaded', function() {
+    // Otomatik çekme ayarlarını yükle (AJAX ile)
+    // Bu kısım SystemSettings'den okunabilir
+});
+</script>
+{% endblock %}

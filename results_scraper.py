@@ -99,6 +99,15 @@ def get_previous_day_results(city, debug=False):
         
         # Sayfayı çek
         response = requests.get(url, timeout=10)
+        
+        if debug:
+            print(f"[SONUÇ] HTTP Status: {response.status_code}")
+        
+        if response.status_code == 404:
+            if debug:
+                print(f"[SONUÇ] Sayfa bulunamadı: {url}")
+            return {}
+        
         response.raise_for_status()
         
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -108,6 +117,8 @@ def get_previous_day_results(city, debug=False):
         
         if debug:
             print(f"[SONUÇ] {len(results)} koşu sonucu bulundu")
+            if not results:
+                print(f"[SONUÇ] Sayfa içeriği parse edilemedi veya sonuç yok")
         
         return results
         
@@ -132,6 +143,9 @@ def parse_results_page(soup, debug=False):
     try:
         # Tüm tabloları bul
         tables = soup.find_all('table')
+        
+        if debug:
+            print(f"[PARSE] {len(tables)} tablo bulundu")
         
         race_number = 0
         

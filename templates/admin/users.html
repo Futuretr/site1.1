@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-users text-primary"></i> Kullanıcı Yönetimi</h2>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Admin Panel
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Arama ve Filtreler -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label class="form-label">Kullanıcı Ara</label>
+                        <input type="text" name="search" class="form-control" placeholder="Ad, email, username..." value="{{ search }}">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Ara
+                        </button>
+                        {% if search %}
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i> Temizle
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <small class="text-muted">
+                            Toplam {{ users.total }} kullanıcı
+                        </small>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kullanıcı Listesi -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> Kullanıcı Listesi</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if users.items %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Kullanıcı</th>
+                                <th>Email</th>
+                                <th>Durum</th>
+                                <th>Premium</th>
+                                <th>Son Giriş</th>
+                                <th>Kayıt Tarihi</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users.items %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle me-2">
+                                            {{ user.first_name[0]|upper }}{{ user.last_name[0]|upper }}
+                                        </div>
+                                        <div>
+                                            <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                                            <div class="small text-muted">@{{ user.username }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <small>{{ user.email }}</small>
+                                </td>
+                                <td>
+                                    {% if user.is_active %}
+                                        <span class="badge bg-success">Aktif</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Pasif</span>
+                                    {% endif %}
+                                    {% if user.is_admin %}
+                                        <span class="badge bg-danger">Admin</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.is_premium_active() %}
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-crown"></i> Premium
+                                        </span>
+                                        <div class="small text-muted">
+                                            {{ user.get_premium_days_left() }} gün kaldı
+                                        </div>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Free</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.last_login %}
+                                        <small>{{ user.last_login.strftime('%d.%m.%Y %H:%M') }}</small>
+                                    {% else %}
+                                        <small class="text-muted">Hiç giriş yapmamış</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small>{{ user.created_at.strftime('%d.%m.%Y') }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="btn btn-outline-primary" title="Detaylar">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-outline-secondary" title="Düzenle">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button class="btn btn-outline-{% if user.is_premium %}warning{% else %}success{% endif %}" 
+                                                onclick="togglePremium({{ user.id }}, '{{ user.username }}')" 
+                                                title="Premium Değiştir">
+                                            <i class="fas fa-{% if user.is_premium %}crown{% else %}plus{% endif %}"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">Kullanıcı Bulunamadı</h5>
+                    {% if search %}
+                    <p class="text-muted">"{{ search }}" için sonuç bulunamadı</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if users.pages > 1 %}
+            <div class="card-footer">
+                <nav aria-label="Kullanıcı sayfaları">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if users.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.users', page=users.prev_num, search=search) }}">Önceki</a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for page_num in users.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != users.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.users', page=page_num, search=search) }}">{{ page_num }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                                {% endif %}
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">…</span>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if users.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.users', page=users.next_num, search=search) }}">Sonraki</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+</style>
+
+<script>
+function togglePremium(userId, username) {
+    if (!confirm(`${username} kullanıcısının premium durumunu değiştirmek istediğinizden emin misiniz?`)) {
+        return;
+    }
+    
+    fetch(`/admin/user/${userId}/toggle_premium`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({days: 30})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Hata: ' + (data.message || 'Bilinmeyen hata'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('İşlem sırasında hata oluştu');
+    });
+}
+</script>
+{% endblock %}

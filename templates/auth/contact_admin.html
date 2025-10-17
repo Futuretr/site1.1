@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Admin'e Mesaj Gönder - At Yarışı Analizi{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4><i class="fas fa-envelope"></i> Premium Paket Satın Alma Talebi</h4>
+                    {% if package %}
+                    <p class="mb-0">Seçili Paket: <strong>
+                        {% if package == '1hafta' %}1 Hafta - 150₺
+                        {% elif package == '1ay' %}1 Ay - 500₺
+                        {% elif package == '3ay' %}3 Ay - 1400₺
+                        {% elif package == '6ay' %}6 Ay - 2400₺
+                        {% endif %}
+                    </strong></p>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if package %}
+                    <!-- Ödeme Bilgileri -->
+                    <div class="alert alert-warning mb-4">
+                        <h5 class="alert-heading mb-3">
+                            <i class="fas fa-credit-card"></i> Ödeme Bilgileri
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Ad Soyad:</strong> Emir Arslan
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <strong>IBAN:</strong>
+                                <div class="input-group mt-1">
+                                    <input type="text" class="form-control" id="ibanNumber" value="TR83 0004 6009 9588 8000 1632 66" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="copyIban()" title="IBAN'ı Kopyala">
+                                        <i class="fas fa-copy"></i> Kopyala
+                                    </button>
+                                </div>
+                                <small class="text-muted">IBAN numarasını kopyalamak için butona tıklayın</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Premium paket satın almak için yukarıdaki adrese gerekli miktarı gönderip aşağıdaki forma isim soyisminizi yazmanız yeterlidir.
+                        En kısa sürede talebiniz değerlendirilecektir.
+                    </div>
+
+                    <form method="POST" action="{{ url_for('auth.contact_admin', package=package) if package else url_for('auth.contact_admin') }}">
+                        {{ form.hidden_tag() }}
+                        {% if package %}
+                            <input type="hidden" name="package" value="{{ package }}">
+                        {% endif %}
+                        
+                        <div class="form-group mb-3">
+                            {{ form.subject.label(class="form-label") }}
+                            {{ form.subject(class="form-control", readonly=True) }}
+                            {% for error in form.subject.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group mb-3">
+                            {{ form.package_type.label(class="form-label") }}
+                            {{ form.package_type(class="form-select", readonly=True) }}
+                            {% for error in form.package_type.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group mb-3">
+                            {{ form.message.label(class="form-label") }}
+                            {{ form.message(class="form-control", rows="6", placeholder="Ödeme yöntemi tercihinizi, iletişim bilgilerinizi ve diğer detayları yazın...") }}
+                            {% for error in form.message.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane"></i> Mesajı Gönder
+                            </button>
+                            <a href="{{ url_for('auth.premium') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Geri Dön
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Önceki Mesajlar -->
+            {% if user_messages %}
+            <div class="card mt-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5><i class="fas fa-history"></i> Önceki Mesajlarım</h5>
+                </div>
+                <div class="card-body">
+                    {% for message in user_messages %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h6 class="card-title">{{ message.subject }}</h6>
+                                <small class="text-muted">{{ message.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                            </div>
+                            <p class="card-text"><strong>Paket:</strong> 
+                                {% if message.package_type == '1hafta' %}1 Hafta (150₺)
+                                {% elif message.package_type == '1ay' %}1 Ay (500₺)
+                                {% elif message.package_type == '3ay' %}3 Ay (1400₺)
+                                {% elif message.package_type == '6ay' %}6 Ay (2400₺)
+                                {% endif %}
+                            </p>
+                            <p class="card-text">{{ message.message }}</p>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {% if message.status == 'pending' %}
+                                        <span class="badge bg-warning">Beklemede</span>
+                                    {% elif message.status == 'replied' %}
+                                        <span class="badge bg-success">Yanıtlandı</span>
+                                    {% elif message.status == 'closed' %}
+                                        <span class="badge bg-secondary">Kapatıldı</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if message.admin_response %}
+                            <div class="alert alert-success mt-3">
+                                <h6><i class="fas fa-reply"></i> Admin Yanıtı:</h6>
+                                {{ message.admin_response }}
+                                <div class="small text-muted mt-2">
+                                    Yanıt tarihi: {{ message.responded_at.strftime('%d.%m.%Y %H:%M') if message.responded_at }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function copyIban() {
+    const ibanInput = document.getElementById('ibanNumber');
+    ibanInput.select();
+    ibanInput.setSelectionRange(0, 99999); // Mobil cihazlar için
+    
+    try {
+        document.execCommand('copy');
+        
+        // Başarılı kopyalama mesajı
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
+        button.classList.remove('btn-outline-secondary');
+        button.classList.add('btn-success');
+        
+        // 2 saniye sonra orijinal haline dön
+        setTimeout(function() {
+            button.innerHTML = originalText;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-secondary');
+        }, 2000);
+        
+    } catch (err) {
+        // Hata durumunda alternatif yöntem
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(ibanInput.value).then(function() {
+                const button = event.target.closest('button');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
+                button.classList.remove('btn-outline-secondary');
+                button.classList.add('btn-success');
+                
+                setTimeout(function() {
+                    button.innerHTML = originalText;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-outline-secondary');
+                }, 2000);
+            });
+        } else {
+            alert('IBAN: ' + ibanInput.value + '\n\nLütfen manuel olarak kopyalayın.');
+        }
+    }
+}
+</script>
+
+{% endblock %}

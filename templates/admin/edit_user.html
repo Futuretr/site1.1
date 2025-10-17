@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-user-edit text-primary"></i> Kullanıcı Düzenle</h2>
+            <div>
+                <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="btn btn-outline-info">
+                    <i class="fas fa-eye"></i> Profili Görüntüle
+                </a>
+                <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Kullanıcı Listesi
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-user-cog"></i> Kullanıcı Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.username.label(class="form-label") }}
+                            {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else "")) }}
+                            {% if form.username.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.username.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                            {% if form.email.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.email.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.first_name.label(class="form-label") }}
+                            {{ form.first_name(class="form-control" + (" is-invalid" if form.first_name.errors else "")) }}
+                            {% if form.first_name.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            {{ form.last_name.label(class="form-label") }}
+                            {{ form.last_name(class="form-control" + (" is-invalid" if form.last_name.errors else "")) }}
+                            {% if form.last_name.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.phone.label(class="form-label") }}
+                        {{ form.phone(class="form-control" + (" is-invalid" if form.phone.errors else "")) }}
+                        {% if form.phone.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.phone.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Yetki ve Durum Ayarları -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Yetki ve Durum Ayarları</label>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="form-check form-switch">
+                                {{ form.is_active(class="form-check-input") }}
+                                {{ form.is_active.label(class="form-check-label") }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="form-check form-switch">
+                                {{ form.is_premium(class="form-check-input") }}
+                                {{ form.is_premium.label(class="form-check-label") }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="form-check form-switch">
+                                {{ form.is_admin(class="form-check-input") }}
+                                {{ form.is_admin.label(class="form-check-label") }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Premium Gün Ayarı -->
+                    <div class="mb-3" id="premiumDaysDiv" style="display: none;">
+                        {{ form.premium_days.label(class="form-label") }}
+                        
+                        <!-- Hızlı Seçim Butonları -->
+                        <div class="mb-2">
+                            <div class="btn-group" role="group" aria-label="Hızlı premium süresi seçimi">
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setPremiumDays(1)">1 Gün</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setPremiumDays(7)">1 Hafta</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setPremiumDays(14)">2 Hafta</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setPremiumDays(30)">1 Ay</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setPremiumDays(90)">3 Ay</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setPremiumDays(180)">6 Ay</button>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            {{ form.premium_days(class="form-control" + (" is-invalid" if form.premium_days.errors else "")) }}
+                            <span class="input-group-text">gün</span>
+                        </div>
+                        {% if form.premium_days.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.premium_days.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Premium üyelik süresini gün cinsinden belirtin. Mevcut premium süresine eklenir.
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> İptal
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-info-circle"></i> Kullanıcı Özeti</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">Kayıt Tarihi</small>
+                    <div class="fw-bold">{{ user.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    <small class="text-muted">Kullanıcı ID</small>
+                    <div class="fw-bold">#{{ user.id }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    <small class="text-muted">Public ID</small>
+                    <div class="font-monospace small">{{ user.public_id }}</div>
+                </div>
+                
+                {% if user.is_premium %}
+                <div class="mb-3">
+                    <small class="text-muted">Premium Durumu</small>
+                    <div>
+                        {% if user.is_premium_active() %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-crown"></i> Aktif Premium
+                            </span>
+                            <div class="small mt-1">
+                                Kalan Süre: {{ user.get_premium_days_left() }} gün
+                            </div>
+                        {% else %}
+                            <span class="badge bg-warning">
+                                <i class="fas fa-crown"></i> Süresi Dolmuş
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <small class="text-muted">Analiz Sayısı</small>
+                    <div class="fw-bold">{{ user.analysis_count or 0 }} adet</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header bg-warning">
+                <h6><i class="fas fa-exclamation-triangle"></i> Dikkat</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small mb-0">
+                    <li><i class="fas fa-info-circle text-info"></i> Admin yetkisi verirken dikkatli olun</li>
+                    <li><i class="fas fa-info-circle text-info"></i> Premium gün sayısı mevcut süreye eklenir</li>
+                    <li><i class="fas fa-info-circle text-info"></i> Kullanıcı pasifleştirilirse giriş yapamaz</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Premium checkbox değiştiğinde gün ayarını göster/gizle
+document.getElementById('is_premium').addEventListener('change', function() {
+    const premiumDaysDiv = document.getElementById('premiumDaysDiv');
+    if (this.checked) {
+        premiumDaysDiv.style.display = 'block';
+    } else {
+        premiumDaysDiv.style.display = 'none';
+    }
+});
+
+// Sayfa yüklendiğinde premium durumunu kontrol et
+document.addEventListener('DOMContentLoaded', function() {
+    const isPremiumChecked = document.getElementById('is_premium').checked;
+    const premiumDaysDiv = document.getElementById('premiumDaysDiv');
+    
+    if (isPremiumChecked) {
+        premiumDaysDiv.style.display = 'block';
+    }
+});
+
+// Premium gün sayısını ayarlama fonksiyonu
+function setPremiumDays(days) {
+    const premiumDaysInput = document.getElementById('premium_days');
+    premiumDaysInput.value = days;
+    
+    // Premium checkbox'ını da işaretle
+    const isPremiumCheckbox = document.getElementById('is_premium');
+    if (!isPremiumCheckbox.checked) {
+        isPremiumCheckbox.checked = true;
+        document.getElementById('premiumDaysDiv').style.display = 'block';
+    }
+}
+</script>
+{% endblock %}

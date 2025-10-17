@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Mesajlar - At Yarışı Analizi{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Konuşma Listesi -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-comments"></i> Konuşmalar</h5>
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#newConversationModal">
+                        <i class="fas fa-plus"></i> Yeni
+                    </button>
+                </div>
+                <div class="card-body p-0" style="max-height: 500px; overflow-y: auto;">
+                    {% if conversations %}
+                        {% for conversation in conversations %}
+                        <div class="conversation-item p-3 border-bottom {% if conversation.id == selected_conversation_id %}bg-light{% endif %}" 
+                             style="cursor: pointer;" onclick="window.location.href='{{ url_for('conversations', conversation_id=conversation.id) }}'">
+                            <div class="d-flex justify-content-between">
+                                <strong class="text-truncate">{{ conversation.subject }}</strong>
+                                {% if conversation.unread_count > 0 %}
+                                <span class="badge bg-danger">{{ conversation.unread_count }}</span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">{{ conversation.updated_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                            <div class="small text-muted">
+                                {% if conversation.status == 'active' %}
+                                    <i class="fas fa-circle text-success"></i> Aktif
+                                {% else %}
+                                    <i class="fas fa-circle text-secondary"></i> Kapalı
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center p-4">
+                            <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">Henüz konuşma yok</p>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newConversationModal">
+                                İlk Konuşmayı Başlat
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mesaj Alanı -->
+        <div class="col-md-8">
+            {% if selected_conversation %}
+            <div class="card">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-comment"></i> {{ selected_conversation.subject }}</h5>
+                    <div>
+                        {% if selected_conversation.status == 'active' %}
+                            <span class="badge bg-success">Aktif</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Kapalı</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Mesajlar -->
+                <div class="card-body" style="height: 400px; overflow-y: auto;" id="messages-container">
+                    {% for message in selected_conversation.messages %}
+                    <div class="message-item mb-3">
+                        {% if message.is_admin %}
+                        <!-- Admin mesajı -->
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="bg-light p-3 rounded">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <strong class="text-danger">Admin</strong>
+                                        <small class="text-muted">{{ message.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                                    </div>
+                                    <div>{{ message.message }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <!-- Kullanıcı mesajı -->
+                        <div class="d-flex flex-row-reverse">
+                            <div class="flex-shrink-0">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 me-3">
+                                <div class="bg-primary text-white p-3 rounded">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <strong>{{ current_user.first_name }}</strong>
+                                        <small class="opacity-75">{{ message.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                                    </div>
+                                    <div>{{ message.message }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Mesaj Gönderme -->
+                {% if selected_conversation.status == 'active' %}
+                <div class="card-footer">
+                    <form method="POST" action="{{ url_for('send_message', conversation_id=selected_conversation.id) }}">
+                        {{ message_form.hidden_tag() }}
+                        <div class="input-group">
+                            {{ message_form.message(class="form-control", placeholder="Mesajınızı yazın...", rows="2") }}
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Gönder
+                            </button>
+                        </div>
+                        {% for error in message_form.message.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </form>
+                </div>
+                {% else %}
+                <div class="card-footer bg-light text-center text-muted">
+                    Bu konuşma kapatılmıştır.
+                </div>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-comments fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">Konuşma seçin</h5>
+                    <p class="text-muted">Soldaki listeden bir konuşma seçin veya yeni konuşma başlatın.</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newConversationModal">
+                        <i class="fas fa-plus"></i> Yeni Konuşma Başlat
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Yeni Konuşma Modal -->
+<div class="modal fade" id="newConversationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('new_conversation') }}">
+                {{ conversation_form.hidden_tag() }}
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Konuşma Başlat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        {{ conversation_form.subject.label(class="form-label") }}
+                        {{ conversation_form.subject(class="form-control") }}
+                        {% for error in conversation_form.subject.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ conversation_form.message.label(class="form-label") }}
+                        {{ conversation_form.message(class="form-control", rows="4") }}
+                        {% for error in conversation_form.message.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Konuşmayı Başlat
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Mesaj containerını en alta kaydır
+    function scrollToBottom() {
+        const container = document.getElementById('messages-container');
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+    
+    // Sayfa yüklendiğinde en alta kaydır
+    document.addEventListener('DOMContentLoaded', scrollToBottom);
+    
+    // Form gönderildiğinde de kaydır
+    document.querySelector('form')?.addEventListener('submit', function() {
+        setTimeout(scrollToBottom, 100);
+    });
+</script>
+{% endblock %}

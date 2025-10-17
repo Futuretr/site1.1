@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-cog text-primary"></i> Sistem Ayarları</h2>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Admin Panel
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Yeni Ayar Ekleme -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5><i class="fas fa-plus"></i> Yeni Ayar Ekle</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.key.label(class="form-label") }}
+                        {{ form.key(class="form-control" + (" is-invalid" if form.key.errors else "")) }}
+                        {% if form.key.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.key.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Örnek: max_analysis_per_day, premium_price</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.value.label(class="form-label") }}
+                        {{ form.value(class="form-control" + (" is-invalid" if form.value.errors else ""), rows="3") }}
+                        {% if form.value.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.value.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else "")) }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.description.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Ayarı Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Ayar Örnekleri</h5>
+            </div>
+            <div class="card-body">
+                <div class="small">
+                    <strong>Kullanım Örnekleri:</strong>
+                    <ul class="mt-2">
+                        <li><code>premium_price</code> - Premium ücret (299)</li>
+                        <li><code>max_free_analysis</code> - Ücretsiz analiz limiti (3)</li>
+                        <li><code>system_message</code> - Sistem mesajı</li>
+                        <li><code>maintenance_mode</code> - Bakım modu (true/false)</li>
+                        <li><code>contact_email</code> - İletişim emaili</li>
+                        <li><code>success_threshold</code> - Başarı eşiği (50.0)</li>
+                    </ul>
+                    
+                    <div class="alert alert-warning alert-sm mt-3">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Dikkat:</strong> Ayar değişiklikleri sistem genelini etkileyebilir.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mevcut Ayarlar -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> Mevcut Sistem Ayarları</h5>
+            </div>
+            <div class="card-body">
+                {% if settings %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Ayar Anahtarı</th>
+                                <th>Değer</th>
+                                <th>Açıklama</th>
+                                <th>Son Güncelleme</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for setting in settings %}
+                            <tr>
+                                <td>
+                                    <code class="text-primary">{{ setting.key }}</code>
+                                </td>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 200px;" title="{{ setting.value }}">
+                                        {% if setting.value|length > 50 %}
+                                            {{ setting.value[:50] }}...
+                                        {% else %}
+                                            {{ setting.value }}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ setting.description or '-' }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <small>{{ setting.updated_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary btn-sm" 
+                                                onclick="editSetting('{{ setting.key }}', '{{ setting.value|replace("'", "\\'") }}', '{{ setting.description or "" }}')"
+                                                title="Düzenle">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form method="POST" action="{{ url_for('admin.delete_setting', setting_id=setting.id) }}" 
+                                              style="display: inline;" 
+                                              onsubmit="return confirm('{{ setting.key }} ayarını silmek istediğinizden emin misiniz?')">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Sil">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-cog fa-3x text-muted mb-3"></i>
+                    <h6 class="text-muted">Henüz sistem ayarı eklenmemiş</h6>
+                    <p class="text-muted small">Yukarıdaki formu kullanarak yeni ayar ekleyebilirsiniz.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ayar Düzenle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editForm" method="POST">
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Ayar Anahtarı</label>
+                        <input type="text" name="key" class="form-control" id="editKey" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Değer</label>
+                        <textarea name="value" class="form-control" id="editValue" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <input type="text" name="description" class="form-control" id="editDescription">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function editSetting(key, value, description) {
+    document.getElementById('editKey').value = key;
+    document.getElementById('editValue').value = value;
+    document.getElementById('editDescription').value = description;
+    
+    new bootstrap.Modal(document.getElementById('editModal')).show();
+}
+
+// Form submit success message
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            // Flash mesajları zaten base template'de gösteriliyor
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+</script>
+{% endblock %}
