@@ -98,7 +98,7 @@ def apply_security_headers(response):
 
 # Basit Konfigürasyon (Development)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///horse_analysis.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/www/site1.1/instance/horse_analysis.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # CSRF ve Session güvenliği
