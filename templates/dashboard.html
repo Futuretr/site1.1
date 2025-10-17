@@ -238,7 +238,11 @@ window.dailyAnalysisCount = {{ current_user.daily_analysis_count or 0 }};
                         <div class="progress mb-2" style="height: 8px;">
                             <div class="progress-bar bg-success" style="width: {{ (premium_days_left / 30 * 100) if premium_days_left <= 30 else 100 }}%"></div>
                         </div>
+                        {% if current_user.premium_end_date %}
                         <small class="text-muted">{{ current_user.premium_end_date.strftime('%d.%m.%Y') }} tarihinde sona eriyor</small>
+                        {% else %}
+                        <small class="text-muted">Premium bitiş tarihi belirtilmemiş</small>
+                        {% endif %}
                     </div>
                 {% else %}
                     <div class="text-center">

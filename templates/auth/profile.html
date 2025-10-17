@@ -120,9 +120,11 @@
                             <div class="small mt-1">
                                 {{ current_user.get_premium_days_left() }} gün kaldı
                             </div>
+                            {% if current_user.premium_end_date %}
                             <div class="small text-muted">
                                 {{ current_user.premium_end_date.strftime('%d.%m.%Y') }} tarihine kadar
                             </div>
+                            {% endif %}
                         {% else %}
                             <span class="badge bg-secondary">Ücretsiz</span>
                             <div class="mt-2">
